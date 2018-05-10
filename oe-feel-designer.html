@@ -1,0 +1,71 @@
+<!--
+©2015-2016 EdgeVerve Systems Limited (a fully owned Infosys subsidiary), Bangalore, India. All Rights Reserved.
+-->
+<link rel="import" href="all-imports.html">
+<link rel="import" href="elements/oe-feel-editor.html">
+<link rel="import" href="elements/oe-feel-footer.html">
+<dom-module id="oe-feel-designer">
+    <template>
+        <style>
+             :host {
+                position: relative;
+                display: block;
+                box-sizing: border-box;
+                height: calc(100vh - 40px);
+            }
+
+            .component-container {
+                height: 100%;
+            }
+        </style>
+        <div class="component-container layout vertical">
+            <div class="component-workspace layout horizontal flex">
+                <oe-feel-editor ></oe-feel-editor>
+            </div>
+        </div>
+        <oe-feel-footer studio-footer hidden></oe-feel-footer>
+    </template>
+    <script>
+        Polymer({
+            is: "oe-feel-designer",
+            properties: {
+                templateList: {
+                    type: Array,
+                    statePath: 'templateList'
+                },
+                componentStack: {
+                    type: Array,
+                    statePath: 'componentStack'
+                },
+                workingComponent: {
+                    type: Object,
+                    statePath: 'currComponent'
+                },
+                stackIndex: {
+                    type: Number,
+                    statePath: 'stackIndex'
+                }
+            },
+            listeners: {
+                'decision-graph-selected':'_graphSelected'
+            },
+            behaviors: [
+                OEUtils.AjaxBehavior
+            ],
+            attached: function () {
+                this.set('showActions', false);
+            },
+            _graphSelected: function (e) {
+                var self = this;
+                var comp = e.detail;
+            },
+            _updateStack: function (e) {
+                this.dispatch('updateComponentStack', e.detail);
+            },
+            _clearWorkSpace:function(e){
+                this.set('showActions', false);
+                this.dispatch('clear');
+            }
+        })
+    </script>
+</dom-module>

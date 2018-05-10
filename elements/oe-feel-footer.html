@@ -1,0 +1,207 @@
+<dom-module id="oe-feel-footer">
+        <template>
+            <style>
+                :host {
+                    position: relative;
+                    display: block;
+                    box-sizing: border-box;
+                    font-family: Roboto;
+                }
+    
+                iron-icon+* {
+                    margin-left: 8px;
+                }
+    
+                .footer-container {
+                    padding: 0px 16px;
+                    background: #455A64;
+                }
+    
+                #graphSelectMenu {
+                    box-sizing: border-box;
+                    height: 40px;
+                    padding: 0px;
+                    width: 200px;
+                    background: var(--default-primary-color);
+                    --paper-menu-button-content: {
+                        border-radius: 0px;
+                        box-shadow: none;
+                    }
+                }
+    
+                #graphSelectMenu paper-button.dropdown-trigger {
+                    font-size: 12px;
+                    border-radius: 0px;
+                    padding: 12px;
+                    width: 200px;
+                    background: var(--dark-primary-color);
+                    font-family: Roboto;
+                    font-weight: 500;
+                    letter-spacing: 0.7px;
+                }
+    
+                #graphSelectMenu .dropdown-content {
+                    margin-bottom: 12px;
+                    position: relative;
+                    width: 450px;
+                    height: 500px;
+                    background: var(--default-primary-color);
+                    color: var(--default-text-color);
+                }
+    
+                #graphSelectMenu .dropdown-content:after {
+                    content: "";
+                    position: absolute;
+                    left: 12px;
+                    bottom: -8px;
+                    border-style: solid;
+                    border-width: 10px 10px 0 10px;
+                    border-color: var(--default-primary-color) transparent transparent transparent;
+                }
+    
+                #graphSelectMenu .dropdown-content.create-component-1:after {
+                    border-color: var(--dark-primary-color) transparent transparent transparent;
+                }
+    
+    
+    
+                .server-graph-list {
+                    width: 200px;
+                    border-right: 1px solid rgba(255, 255, 255, 0.4);
+                }
+    
+                .header-panel {
+                    height: 40px;
+                    box-sizing: border-box;
+                    padding: 8px 16px;
+                    margin-bottom: 2px;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+                }
+    
+                .list-option {
+                    height: 48px;
+                    padding: 0 16px;
+                    cursor: pointer;
+                    position: relative;
+                    color: var(--default-text-color);
+                }
+    
+                .list-option:hover {
+                    box-shadow: 1px 2px 1px rgba(0, 0, 0, 0.20), 1px -2px 1px rgba(0, 0, 0, 0.20);
+                }
+    
+                .list-option iron-icon {
+                    --iron-icon-height: 16px;
+                    --iron-icon-width: 16px;
+                }
+    
+                .page-name {
+                    margin-left: 16px;
+                }
+    
+                .toolbar-menu {
+                    border-left: 1px solid rgba(255, 255, 255, 0.12);
+                }
+    
+                .toolbar-menu iron-icon {
+                    --iron-icon-height: 20px;
+                    --iron-icon-width: 20px;
+                }
+    
+    
+    
+                .toolbar-menu .toolbar-item {
+                    height: 40px;
+                    color: #FFF;
+                    border-right: 1px solid rgba(255, 255, 255, 0.12);
+                }
+    
+                .toolbar-menu paper-menu-button {
+                    padding: 0px;
+                }
+    
+                .toolbar-menu paper-icon-button {
+                    width: 40px;
+                    height: 40px;
+                    padding: 11px;
+                }
+            </style>
+            <div class="footer-container layout horizontal">
+                <paper-menu-button no-animations no-overlap vertical-align="bottom" id="graphSelectMenu" ignore-select>
+                    <paper-button class="dropdown-trigger">
+                        <iron-icon icon="settings-ethernet" hidden=[[!isGraphSelected]]></iron-icon>
+                        <label hidden=[[isGraphSelected]]>Select Decision Graph</label>
+                        <label hidden=[[!isGraphSelected]]>[[selectedGraph.name]]</label>
+                    </paper-button>
+                    <div class="dropdown-content layout horizontal justified">
+                        <div class="server-graph-list layout vertical justified">
+                            <div class="header-panel">
+                                <label class="mini-heading">Load Graph</label>
+                            </div>
+                            <div class="graph-list flex">
+                                <template is="dom-repeat" items="[[decisionGraphList]]" as="graph">
+                                    <div class="list-option layout horizontal center" on-tap="_loadGraph">
+                                        <iron-icon icon="settings-ethernet"></iron-icon>
+                                        <span class="flex page-name">[[graph.name]]</span>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="graph-options flex">
+                            <div class="header-panel">
+                                <label class="mini-heading">Options</label>
+                            </div>
+                            <div class="list-option layout horizontal center" on-tap="_createGraph">
+                                <iron-icon icon="star"></iron-icon>
+                                <span class="flex option-name">Create New Graph</span>
+                            </div>
+                            <div class="list-option layout horizontal center" on-tap="_uploadGraph">
+                                <iron-icon icon="file-upload"></iron-icon>
+                                <span class="flex option-name">Upload Graph</span>
+                            </div>
+                            <div class="list-option layout horizontal center" on-tap="_downloadGraph">
+                                <iron-icon icon="file-download"></iron-icon>
+                                <span class="flex option-name">Download Graph</span>
+                            </div>
+                        </div>
+                    </div>
+                </paper-menu-button>
+                <div class="flex">
+    
+                </div>
+                <div class="layout horizontal toolbar-menu">
+                    <paper-menu-button class="toolbar-item" no-animations no-overlap vertical-align="bottom" close-on-activate>
+                        <paper-button class="dropdown-trigger">
+                            <iron-icon icon="save"></iron-icon>
+                            <iron-icon icon="icons:arrow-drop-down"></iron-icon>
+                        </paper-button>
+                        <paper-menu class="dropdown-content">
+                            <paper-item id="save-btn" on-tap="_saveGraph">
+                                <iron-icon icon="save"></iron-icon>
+                                <span> Save</span>
+                            </paper-item>
+                            <paper-item id="save-as-btn" on-tap="_saveGraphAs">
+                                <iron-icon icon="save"></iron-icon>
+                                <span> Save As</span>
+                            </paper-item>
+                        </paper-menu>
+                    </paper-menu-button>
+                    <paper-icon-button id="code-view-btn" icon="delete" class="toolbar-item" on-tap="_deleteGraph"></paper-icon-button>
+                </div>
+            </div>
+        </template>
+        <script>
+            Polymer({
+                is: "oe-feel-footer",
+                behaviors: [OEUtils.AjaxBehavior],
+                listeners: {},
+                attached: function () {
+                    this.makeAjaxCall('api/decisiongraphs', 'get', null, null, null, function (err, resp) {
+                        this.set('decisionGraphList', resp);
+                        this.set('selectedGraph', null);
+                        this.set('isGraphSelected', false);
+                    }.bind(this));
+                }
+            })
+        </script>
+    </dom-module>

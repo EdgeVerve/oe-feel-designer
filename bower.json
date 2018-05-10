@@ -1,0 +1,52 @@
+{
+  "name": "oe-feel-designer",
+  "authors": [
+    "Gowtham <gowtham_d02@infosys.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.2.0",
+    "iron-collapse": "^1.0.0",
+    "iron-icon": "^1.0.0",
+    "iron-icons": "^1.0.0",
+    "iron-pages": "^1.0.0",
+    "iron-selector": "^1.0.0",
+    "oe-ajax": "^1.0.0",
+    "oe-combo": "^1.0.0",
+    "oe-input": "^1.0.0",
+    "oe-message-handler": "^1.0.0",
+    "oe-typeahead": "^1.0.0",
+    "oe-ui-forms": "^1.0.0",
+    "oe-utils": "^1.0.0",
+    "paper-button": "^1.0.0",
+    "paper-checkbox": "^1.0.0",
+    "paper-dialog": "^1.0.0",
+    "paper-icon-button": "^1.0.0",
+    "paper-menu-button": "^1.0.0",
+    "paper-progress": "^1.0.0",
+    "paper-radio-button": "^1.0.0",
+    "paper-radio-group": "^1.0.0",
+    "paper-toggle-button": "^1.0.0",
+    "paper-tooltip": "^1.0.0"
+  },
+  "devDependencies": {
+    "web-component-tester": "*",
+    "test-fixture": "PolymerElements/test-fixture#^1.0.0",
+    "fakerest": "~1.1.4"
+  },
+  "resolutions": {
+    "test-fixture": "^3.0.0",
+    "lodash": "^4.17.4",
+    "iron-form": "1.1.5"
+  }
+}
