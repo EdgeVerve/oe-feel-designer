@@ -4,6 +4,7 @@
 <link rel="import" href="all-imports.html">
 <link rel="import" href="elements/oe-feel-editor.html">
 <link rel="import" href="elements/oe-feel-footer.html">
+<link rel="import" href="elements/oe-feel-component.html">
 <dom-module id="oe-feel-designer">
     <template>
         <style>
@@ -20,7 +21,7 @@
         </style>
         <div class="component-container layout vertical">
             <div class="component-workspace layout horizontal flex">
-                <oe-feel-editor ></oe-feel-editor>
+                <oe-feel-editor decision-graph="[[_getCurrentGraph(_currentStackIndex)]]"></oe-feel-editor>
             </div>
         </div>
         <oe-feel-footer studio-footer hidden></oe-feel-footer>
@@ -29,42 +30,86 @@
         Polymer({
             is: "oe-feel-designer",
             properties: {
-                templateList: {
-                    type: Array,
-                    statePath: 'templateList'
-                },
-                componentStack: {
-                    type: Array,
-                    statePath: 'componentStack'
-                },
-                workingComponent: {
-                    type: Object,
-                    statePath: 'currComponent'
-                },
-                stackIndex: {
-                    type: Number,
-                    statePath: 'stackIndex'
-                }
+                
             },
             listeners: {
-                'decision-graph-selected':'_graphSelected'
+                'decision-graph-selected':'_graphSelected',
+                'add-feel-component':'_handleAddNode',
+                'update-component-position':'_handlePositionUpdate',
+                'undo-decision-graph':'_handleUndoGraph',
+                'redo-decision-graph':'_handleRedoGraph'
             },
             behaviors: [
-                OEUtils.AjaxBehavior
             ],
             attached: function () {
                 this.set('showActions', false);
             },
+            _clearStack:function(){
+                this.set('curGraphStack',[]);
+                this.set('_currentStackIndex',-1);
+            },
             _graphSelected: function (e) {
                 var self = this;
-                var comp = e.detail;
+                var graph = e.detail;
+                this._clearStack();
+                if(graph){
+                    this._pushToStack(graph);
+                }
             },
-            _updateStack: function (e) {
-                this.dispatch('updateComponentStack', e.detail);
+            _handleAddNode:function(e){
+                var node = e.detail;
+                var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
+                decisiongraph.graph.nodes.push(node);
+                this._pushToStack(decisiongraph);
             },
-            _clearWorkSpace:function(e){
-                this.set('showActions', false);
-                this.dispatch('clear');
+            _handlePositionUpdate:function(e){
+                var detail = e.detail;
+                var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
+                var updatedNode = decisiongraph.graph.nodes.find(function(node){
+                    return node.i === detail.nodeIndex
+                });
+                updatedNode.x = detail.x;
+                updatedNode.y = detail.y;
+                this._pushToStack(decisiongraph);
+            },
+            _getCurrentGraph:function(index){
+                if(index > -1){
+                    var graph = JSON.parse(JSON.stringify(this.curGraphStack[index]));
+                    return graph;
+                }
+            },
+            _pushToStack:function(graph){
+                this.curGraphStack.splice(this._currentStackIndex+1);
+                this.push('curGraphStack',JSON.parse(JSON.stringify(graph)));
+                this.set('_currentStackIndex',this._currentStackIndex+1);
+                this._footerFire('stack-updated',{
+                    curIndex:this._currentStackIndex,
+                    stackLength:this.curGraphStack.length
+                })
+            },
+            _footerFire: function (name, detail) {
+                this.fire('oe-studio-footer-action', {
+                    'event': name,
+                    'payload': detail
+                });
+            },
+            _handleUndoGraph:function(){
+                if(this._currentStackIndex > 0){
+                    this.set('_currentStackIndex',this._currentStackIndex-1);
+                    this._footerFire('stack-updated',{
+                        curIndex:this._currentStackIndex,
+                        stackLength:this.curGraphStack.length
+                    })
+                }
+            },
+            _handleRedoGraph:function(){
+                if(this._currentStackIndex < (this.curGraphStack.length-1)){
+                    this.set('_currentStackIndex',this._currentStackIndex+1);
+                    this._footerFire('stack-updated',{
+                        curIndex:this._currentStackIndex,
+                        stackLength:this.curGraphStack.length
+                    })
+                }
             }
         })
     </script>

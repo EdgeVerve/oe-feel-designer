@@ -1,0 +1,126 @@
+<link rel="import" href="oe-feel-icons.html">
+<dom-module id="oe-feel-element-list">
+    <template>
+        <style>
+            :host {
+                position: relative;
+                display: block;
+                box-sizing: border-box;
+            }
+
+            .element,
+            .association {
+                position: relative;
+            }
+
+            .element iron-icon {
+                height: 30px;
+                width: 30px;
+            }
+
+            .hover-display {
+                position: absolute;
+                top: 0px;
+                background: #fff;
+                font-size: 14px;
+                white-space: nowrap;
+                cursor: -webkit-grab;
+                user-select: none;
+                width:0px;
+                opacity: 0;
+                transition: opacity linear 100ms;
+                box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.4);
+            }
+
+            .hover-display label {
+                padding: 0px 8px;
+            }
+
+            .element:hover .hover-display{
+                width:auto;
+                opacity: 1;
+            }
+
+        </style>
+        <div class="component-container">
+            <div class="layout vertical">
+                <template is="dom-repeat" items="{{icons}}">
+                    <div class="element" title="[[item.name]]">
+                        <iron-icon icon="oe-feel-icons:[[item.type]]"></iron-icon>
+                        <div class="hover-display layout horizontal center justified" draggable="true" on-dragstart="dragStart">
+                            <iron-icon icon="oe-feel-icons:[[item.type]]"></iron-icon>
+                            <label>[[item.name]]</label>
+                        </div>
+                    </div>
+                </template>
+                <hr>
+                <template is="dom-repeat" items="{{associations}}">
+                    <div class="association" draggable="true" title="[[item.name]]" on-click="raiseConnect">
+                        <iron-icon icon="oe-feel-icons:[[item.type]]"></iron-icon>
+                        <div class="hover-display layout horizontal center justified">
+                            <iron-icon icon="oe-feel-icons:[[item.type]]"></iron-icon>
+                            <label>[[item.name]]</label>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: "oe-feel-element-list",
+            ready: function () {
+                var icons = [{
+                        name: 'Decision Table',
+                        type: 'decision'
+                    },
+                    {
+                        name: 'Boxed Invocation',
+                        type: 'invocation'
+                    },
+                    {
+                        name: 'Boxed Context',
+                        type: 'context'
+                    },
+                    {
+                        name: 'Knowledge Source',
+                        type: 'knowledge'
+                    },
+                    {
+                        name: 'Business Model',
+                        type: 'business-model'
+                    },
+                    {
+                        name: 'Input',
+                        type: 'input'
+                    }
+                ];
+                this.set('icons', icons);
+
+                var assoc = [{
+                        name: 'Information',
+                        type: 'information'
+                    },
+
+                    {
+                        name: 'Authority',
+                        type: 'authority'
+                    },
+
+                    {
+                        name: 'Knowledge',
+                        type: 'knowledge-requirement'
+                    }
+                ];
+
+                this.set('associations', assoc)
+            },
+            behaviors: [],
+            listeners: {},
+            dragStart: function(e) {
+                e.dataTransfer.setData('type', JSON.stringify(e.model.item));
+                this.dispatchEvent(new CustomEvent('component-dragged'))
+            },
+        })
+    </script>
+</dom-module>

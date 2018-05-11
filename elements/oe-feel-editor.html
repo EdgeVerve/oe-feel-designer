@@ -1,21 +1,249 @@
+<link rel="import" href="oe-feel-element-list.html">
 <dom-module id="oe-feel-editor">
     <template>
-        <style>
-            :host{
-                position:relative;
-                display:block;
-                box-sizing:border-box;
+        <style include="iron-flex iron-flex-alignment">
+            :host {
+                position: relative;
+                display: block;
+                box-sizing: border-box;
+            }
+
+            #element-list {
+                width: 34px;
+                height: calc(100vh - 40px);
+                border-right: 1px solid rgba(0, 0, 0, 0.2);
+            }
+
+            .component-container {
+                height: calc(100vh - 40px);
+            }
+
+            #workSpace {
+                position: relative;
+            }
+
+            oe-feel-component {
+                position: absolute;
+                user-select: none;
+                cursor: move;
+                z-index: 2;
+            }
+
+            #mainPageSelection>* {
+                width: 100vw;
+                height: calc(100vh - 40px);
+            }
+
+            .connector {
+                background: red;
+                height: 2px;
+                transform-origin: top left;
+                position: absolute;
             }
         </style>
         <div class="component-container">
-            OE FEEL EDITOR
+            <iron-pages id="mainPageSelection" selected="[[_mainSection]]" attr-for-selected="mode">
+                <div id="empty-state" class="layout horizontal center-center" mode="empty">
+                    <h2>Select a graph to start editing</h2>
+                </div>
+                <div id="editor-section" mode="edit" class="layout horizontal justified">
+                    <oe-feel-element-list id="element-list"></oe-feel-element-list>
+                    <div class="flex" id="workSpace" on-drop="_handleDrop" on-dragover="_handleDragOver"></div>
+                    <div id="workspace-actions">
+
+                    </div>
+                </div>
+                <div id="configure-section" mode="setting">
+                    Setting
+                </div>
+            </iron-pages>
         </div>
     </template>
     <script>
         Polymer({
-            is:"oe-feel-editor",
-            behaviors:[],
-            listeners:{}
+            is: "oe-feel-editor",
+            properties: {
+                decisionGraph: {
+                    type: Object,
+                    observer: '_graphChanged'
+                }
+            },
+            behaviors: [],
+            listeners: {},
+            attached: function () {
+                this.set('_mainSection', 'empty');
+                this.set('componentMap', {
+                    'decision': 'DECISION_TABLE',
+                    'invocation': 'BOXED_INVOCATION',
+                    'context': 'BOXED_CONTEXT',
+                    'knowledge': 'KNOWLEDGE_SOURCE',
+                    'business-model': 'BUSINESS_MODEL',
+                    'input': 'INPUT'
+                })
+            },
+            _graphChanged: function (nval, oval) {
+                if (nval != oval && nval) {
+                    this.set('_mainSection', 'edit');
+                    var workSpace = this.$.workSpace;
+                    workSpace.innerHTML = "";
+                    this.set('counter', {
+                        'lastNodeIndex': 0,
+                        'DECISION_TABLE': 0,
+                        'BOXED_INVOCATION': 0,
+                        'BOXED_CONTEXT': 0,
+                        'KNOWLEDGE_SOURCE': 0,
+                        'BUSINESS_MODEL': 0,
+                        'INPUT': 0
+                    })
+                    this.decisionGraph.graph.nodes.forEach(this._createElementForNode.bind(this));
+                    this.decisionGraph.graph.connections.forEach(this._createConnection.bind(this));
+                }
+            },
+            _createElementForNode: function (node) {
+                var workSpace = this.$.workSpace;
+                var nodeEle = document.createElement('oe-feel-component');
+                nodeEle.classList.add('oe-feel-editor');
+                nodeEle.set('node', node);
+                var id = node.id || OEUtils.generateGuid();
+                nodeEle.setAttribute('id', id);
+                nodeEle.setAttribute('i', node.i);
+
+                this.counter[node.nodeType]++;
+                this.counter.lastNodeIndex = (this.counter.lastNodeIndex > node.i) ? this.counter.lastNodeIndex :
+                    node.i;
+
+                workSpace.appendChild(nodeEle);
+                this._positionNode(nodeEle, node);
+                this.listen(nodeEle, 'track', '_nodeTrackHandler')
+            },
+            _createConnection: function (connection) {
+                var node1 = this.querySelector('oe-feel-component[i="' + connection.from + '"]');
+                var node2 = this.querySelector('oe-feel-component[i="' + connection.to + '"]');
+                this._drawConnection(node1, node2, connection);
+            },
+            _positionNode: function (ele, node) {
+                ele.style.top = node.y + 'px';
+                ele.style.left = node.x + 'px';
+            },
+            _nodeTrackHandler: function (event) {
+                event.stopPropagation();
+                var elem = event.currentTarget;
+                var detail = event.detail;
+                switch (detail.state) {
+                    case "start":
+                        var rect = elem.getBoundingClientRect();
+                        var iVar = elem.node.i;
+                        var connections = this.decisionGraph.graph.connections.filter(function (connection) {
+                            return (connection.from === iVar || connection.to === iVar)
+                        });
+                        this.set('__currentDragData', {
+                            ele: elem,
+                            originalTop: rect.top,
+                            originalLeft: rect.left,
+                            connections: connections
+                        })
+                        break;
+                    case "track":
+                        //Move dragged element
+                        elem.style.top = this.__currentDragData.originalTop + detail.dy + 'px';
+                        elem.style.left = this.__currentDragData.originalLeft + detail.dx + 'px';
+                        this.__currentDragData.connections.forEach(this._createConnection.bind(this));
+                        break;
+                    case "end":
+                        var finalRect = elem.getBoundingClientRect();
+                        var rectw = workSpace.getBoundingClientRect();
+                        this.fire('update-component-position',{
+                            x:(finalRect.left - rectw.left),
+                            y:(finalRect.top - rectw.top),
+                            nodeIndex:elem.node.i
+                        });
+                        break;
+                }
+            },
+            _handleDrop: function (eve) {
+                var configStr = eve.dataTransfer.getData('type');
+                var compConfig = JSON.parse(configStr);
+                var nodeType = this.componentMap[compConfig.type]
+                var nodeData = {
+                    'id': OEUtils.generateGuid(),
+                    'i': (this.counter.lastNodeIndex + 1),
+                    'name': compConfig.name + " " + (this.counter[nodeType]+1),
+                    'nodeType':nodeType,
+                    'x':eve.offsetX,
+                    'y':eve.offsetY,
+                    'data':{}
+                };
+                this.fire('add-feel-component',nodeData);
+                //handle Add node on drop location
+            },
+            _handleDragOver: function (eve) {
+                eve.preventDefault();
+            },
+            _drawConnection: function (node1, node2, connection) {
+                var workSpace = this.$.workSpace;
+                var rectw = workSpace.getBoundingClientRect();
+                var rect1 = node1.getBoundingClientRect();
+                var rect2 = node2.getBoundingClientRect();
+
+
+                var cx1 = Math.round(rect1.left - rectw.left + rect1.width / 2);
+                var cy1 = Math.round(rect1.top - rectw.top + rect1.height / 2);
+                var cx2 = Math.round(rect2.left - rectw.left + rect2.width / 2);
+                var cy2 = Math.round(rect2.top - rectw.top + rect2.height / 2);
+
+                var length = Math.sqrt(((cx2 - cx1) * (cx2 - cx1)) + ((cy2 - cy1) * (cy2 - cy1)));
+                var angle = 180 + Math.atan2((cy1 - cy2), (cx1 - cx2)) * (180 / Math.PI);
+
+                var prevConnection = workSpace.querySelector('div.connector[id="' + connection.id + '"]');
+                if (!prevConnection) {
+                    prevConnection = document.createElement('div');
+                    prevConnection.classList.add('connector');
+                    prevConnection.classList.add(this.is);
+                    prevConnection.setAttribute('id', connection.id);
+                    prevConnection.setAttribute('connection-type', connection.type);
+                    workSpace.appendChild(prevConnection);
+                }
+
+                var styleVal = "left:" + cx1 + "px; top:" + cy1 + "px; width:" + length +
+                    "px; -moz-transform:rotate(" + angle + "deg); -webkit-transform:rotate(" + angle +
+                    "deg); -o-transform:rotate(" + angle + "deg); -ms-transform:rotate(" + angle +
+                    "deg); transform:rotate(" + angle + "deg);";
+                prevConnection.setAttribute('style', styleVal);
+            },
+            // line intercept math by Paul Bourke http://paulbourke.net/geometry/pointlineplane/
+            // Determine the intersection point of two line segments
+            // Return FALSE if the lines don't intersect
+            _intersectPoint: function (x1, y1, x2, y2, x3, y3, x4, y4) {
+
+                // Check if none of the lines are of length 0
+                if ((x1 === x2 && y1 === y2) || (x3 === x4 && y3 === y4)) {
+                    return false
+                }
+
+                denominator = ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1))
+
+                // Lines are parallel
+                if (denominator === 0) {
+                    return false
+                }
+
+                let ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denominator
+                let ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denominator
+
+                // is the intersection along the segments
+                if (ua < 0 || ua > 1 || ub < 0 || ub > 1) {
+                    return false
+                }
+
+                // Return a object with the x and y coordinates of the intersection
+                let x = x1 + ua * (x2 - x1)
+                let y = y1 + ua * (y2 - y1)
+
+                return {
+                    x,
+                    y
+                }
+            }
         })
     </script>
 </dom-module>

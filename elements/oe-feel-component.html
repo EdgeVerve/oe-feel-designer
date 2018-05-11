@@ -1,0 +1,119 @@
+<dom-module id="oe-feel-component">
+    <template>
+        <style>
+            :host {
+                position: relative;
+                display: block;
+                box-sizing: border-box;
+            }
+
+            .component-header {
+                height: 30px;
+                padding: 0px 8px;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+                color: #FFF;
+            }
+
+            .component-header.DECISION_TABLE {
+                background: #90ee90;
+            }
+
+            .component-header.BOXED_INVOCATION {
+                background: #e699ff;
+            }
+
+            .component-header.BOXED_CONTEXT {
+                background: #ffcc33;
+            }
+
+            .component-header.KNOWLEDGE_SOURCE {
+                background: rgb(0, 153, 255);
+            }
+
+            .component-header.BUSINESS_MODEL {
+                background: #33ccff;
+            }
+
+            .component-header.INPUT {
+                background: rgb(182, 64, 64);
+            }
+
+            .component-header label{
+                padding: 0px 8px;
+            }
+
+
+            .component-panel {
+                background: #FFF;
+                height: 100px;
+                min-width: 150px;
+                border: 1px solid rgba(0, 0, 0, 0.4);
+                box-shadow: 3px 3px 1px 1px rgba(0, 0, 0, 0.3);
+                border-radius: 2px;
+            }
+            .component-panel iron-icon{
+                --iron-icon-width:16px;
+                --iron-icon-height:16px;
+            }
+        </style>
+        <div class="component-panel">
+            <div class$="component-header [[node.nodeType]] layout horizontal justified center">
+                <iron-icon icon="oe-feel-icons:[[_getNodeIcon(node.nodeType)]]"></iron-icon>
+                <label>[[node.name]]</label>
+                <iron-icon icon="delete"></iron-icon>
+            </div>
+            <div>
+
+            </div>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: "oe-feel-component",
+            properties: {
+                node: {
+                    type: Object,
+                    value: function () {
+
+                    }
+                }
+            },
+            ready: function () {
+                var icons = [{
+                        nodeType: 'DECISION_TABLE',
+                        icon: 'decision'
+                    },
+                    {
+                        nodeType: 'BOXED_INVOCATION',
+                        icon: 'invocation'
+                    },
+                    {
+                        nodeType: 'BOXED_CONTEXT',
+                        icon: 'context'
+                    },
+                    {
+                        nodeType: 'KNOWLEDGE_SOURCE',
+                        icon: 'knowledge'
+                    },
+                    {
+                        nodeType: 'BUSINESS_MODEL',
+                        icon: 'business-model'
+                    },
+                    {
+                        nodeType: 'INPUT',
+                        icon: 'input'
+                    }
+                ];
+                this.set('iconsList', icons);
+            },
+            _getNodeIcon: function (nodeType) {
+                var selectedIcon = this.iconsList.find(function (icon) {
+                    return icon.nodeType === nodeType;
+                });
+                return selectedIcon.icon;
+            },
+            behaviors: [],
+            listeners: {}
+        })
+    </script>
+</dom-module>

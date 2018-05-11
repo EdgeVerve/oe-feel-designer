@@ -13,7 +13,6 @@
                 }
     
                 .footer-container {
-                    padding: 0px 16px;
                     background: #455A64;
                 }
     
@@ -112,10 +111,13 @@
     
                 .toolbar-menu .toolbar-item {
                     height: 40px;
-                    color: #FFF;
                     border-right: 1px solid rgba(255, 255, 255, 0.12);
                 }
     
+                .toolbar-menu .toolbar-item:not([disabled]){
+                    color: #FFF;
+                }
+
                 .toolbar-menu paper-menu-button {
                     padding: 0px;
                 }
@@ -125,13 +127,16 @@
                     height: 40px;
                     padding: 11px;
                 }
+                .graph-icon{
+                    padding: 0px 16px;
+                }
             </style>
             <div class="footer-container layout horizontal">
                 <paper-menu-button no-animations no-overlap vertical-align="bottom" id="graphSelectMenu" ignore-select>
                     <paper-button class="dropdown-trigger">
-                        <iron-icon icon="settings-ethernet" hidden=[[!isGraphSelected]]></iron-icon>
-                        <label hidden=[[isGraphSelected]]>Select Decision Graph</label>
-                        <label hidden=[[!isGraphSelected]]>[[selectedGraph.name]]</label>
+                        <iron-icon icon="settings-ethernet" class="graph-icon" hidden=[[!_graphSelected]]></iron-icon>
+                        <label hidden=[[_graphSelected]]>Select Decision Graph</label>
+                        <label hidden=[[!_graphSelected]]>[[selectedGraph.name]]</label>
                     </paper-button>
                     <div class="dropdown-content layout horizontal justified">
                         <div class="server-graph-list layout vertical justified">
@@ -141,7 +146,7 @@
                             <div class="graph-list flex">
                                 <template is="dom-repeat" items="[[decisionGraphList]]" as="graph">
                                     <div class="list-option layout horizontal center" on-tap="_loadGraph">
-                                        <iron-icon icon="settings-ethernet"></iron-icon>
+                                        <iron-icon icon="settings-ethernet" class="graph-icon"></iron-icon>
                                         <span class="flex page-name">[[graph.name]]</span>
                                     </div>
                                 </template>
@@ -169,7 +174,13 @@
                 <div class="flex">
     
                 </div>
-                <div class="layout horizontal toolbar-menu">
+                <div class="layout horizontal toolbar-menu" hidden=[[!_graphSelected]]>
+                    <paper-icon-button id="undo-btn" icon="undo" 
+                        disabled=[[_isUndoDisabled]]
+                        class="toolbar-item" on-tap="_undoGraph"></paper-icon-button>
+                    <paper-icon-button id="redo-btn" icon="redo" 
+                        disabled=[[_isRedoDisabled]]
+                        class="toolbar-item" on-tap="_redoGraph"></paper-icon-button>
                     <paper-menu-button class="toolbar-item" no-animations no-overlap vertical-align="bottom" close-on-activate>
                         <paper-button class="dropdown-trigger">
                             <iron-icon icon="save"></iron-icon>
@@ -194,13 +205,38 @@
             Polymer({
                 is: "oe-feel-footer",
                 behaviors: [OEUtils.AjaxBehavior],
-                listeners: {},
+                listeners: {
+                    'stack-updated':'_updateStackInfo'
+                },
                 attached: function () {
                     this.makeAjaxCall('api/decisiongraphs', 'get', null, null, null, function (err, resp) {
                         this.set('decisionGraphList', resp);
                         this.set('selectedGraph', null);
-                        this.set('isGraphSelected', false);
+                        this.set('_graphSelected', false);
                     }.bind(this));
+                },
+                _loadGraph:function(event){
+                    var graph = event.model.graph;
+                    this.set('selectedGraph',graph);
+                    this.set('_graphSelected',true);               
+                    this._moduleFire('decision-graph-selected',graph);
+                    this.$.graphSelectMenu.close();
+                },
+                _moduleFire: function (name, detail) {
+                    this.fire('oe-studio-module-action', {
+                        'event': name,
+                        'payload': detail
+                    });
+                },
+                _updateStackInfo:function(eve){
+                    this.set('_isUndoDisabled',eve.detail.curIndex === 0);
+                    this.set('_isRedoDisabled',eve.detail.curIndex === (eve.detail.stackLength-1));
+                },
+                _undoGraph:function(e){
+                    this._moduleFire('undo-decision-graph');
+                },
+                _redoGraph:function(e){
+                    this._moduleFire('redo-decision-graph');
                 }
             })
         </script>

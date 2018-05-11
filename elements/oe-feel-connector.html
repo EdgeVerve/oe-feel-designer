@@ -1,0 +1,30 @@
+<dom-module id="oe-feel-connector">
+    <template>
+        <style>
+            :host{
+                display:block;
+                box-sizing:border-box;
+            }
+        </style>
+        <div class="line">
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is:"oe-feel-connector",
+            properties:{
+                fromNode:{
+                    type:Object
+                },
+                toNode:{
+                    type:Object
+                },
+                connector:{
+                    type:Object
+                }
+            },
+            behaviors:[],
+            listeners:{}
+        })
+    </script>
+</dom-module>
