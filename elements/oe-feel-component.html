@@ -14,29 +14,49 @@
                 color: #FFF;
             }
 
-            .component-header.DECISION_TABLE {
+            .component-panel.DECISION_TABLE .component-header{
                 background: #90ee90;
             }
 
-            .component-header.BOXED_INVOCATION {
+            .component-panel.BOXED_INVOCATION .component-header{
                 background: #e699ff;
             }
 
-            .component-header.BOXED_CONTEXT {
+            .component-panel.BOXED_CONTEXT .component-header{
                 background: #ffcc33;
             }
 
-            .component-header.KNOWLEDGE_SOURCE {
+            .component-panel.KNOWLEDGE_SOURCE .component-header{
                 background: rgb(0, 153, 255);
             }
 
-            .component-header.BUSINESS_MODEL {
+            .component-panel.BUSINESS_MODEL .component-header{
                 background: #33ccff;
             }
 
-            .component-header.INPUT {
+            .component-panel.INPUT .component-header{
                 background: rgb(182, 64, 64);
             }
+
+            .component-panel.BUSINESS_MODEL:before{
+                content: "";
+                position: absolute;
+                top: -1px;
+                left: -1px;
+                width: 15px;
+                height: 15px;
+                background: linear-gradient(to bottom right,white, white 49%, #999999 50%, transparent 51%,transparent);
+            }
+            .component-panel.BUSINESS_MODEL:after{
+                content: "";
+                position: absolute;
+                right: -1px;
+                bottom: -1px;
+                width: 15px;
+                height: 15px;
+                background: linear-gradient(to top left,white, white 49%, #999999 50%, transparent 51%,transparent);
+            }
+
 
             .component-header label{
                 padding: 0px 8px;
@@ -50,17 +70,19 @@
                 border: 1px solid rgba(0, 0, 0, 0.4);
                 box-shadow: 3px 3px 1px 1px rgba(0, 0, 0, 0.3);
                 border-radius: 2px;
+                position: relative;
             }
             .component-panel iron-icon{
                 --iron-icon-width:16px;
                 --iron-icon-height:16px;
             }
         </style>
-        <div class="component-panel">
-            <div class$="component-header [[node.nodeType]] layout horizontal justified center">
+        <div class$="component-panel [[node.nodeType]]">
+            <div class="component-header layout horizontal justified center">
                 <iron-icon icon="oe-feel-icons:[[_getNodeIcon(node.nodeType)]]"></iron-icon>
                 <label>[[node.name]]</label>
-                <iron-icon icon="delete"></iron-icon>
+                <iron-icon icon="icons:settings" on-tap="_launchSetting"></iron-icon>
+                <iron-icon icon="delete" on-tap="_deleteComponent"></iron-icon>
             </div>
             <div>
 
@@ -72,10 +94,7 @@
             is: "oe-feel-component",
             properties: {
                 node: {
-                    type: Object,
-                    value: function () {
-
-                    }
+                    type: Object
                 }
             },
             ready: function () {
@@ -111,6 +130,12 @@
                     return icon.nodeType === nodeType;
                 });
                 return selectedIcon.icon;
+            },
+            _launchSetting:function(){
+                this.fire('open-node-setting',this.node);
+            },
+            _deleteComponent:function(){
+                this.fire('delete-component',this.node);
             },
             behaviors: [],
             listeners: {}

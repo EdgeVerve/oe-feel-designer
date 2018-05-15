@@ -4,9 +4,26 @@
             :host{
                 display:block;
                 box-sizing:border-box;
+                position: absolute;
+                height: auto;
+                transform-origin: top left;
+            }
+            .line{
+                background: red;
+                height: 2px;
+                width:100%;
+            }
+            #arrow{
+                border-width: 6px 0px 6px 15px;
+                border-style: solid;
+                border-color: transparent transparent transparent red;
+                position: absolute;
+                top:-5px;
+                right: 0px;
             }
         </style>
         <div class="line">
+            <div id="arrow"></div>
         </div>
     </template>
     <script>
@@ -21,9 +38,120 @@
                 },
                 connector:{
                     type:Object
+                },
+                workSpace:{
+                    type:Object
                 }
             },
             behaviors:[],
+            _getRelativeRect:function(ele){
+                var rect = ele.getBoundingClientRect();
+                var rectw = this.workSpace.getBoundingClientRect();
+                var relativeRect = {
+                    "x": rect.x - rectw.x,
+                    "y": rect.y - rectw.y,
+                    "width": rect.width,
+                    "height": rect.height,
+                    "top": rect.top - rectw.top,
+                    "left": rect.left - rectw.left
+                  }
+                  
+                  relativeRect.bottom = relativeRect.top + relativeRect.height;
+                  relativeRect.right = relativeRect.left + relativeRect.width;
+                return relativeRect;
+            },
+            _renderConnection:function(){
+                var rectw = this.workSpace.getBoundingClientRect();
+                var rect1 = this._getRelativeRect(this.fromNode);
+                var rect2 = this._getRelativeRect(this.toNode);
+
+                var cx1 = Math.round(rect1.left + rect1.width / 2);
+                var cy1 = Math.round(rect1.top + rect1.height / 2);
+                var cx2 = Math.round(rect2.left + rect2.width / 2);
+                var cy2 = Math.round(rect2.top + rect2.height / 2);
+
+                var length = Math.sqrt(((cx2 - cx1) * (cx2 - cx1)) + ((cy2 - cy1) * (cy2 - cy1)));
+                var angle = 180 + Math.atan2((cy1 - cy2), (cx1 - cx2)) * (180 / Math.PI);
+
+                var styleVal = "left:" + cx1 + "px; top:" + cy1 + "px; width:" + length +
+                    "px; -moz-transform:rotate(" + angle + "deg); -webkit-transform:rotate(" + angle +
+                    "deg); -o-transform:rotate(" + angle + "deg); -ms-transform:rotate(" + angle +
+                    "deg); transform:rotate(" + angle + "deg);";
+                this.setAttribute('style', styleVal);
+
+                var sides = [
+                    {x1:rect2.left,y1:rect2.top,x2:rect2.right,y2:rect2.top},
+                    {x1:rect2.right,y1:rect2.top,x2:rect2.right,y2:rect2.bottom},
+                    {x1:rect2.right,y1:rect2.bottom,x2:rect2.left,y2:rect2.bottom},
+                    {x1:rect2.left,y1:rect2.bottom,x2:rect2.left,y2:rect2.top},
+                ]
+
+               var intersectPoint;
+               var intersectSide =  sides.find(function(side){
+                    var intr = this._intersectPoint(cx1,cy1,cx2,cy2,side.x1,side.y1,side.x2,side.y2);
+                    if(intr && intr.x && intr.y){
+                        intersectPoint = intr;
+                        return true;
+                    }
+                }.bind(this));
+
+                if(!intersectPoint){
+                    return;
+                }
+
+                var arrow = this.$.arrow;
+                var rightOffset = Math.sqrt(((cx2 - intersectPoint.x) * (cx2 - intersectPoint.x)) + ((cy2 - intersectPoint.y) * (cy2 - intersectPoint.y)));
+                arrow.style.right = rightOffset +'px';
+            },
+            _renderTo:function(cx2,cy2){
+                var rect1 = this._getRelativeRect(this.fromNode);
+               
+                var cx1 = Math.round(rect1.left + rect1.width / 2);
+                var cy1 = Math.round(rect1.top + rect1.height / 2);
+
+                var length = Math.sqrt(((cx2 - cx1) * (cx2 - cx1)) + ((cy2 - cy1) * (cy2 - cy1)));
+                var angle = 180 + Math.atan2((cy1 - cy2), (cx1 - cx2)) * (180 / Math.PI);
+
+                var styleVal = "left:" + cx1 + "px; top:" + cy1 + "px; width:" + length +
+                    "px; -moz-transform:rotate(" + angle + "deg); -webkit-transform:rotate(" + angle +
+                    "deg); -o-transform:rotate(" + angle + "deg); -ms-transform:rotate(" + angle +
+                    "deg); transform:rotate(" + angle + "deg);";
+                this.setAttribute('style', styleVal);
+            },
+            // line intercept math by Paul Bourke http://paulbourke.net/geometry/pointlineplane/
+            // Determine the intersection point of two line segments
+            // Return FALSE if the lines don't intersect
+            _intersectPoint: function (x1, y1, x2, y2, x3, y3, x4, y4) {
+
+                // Check if none of the lines are of length 0
+                if ((x1 === x2 && y1 === y2) || (x3 === x4 && y3 === y4)) {
+                    return false
+                }
+
+                denominator = ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1))
+
+                // Lines are parallel
+                if (denominator === 0) {
+                    return false
+                }
+
+                let ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denominator
+                let ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denominator
+
+                // is the intersection along the segments
+                if (ua < 0 || ua > 1 || ub < 0 || ub > 1) {
+                    return false
+                }
+
+                // Return a object with the x and y coordinates of the intersection
+                let x = x1 + ua * (x2 - x1)
+                let y = y1 + ua * (y2 - y1)
+
+                return {
+                    x,
+                    y
+                }
+            },
             listeners:{}
         })
     </script>

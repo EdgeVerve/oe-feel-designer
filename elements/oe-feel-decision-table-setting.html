@@ -1,0 +1,213 @@
+<link rel="import" href="../../oe-combo/oe-combo.html">
+<dom-module id="oe-feel-decision-table-setting">
+    <template>
+        <style include="iron-flex-layout iron-flex-alignment">
+            :host {
+                position: relative;
+                display: block;
+                box-sizing: border-box;
+            }
+
+            .align-h {
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+            }
+
+            .expression-table oe-input{
+                --paper-input-container: {
+                    padding: 2px 8px;
+                    box-sizing: border-box;
+                }
+                --paper-input-container-input: {
+                    font-size: 12px;
+                }
+            }
+
+            .expression-table paper-checkbox{
+                --paper-checkbox-size:14px;
+                --paper-checkbox-label-spacing:0px;
+            }
+
+            .header-cell{
+                height: 40px;
+                border-right: 1px solid;
+                padding-left: 8px;
+            }
+
+        </style>
+        <div class="component-container">
+            <div class="hit-policy-selection">
+                <oe-combo label="Hit policy" listdata="[[hitPolicyList]]" value={{data.hitPolicy}} displayproperty="name" valueproperty="code">
+                    <template item-template>
+                        <div class="layout horizontal center justified" on-tap="onItemSelected" data-item={{item}}>
+                            <label class="hit-name">[[item.name]]</label>
+                            <label class="hit-code">[[item.code]]</label>
+                        </div>
+                    </template>
+                </oe-combo>
+            </div>
+            <div class="expression-table">
+                <div class="table-header align-h">
+                    <template is="dom-repeat" items={{inputList}}>
+                        <div class="header-cell align-h">
+                            <paper-checkbox checked={{item.checked}}></paper-checkbox>
+                            <oe-input no-label-float value={{item.name}}></oe-input>
+                        </div>
+                    </template>
+                    <template is="dom-repeat" items={{outputList}}>
+                        <div class="header-cell align-h">
+                            <paper-checkbox checked={{item.checked}}></paper-checkbox>
+                            <oe-input no-label-float value={{item.name}}></oe-input>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: "oe-feel-decision-table-setting",
+            properties: {
+                data: {
+                    type: Object,
+                    observer: '_dataChanged'
+                }
+            },
+            behaviors: [],
+            listeners: {
+                'oe-data-table-action-add-row': '_addNewRow',
+                'oe-data-table-action-delete-row': '_delteRow',
+                'oe-data-table-action-add-input': '_addNewInput',
+                'oe-data-table-action-delete-input': '_deleteInput',
+                'oe-data-table-action-add-output': '_addNewOutput',
+                'oe-data-table-action-delete-output': '_deleteOutput',
+            },
+            ready: function () {
+                var hitPolicies = [{
+                        name: 'Unique',
+                        code: 'U'
+                    },
+                    {
+                        name: 'Priority',
+                        code: 'P'
+                    },
+                    {
+                        name: 'Output Order',
+                        code: 'O'
+                    },
+                    {
+                        name: 'Validation',
+                        code: 'V'
+                    },
+                    {
+                        name: 'Any',
+                        code: 'A'
+                    },
+                    {
+                        name: 'First',
+                        code: 'F'
+                    },
+                    {
+                        name: 'Rule Order',
+                        code: 'R'
+                    },
+                    {
+                        name: 'Collect Sum',
+                        code: 'C+'
+                    },
+                    {
+                        name: 'Collect Count',
+                        code: 'C#'
+                    },
+                    {
+                        name: 'Collect Minimum',
+                        code: 'C<'
+                    },
+                    {
+                        name: 'Collect Maximum',
+                        code: 'C>'
+                    }
+                ];
+                this.set('hitPolicyList', hitPolicies);
+                var toolbarActions = [{
+                        'icon': 'add',
+                        'title': 'Add Row',
+                        'action': 'add-row'
+                    },
+                    {
+                        'icon': 'remove',
+                        'title': 'Delete Row',
+                        'action': 'delete-row'
+                    },
+                    {
+                        'icon': 'add',
+                        'title': 'Add Input',
+                        'action': 'add-input'
+                    },
+                    {
+                        'icon': 'remove',
+                        'title': 'Delete Input',
+                        'action': 'delete-input'
+                    },
+                    {
+                        'icon': 'add',
+                        'title': 'Add Output',
+                        'action': 'add-output'
+                    },
+                    {
+                        'icon': 'remove',
+                        'title': 'Delete Output',
+                        'action': 'delete-output'
+                    },
+                ]
+                this.set('_toolBarActions', toolbarActions);
+                this.set('_presetColumn', {
+                    key: 'Detail',
+                    label: 'Details',
+                    type: 'string',
+                    readOnly: true
+                })
+            },
+            _dataChanged: function (nval, oval) {
+                if (nval && nval !== oval) {
+                    this.set('inputList', this.data.inputExpressionList.map(function (n) {
+                        return {
+                            checked: false,
+                            name: n
+                        }
+                    }));
+                    this.set('outputList', this.data.outputs.map(function (n) {
+                        return {
+                            checked: false,
+                            name: n
+                        }
+                    }));
+                }
+            },
+            _getColumns: function (inputEle, outputEle) {
+                return [];
+            },
+
+
+
+            _addNewRow: function (event) {
+                var dataTable = this.$.expressionTable;
+            },
+            _delteRow: function (event) {
+                var dataTable = this.$.expressionTable;
+            },
+            _addNewInput: function (event) {
+                var dataTable = this.$.expressionTable;
+            },
+            _deleteInput: function (event) {
+                var dataTable = this.$.expressionTable;
+            },
+            _addNewOutput: function (event) {
+                var dataTable = this.$.expressionTable;
+            },
+            _deleteOutput: function (event) {
+                var dataTable = this.$.expressionTable;
+            },
+        })
+    </script>
+</dom-module>

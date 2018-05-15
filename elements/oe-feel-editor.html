@@ -1,4 +1,6 @@
 <link rel="import" href="oe-feel-element-list.html">
+<link rel="import" href="oe-feel-connector.html">
+<link rel="import" href="oe-feel-decision-table-setting.html">
 <dom-module id="oe-feel-editor">
     <template>
         <style include="iron-flex iron-flex-alignment">
@@ -34,11 +36,19 @@
                 height: calc(100vh - 40px);
             }
 
-            .connector {
-                background: red;
-                height: 2px;
-                transform-origin: top left;
-                position: absolute;
+            .configure-heading{
+                height:40px;
+                box-shadow: 1px 2px 2px 3px rgba(0, 0, 0, 0.2);
+                background: var(--default-primary-color);
+                padding:0px 16px;
+                color: var(--default-text-color);
+            }
+            .configure-heading iron-icon{
+                margin-right: 16px;
+            }
+
+            .node-setting{
+                padding:16px;
             }
         </style>
         <div class="component-container">
@@ -49,12 +59,21 @@
                 <div id="editor-section" mode="edit" class="layout horizontal justified">
                     <oe-feel-element-list id="element-list"></oe-feel-element-list>
                     <div class="flex" id="workSpace" on-drop="_handleDrop" on-dragover="_handleDragOver"></div>
-                    <div id="workspace-actions">
-
-                    </div>
+                    <div id="workspace-actions"></div>
                 </div>
                 <div id="configure-section" mode="setting">
-                    Setting
+                    <div class="configure-heading layout horizontal center justified">
+                        <iron-icon icon="settings"></iron-icon>
+                        <label class="flex">Settings</label>
+                        <iron-icon icon="save" on-tap="_applySetting"></iron-icon>
+                        <iron-icon icon="close" on-tap="_closeSetting"></iron-icon>
+                    </div>
+                    <div class="node-setting">
+                        <oe-input label="Node Name" value={{_selectedNode.name}}></oe-input>
+                        <iron-pages id="settingSelector" selected="[[_selectedNode.nodeType]]" attr-for-selected="type">
+                            <oe-feel-decision-table-setting type="DECISION_TABLE"></oe-feel-decision-table-setting>
+                        </iron-pages>
+                    </div>
                 </div>
             </iron-pages>
         </div>
@@ -69,7 +88,9 @@
                 }
             },
             behaviors: [],
-            listeners: {},
+            listeners: {
+                'open-node-setting':'_handleOpenSetting'
+            },
             attached: function () {
                 this.set('_mainSection', 'empty');
                 this.set('componentMap', {
@@ -81,6 +102,7 @@
                     'input': 'INPUT'
                 })
             },
+            // Render graph
             _graphChanged: function (nval, oval) {
                 if (nval != oval && nval) {
                     this.set('_mainSection', 'edit');
@@ -113,7 +135,8 @@
                     node.i;
 
                 workSpace.appendChild(nodeEle);
-                this._positionNode(nodeEle, node);
+                nodeEle.style.top = node.y + 'px';
+                nodeEle.style.left = node.x + 'px';
                 this.listen(nodeEle, 'track', '_nodeTrackHandler')
             },
             _createConnection: function (connection) {
@@ -121,10 +144,23 @@
                 var node2 = this.querySelector('oe-feel-component[i="' + connection.to + '"]');
                 this._drawConnection(node1, node2, connection);
             },
-            _positionNode: function (ele, node) {
-                ele.style.top = node.y + 'px';
-                ele.style.left = node.x + 'px';
+            _drawConnection: function (fromNode, toNode, connection) {
+                var workSpace = this.$.workSpace;
+                var prevConnection = workSpace.querySelector('oe-feel-connector[id="' + connection.id + '"]');
+                if (!prevConnection) {
+                    prevConnection = document.createElement('oe-feel-connector');
+                    prevConnection.classList.add(this.is);
+                    prevConnection.setAttribute('id', connection.id);
+                    prevConnection.set('fromNode',fromNode);
+                    prevConnection.set('toNode',toNode);
+                    prevConnection.set('connection',connection);
+                    prevConnection.set('workSpace',workSpace);
+                    workSpace.appendChild(prevConnection);
+                }
+                prevConnection._renderConnection();
             },
+
+            // Handle Drag-n-Drop actions
             _nodeTrackHandler: function (event) {
                 event.stopPropagation();
                 var elem = event.currentTarget;
@@ -179,70 +215,17 @@
             _handleDragOver: function (eve) {
                 eve.preventDefault();
             },
-            _drawConnection: function (node1, node2, connection) {
-                var workSpace = this.$.workSpace;
-                var rectw = workSpace.getBoundingClientRect();
-                var rect1 = node1.getBoundingClientRect();
-                var rect2 = node2.getBoundingClientRect();
-
-
-                var cx1 = Math.round(rect1.left - rectw.left + rect1.width / 2);
-                var cy1 = Math.round(rect1.top - rectw.top + rect1.height / 2);
-                var cx2 = Math.round(rect2.left - rectw.left + rect2.width / 2);
-                var cy2 = Math.round(rect2.top - rectw.top + rect2.height / 2);
-
-                var length = Math.sqrt(((cx2 - cx1) * (cx2 - cx1)) + ((cy2 - cy1) * (cy2 - cy1)));
-                var angle = 180 + Math.atan2((cy1 - cy2), (cx1 - cx2)) * (180 / Math.PI);
-
-                var prevConnection = workSpace.querySelector('div.connector[id="' + connection.id + '"]');
-                if (!prevConnection) {
-                    prevConnection = document.createElement('div');
-                    prevConnection.classList.add('connector');
-                    prevConnection.classList.add(this.is);
-                    prevConnection.setAttribute('id', connection.id);
-                    prevConnection.setAttribute('connection-type', connection.type);
-                    workSpace.appendChild(prevConnection);
-                }
-
-                var styleVal = "left:" + cx1 + "px; top:" + cy1 + "px; width:" + length +
-                    "px; -moz-transform:rotate(" + angle + "deg); -webkit-transform:rotate(" + angle +
-                    "deg); -o-transform:rotate(" + angle + "deg); -ms-transform:rotate(" + angle +
-                    "deg); transform:rotate(" + angle + "deg);";
-                prevConnection.setAttribute('style', styleVal);
+            
+            // Handle node settings
+            _handleOpenSetting:function(event){
+                var node = event.detail;
+                this.set('_selectedNode',JSON.parse(JSON.stringify(node)));
+                var settingsPanel = this.$.settingSelector.selectedItem;
+                settingsPanel.set('data',this._selectedNode.data);
+                this.set('_mainSection', 'setting');
             },
-            // line intercept math by Paul Bourke http://paulbourke.net/geometry/pointlineplane/
-            // Determine the intersection point of two line segments
-            // Return FALSE if the lines don't intersect
-            _intersectPoint: function (x1, y1, x2, y2, x3, y3, x4, y4) {
-
-                // Check if none of the lines are of length 0
-                if ((x1 === x2 && y1 === y2) || (x3 === x4 && y3 === y4)) {
-                    return false
-                }
-
-                denominator = ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1))
-
-                // Lines are parallel
-                if (denominator === 0) {
-                    return false
-                }
-
-                let ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denominator
-                let ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denominator
-
-                // is the intersection along the segments
-                if (ua < 0 || ua > 1 || ub < 0 || ub > 1) {
-                    return false
-                }
-
-                // Return a object with the x and y coordinates of the intersection
-                let x = x1 + ua * (x2 - x1)
-                let y = y1 + ua * (y2 - y1)
-
-                return {
-                    x,
-                    y
-                }
+            _closeSetting:function(){
+                this.set('_mainSection', 'edit');
             }
         })
     </script>
