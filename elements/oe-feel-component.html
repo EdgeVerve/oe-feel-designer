@@ -4,8 +4,6 @@ The Program may contain/reference third party or open source components, the rig
 remain with the applicable third party licensors or the open source community as the case may be and nothing
 here transfers the rights to the third party and open source components, except as expressly permitted.
 Any unauthorized reproduction, storage, transmission in any form or by any means (including without limitation to electronic, mechanical, printing, photocopying, recording or  otherwise), or any distribution of this Program,or any portion of it, may result in severe civil and criminal penalties, and will be prosecuted to the maximum extent possible under the law. -->
-
-
 <dom-module id="oe-feel-component">
     <template>
         <style>
@@ -76,13 +74,25 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 height: 100px;
                 min-width: 150px;
                 border: 1px solid rgba(0, 0, 0, 0.4);
-                box-shadow: 3px 3px 1px 1px rgba(0, 0, 0, 0.3);
+                /* box-shadow: 3px 3px 1px 1px rgba(0, 0, 0, 0.3); */
                 border-radius: 2px;
                 position: relative;
             }
             .component-panel iron-icon{
                 --iron-icon-width:16px;
                 --iron-icon-height:16px;
+            }
+            #connectorTrigger{
+                width: 6px;
+                height: 6px;
+                position: absolute;
+                top: 50%;
+                right: -5px;
+                background: #00acff;
+                border-radius: 50%;
+                z-index: 20;
+                cursor: crosshair;
+                border: 2px solid;
             }
         </style>
         <div class$="component-panel [[node.nodeType]]">
@@ -93,6 +103,9 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 <iron-icon icon="delete" on-tap="_deleteComponent"></iron-icon>
             </div>
             <div>
+
+            </div>
+            <div id="connectorTrigger" on-track="_handleConnectorLaunch">
 
             </div>
         </div>
@@ -144,6 +157,13 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             },
             _deleteComponent:function(){
                 this.fire('delete-component',this.node);
+            },
+            _handleConnectorLaunch:function(e){
+                e.stopPropagation();
+                this.fire('connector-drag',{
+                    node:this,
+                    event:e
+                })
             },
             behaviors: [],
             listeners: {}

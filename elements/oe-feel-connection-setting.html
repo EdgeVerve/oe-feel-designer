@@ -1,0 +1,130 @@
+<!-- ©2017-2018 EdgeVerve Systems Limited (a fully owned Infosys subsidiary), Bangalore, India. All Rights Reserved.
+The EdgeVerve proprietary software program ("Program"), is protected by copyrights laws, international treaties and other pending or existing intellectual property rights in India, the United States and other countries.
+The Program may contain/reference third party or open source components, the rights to which continue to
+remain with the applicable third party licensors or the open source community as the case may be and nothing
+here transfers the rights to the third party and open source components, except as expressly permitted.
+Any unauthorized reproduction, storage, transmission in any form or by any means (including without limitation to electronic, mechanical, printing, photocopying, recording or  otherwise), or any distribution of this Program,or any portion of it, may result in severe civil and criminal penalties, and will be prosecuted to the maximum extent possible under the law. -->
+
+
+<link rel="import" href="../../paper-dialog/paper-dialog.html">
+<dom-module id="oe-feel-connection-setting">
+    <template>
+        <style inlcude="iron-flex-layout iron-layout-alignments">
+            :host {
+                position: relative;
+                display: block;
+                box-sizing: border-box;
+            }
+
+            #dialog {
+                width: 40%;
+            }
+
+            .dialog-header{
+                font-size: 20px;
+            }
+            .body-section{
+                height: 60px;
+                padding-right: 16px;
+                @apply(--layout-vertical);
+                @apply(--layout-around-justified);
+                flex:1;
+            }
+
+
+        </style>
+        <paper-dialog id="dialog">
+            <div class="dialog-header">
+                <label>Connection settings</label>
+            </div>
+            <div class="dialog-body layout horizontal center justified">
+                <div class="body-section">
+                    <label> From Node : </label>
+                    <label>[[connectionDetail.from.name]]</label>
+                </div>
+                <div class="body-section">
+                    <oe-combo label="Connection type" 
+                    value="{{connectionDetail.connection.type}}" 
+                    displayproperty="name" valueproperty="id"
+                    listdata="[[_getListData(connectionDetail.from.nodeType,connectionDetail.to.nodeType)]]"></oe-input>
+                </div>
+                <div class="body-section">
+                    <label> To Node : </label>
+                    <label>[[connectionDetail.to.name]]</label>
+                </div>
+            </div>
+            <div class="dialog-footer layout horizontal center end-justified">
+                <paper-button on-tap="_confirmConnection">Accept</paper-button>
+                <paper-button on-tap="closeDialog">Cancel</paper-button>
+            </div>
+        </paper-dialog>
+    </template>
+    <script>
+        Polymer({
+            is: "oe-feel-connection-setting",
+            properties: {
+                connectionDetail: {
+                    type: Object
+                },
+                isNewConnection: {
+                    type: Boolean,
+                    value: false
+                }
+            },
+            behaviors: [],
+            listeners: {},
+            ready: function () {
+                var connectionMap = {
+                    'information': {
+                        'DECISION_TABLE': ['DECISION_TABLE', 'BOXED_CONTEXT', 'BOXED_INVOCATION'],
+                        'BOXED_INVOCATION': ['DECISION_TABLE', 'BOXED_CONTEXT', 'BOXED_INVOCATION'],
+                        'BOXED_CONTEXT': ['DECISION_TABLE', 'BOXED_CONTEXT', 'BOXED_INVOCATION']
+                    },
+                    'knowledge-requirement': {
+                        'BUSINESS_MODEL': ['DECISION_TABLE', 'BUSINESS_MODEL', 'BOXED_INVOCATION']
+                    }
+                }
+                var associtaions = [{
+                        name: 'Information',
+                        type: 'information',
+                        id:'INFORMATION_REQUIREMENT'
+                    },
+                    {
+                        name: 'Authority',
+                        type: 'authority',
+                        id:'AUTHORITY_REQUIREMENT'
+                    },
+                    {
+                        name: 'Knowledge',
+                        type: 'knowledge-requirement',
+                        id:'KNOWLEDGE_REQUIREMENT'
+                    }
+                ]
+                this.set('associtaions', associtaions);
+                this.set('connectionMap',connectionMap);
+            },
+            _getListData:function(fromType,toType){
+                var connectionMap = this.connectionMap;
+                var list = this.associtaions.filter(function(associtaion){
+                    var associationMap =connectionMap[associtaion.type];
+                    return associationMap && associationMap[fromType] && (associationMap[fromType].indexOf(toType) != -1);
+                });
+                return list
+            },
+            openDialog: function () {
+                this.$.dialog.open()
+            },
+            closeDialog: function () {
+                this.$.dialog.close();
+            },
+            _confirmConnection: function () {
+                var connection = this.connectionDetail.connection;
+                connection.from = this.connectionDetail.from.i;
+                connection.to = this.connectionDetail.to.i;
+                connection.id = connection.id || OEUtils.generateGuid();
+                this.fire('update-connection', connection);
+                this.closeDialog();
+            }
+        })
+    </script>
+</dom-module>

@@ -38,7 +38,8 @@
                 'delete-component':'_handleDeleteNode',
                 'update-component-position':'_handlePositionUpdate',
                 'undo-decision-graph':'_handleUndoGraph',
-                'redo-decision-graph':'_handleRedoGraph'
+                'redo-decision-graph':'_handleRedoGraph',
+                'update-connection':'_handleConnectionUpdate'
             },
             behaviors: [
             ],
@@ -123,6 +124,19 @@
                         stackLength:this.curGraphStack.length
                     })
                 }
+            },
+            _handleConnectionUpdate:function(event){
+                var newConnection = event.detail;
+                var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
+                var prevIndex = decisiongraph.graph.connections.findIndex(function(conn){
+                    return conn.from == newConnection.from && conn.to == newConnection.to;
+                });
+                if(prevIndex >= 0){
+                    decisiongraph.graph.connections.splice(prevIndex,1,newConnection);
+                }else{
+                    decisiongraph.graph.connections.push(newConnection);
+                }
+                this._pushToStack(decisiongraph);
             }
         })
     </script>

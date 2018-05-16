@@ -8,6 +8,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
 
 <link rel="import" href="oe-feel-element-list.html">
 <link rel="import" href="oe-feel-connector.html">
+<link rel="import" href="oe-feel-connection-setting.html">
 <link rel="import" href="oe-feel-decision-table-setting.html">
 <dom-module id="oe-feel-editor">
     <template>
@@ -85,6 +86,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 </div>
             </iron-pages>
         </div>
+        <oe-feel-connection-setting id="connectionSetting"></oe-feel-connector-setting>
     </template>
     <script>
         Polymer({
@@ -97,7 +99,8 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             },
             behaviors: [],
             listeners: {
-                'open-node-setting':'_handleOpenSetting'
+                'open-node-setting':'_handleOpenSetting',
+                'confirm-connection':'_handleNewConnection'
             },
             attached: function () {
                 this.set('_mainSection', 'empty');
@@ -146,6 +149,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 nodeEle.style.top = node.y + 'px';
                 nodeEle.style.left = node.x + 'px';
                 this.listen(nodeEle, 'track', '_nodeTrackHandler')
+                this.listen(nodeEle, 'connector-drag', '_connectorHandler')
             },
             _createConnection: function (connection) {
                 var node1 = this.querySelector('oe-feel-component[i="' + connection.from + '"]');
@@ -201,7 +205,9 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                             y:(finalRect.top - rectw.top),
                             nodeIndex:elem.node.i
                         });
+                        this.set('__currentDragData',null);
                         break;
+                    default:break;
                 }
             },
             _handleDrop: function (eve) {
@@ -223,7 +229,62 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             _handleDragOver: function (eve) {
                 eve.preventDefault();
             },
-            
+            _connectorHandler:function(eve){
+                var fromNode = eve.detail.node;
+                var trackEvent = eve.detail.event;
+                switch (trackEvent.detail.state) {
+                    case "start":
+                            var workSpace = this.$.workSpace;
+                            var tempConnection = document.createElement('oe-feel-connector');
+                            tempConnection.classList.add(this.is);
+                            tempConnection.setAttribute('id', 'temp');
+                            tempConnection.set('fromNode',fromNode);
+                            tempConnection.set('workSpace',workSpace);
+                            tempConnection.set('connection',{type:"INFORMATION_REQUIREMENT"});
+                            workSpace.appendChild(tempConnection);
+                            this.set('__tempConnector',tempConnection);
+                            break;
+                    case "track":
+                            this.__tempConnector._renderTo(trackEvent.detail.x,trackEvent.detail.y);
+                            break;
+                    case "end":
+                            var endPoint = document.elementFromPoint(trackEvent.detail.x,trackEvent.detail.y);
+                            var endNode = this._getComponent(endPoint);
+                            if(endNode && endNode != fromNode){
+                                this.fire('confirm-connection',{
+                                    from:fromNode.node,
+                                    to:endNode.node,
+                                    connection:{type:"INFORMATION_REQUIREMENT"}
+                                });
+                            }
+                            this.__tempConnector.parentElement.removeChild(this.__tempConnector);
+                            this.set('__tempConnector',null);
+                            break;
+                    default:
+                            break;
+                }
+            },
+            _getComponent:function(node){
+                var workSpace = this.$.workSpace;
+                if(node.is === "oe-feel-component"){
+                    return node;
+                }else if(node === workSpace){
+                    return null;
+                }else{
+                    return this._getComponent(node.parentElement);
+                }
+            },
+            _handleNewConnection:function(event){
+                this.$.connectionSetting.set('isNewConnection',true);
+                this.$.connectionSetting.set('connectionDetail',event.detail);
+                this.$.connectionSetting.openDialog();
+            },
+            _handleEditConnection:function(event){
+                this.$.connectionSetting.set('isNewConnection',false);
+                this.$.connectionSetting.set('connectionDetail',event.detail);
+                this.$.connectionSetting.openDialog();
+            },
+
             // Handle node settings
             _handleOpenSetting:function(event){
                 var node = event.detail;

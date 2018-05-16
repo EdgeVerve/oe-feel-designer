@@ -15,22 +15,46 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 position: absolute;
                 height: auto;
                 transform-origin: top left;
+                --connector-color:var(--accent-color,#00ACFF);
             }
             .line{
-                background: red;
-                height: 2px;
                 width:100%;
+                height:0px;
+                border: 1px var(--connector-color) dashed;
             }
-            #arrow{
-                border-width: 6px 0px 6px 15px;
+
+            .line.INFORMATION_REQUIREMENT{
                 border-style: solid;
-                border-color: transparent transparent transparent red;
+            }
+
+            #arrow{
                 position: absolute;
                 top:-5px;
                 right: 0px;
             }
+            .line.INFORMATION_REQUIREMENT #arrow{
+                border-width: 6px 0px 6px 15px;
+                border-style: solid;
+                border-color: transparent transparent transparent var(--connector-color);
+            }
+
+            .line.KNOWLEDGE_REQUIREMENT #arrow{
+                border-width: 2px;
+                border-style: solid;
+                border-color: var(--connector-color) var(--connector-color) transparent transparent;
+                height: 10px;
+                width:10px;
+                transform: rotate(45deg);
+            }
+            .line.AUTHORITY_REQUIREMENT #arrow{
+                height: 10px;
+                width:10px;
+                background: var(--connector-color);
+                border-radius: 5px;
+            }
+
         </style>
-        <div class="line">
+        <div class$="line [[connection.type]]" on-dblclick="_editConnection">
             <div id="arrow"></div>
         </div>
     </template>
@@ -44,7 +68,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 toNode:{
                     type:Object
                 },
-                connector:{
+                connection:{
                     type:Object
                 },
                 workSpace:{
@@ -159,6 +183,13 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     x,
                     y
                 }
+            },
+            _editConnection:function(){
+                this.fire('edit-connection',{
+                    from:this.fromNode.node,
+                    to:this.toNode.node,
+                    connection:this.connection
+                });
             },
             listeners:{}
         })
