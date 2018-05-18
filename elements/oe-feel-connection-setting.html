@@ -112,6 +112,18 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 return list
             },
             openDialog: function () {
+                if(this.isNewConnection){
+                    var fromType = this.connectionDetail.from.nodeType;
+                    var toType = this.connectionDetail.to.nodeType;
+                    var validList = this._getListData(fromType,toType);
+                    if(validList.length == 0){
+                        //Can't create connection;
+                        this.fire('oe-show-error','Cannot create connection from '+fromType+' to '+toType);
+                        return;
+                    }else{
+                       this.set('connectionDetail.connection.type',validList[0].id);
+                    }
+                }
                 this.$.dialog.open()
             },
             closeDialog: function () {

@@ -7,6 +7,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
 
 
 <link rel="import" href="../../oe-combo/oe-combo.html">
+<link rel="import" href="../../polymer-sortablejs/polymer-sortablejs.html">
 <dom-module id="oe-feel-decision-table-setting">
     <template>
         <style include="iron-flex-layout iron-flex-alignment">
@@ -18,10 +19,14 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
 
             .align-h {
                 @apply(--layout-horizontal);
-                @apply(--layout-center);
+                @apply(--layout-end);
             }
 
-            .expression-table oe-input{
+            .align-v {
+                @apply(--layout-vertical);
+            }
+
+            .expression-table oe-input {
                 --paper-input-container: {
                     padding: 2px 8px;
                     box-sizing: border-box;
@@ -31,17 +36,67 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 }
             }
 
-            .expression-table paper-checkbox{
-                --paper-checkbox-size:14px;
-                --paper-checkbox-label-spacing:0px;
+            .expression-table paper-checkbox {
+                --paper-checkbox-size: 14px;
+                --paper-checkbox-label-spacing: 0px;
             }
 
-            .header-cell{
+            .cell {
                 height: 40px;
-                border-right: 1px solid;
+                width: 250px;
                 padding-left: 8px;
+                border-right: 1px solid;
+                flex-shrink: 0;
             }
 
+            .table-header {
+                margin-bottom: 6px;
+                box-shadow: 1px 1px 1px 2px rgba(0, 0, 0, 0.2);
+                width: fit-content;
+            }
+
+            .table-header .header-cell {
+                background: #ccc;
+            }
+
+            .table-default .header-cell {
+                background: #eaeaea;
+                ;
+            }
+
+            .table-body {
+                height: 200px;
+                overflow-y: auto;
+                overflow-x: hidden;
+                width: fit-content;
+            }
+
+            .expression-table {
+                width: 100%;
+                overflow-x: auto;
+                overflow-y: hidden;
+            }
+
+            iron-icon {
+                --iron-icon-width: 16px;
+                --iron-icon-height: 16px;
+            }
+
+            .actions {
+                height: 100%;
+                justify-content: space-between;
+                padding: 2px 0px;
+                box-sizing: border-box;
+                border-left: 1px solid rgba(0, 0, 0, 0.1);
+            }
+
+            .options-block {
+                width: 24px;
+                flex-shrink: 0;
+                height: 40px;
+                box-sizing: border-box;
+                justify-content: center;
+            }
         </style>
         <div class="component-container">
             <div class="hit-policy-selection">
@@ -56,18 +111,55 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             </div>
             <div class="expression-table">
                 <div class="table-header align-h">
-                    <template is="dom-repeat" items={{inputList}}>
-                        <div class="header-cell align-h">
-                            <paper-checkbox checked={{item.checked}}></paper-checkbox>
-                            <oe-input no-label-float value={{item.name}}></oe-input>
+                    <div class="options-block"></div>
+                    <template is="dom-repeat" items={{data.inputExpressionList}}>
+                        <div class="header-cell cell align-h">
+                            <oe-input class="flex" no-label-float value={{item}}></oe-input>
+                            <div class="actions align-v">
+                                <iron-icon icon="add" on-tap="_addNewColumn" column="input"></iron-icon>
+                                <iron-icon icon="remove" on-tap="_deleteColumn" column="input"></iron-icon>
+                            </div>
                         </div>
                     </template>
-                    <template is="dom-repeat" items={{outputList}}>
-                        <div class="header-cell align-h">
-                            <paper-checkbox checked={{item.checked}}></paper-checkbox>
-                            <oe-input no-label-float value={{item.name}}></oe-input>
+                    <template is="dom-repeat" items={{data.outputs}}>
+                        <div class="header-cell cell align-h">
+                            <oe-input class="flex" no-label-float value={{item}}></oe-input>
+                            <div class="actions align-v">
+                                <iron-icon icon="add" on-tap="_addNewColumn" column="output"></iron-icon>
+                                <iron-icon icon="remove" on-tap="_deleteColumn" column="output"></iron-icon>
+                            </div>
                         </div>
                     </template>
+                </div>
+                <div class="table-default align-h">
+                    <div class="options-block"></div>
+                    <template is="dom-repeat" items={{data.inputValues}}>
+                        <div class="header-cell cell">
+                            <oe-input no-label-float value={{item}}></oe-input>
+                        </div>
+                    </template>
+                    <template is="dom-repeat" items={{data.outputValues}}>
+                        <div class="header-cell cell">
+                            <oe-input no-label-float value={{item}}></oe-input>
+                        </div>
+                    </template>
+                </div>
+                <div class="table-body align-v">
+                    <sortable-js class="rule-list" draggable=".table-row">
+                        <template is="dom-repeat" items={{data.ruleList}} as="rule">
+                            <div class="table-row align-h">
+                                <div class="options-block align-v">
+                                    <iron-icon icon="delete" on-tap="_deleteRule"></iron-icon>
+                                    <iron-icon icon="add" on-tap="_addNewRule"></iron-icon>
+                                </div>
+                                <template is="dom-repeat" items={{rule}}>
+                                    <div class="cell">
+                                        <oe-input no-label-float value={{item}}></oe-input>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </sortable-js>
                 </div>
             </div>
         </div>
@@ -82,14 +174,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 }
             },
             behaviors: [],
-            listeners: {
-                'oe-data-table-action-add-row': '_addNewRow',
-                'oe-data-table-action-delete-row': '_delteRow',
-                'oe-data-table-action-add-input': '_addNewInput',
-                'oe-data-table-action-delete-input': '_deleteInput',
-                'oe-data-table-action-add-output': '_addNewOutput',
-                'oe-data-table-action-delete-output': '_deleteOutput',
-            },
+
             ready: function () {
                 var hitPolicies = [{
                         name: 'Unique',
@@ -178,44 +263,67 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             },
             _dataChanged: function (nval, oval) {
                 if (nval && nval !== oval) {
-                    this.set('inputList', this.data.inputExpressionList.map(function (n) {
-                        return {
-                            checked: false,
-                            name: n
-                        }
-                    }));
-                    this.set('outputList', this.data.outputs.map(function (n) {
-                        return {
-                            checked: false,
-                            name: n
-                        }
-                    }));
+
                 }
             },
             _getColumns: function (inputEle, outputEle) {
                 return [];
             },
+            _removeFromArray: function (arrPath, removeIndex) {
+                this.splice(arrPath, removeIndex, 1);
+            },
+            _addToArray: function (arrPath, addIndex, data) {
+                this.splice(arrPath, addIndex, 0, data);
+            },
+            _addNewRule: function (event) {
+                var length = this.data.inputExpressionList.length + this.data.outputs.length;
+                var newArr = new Array(length);
+                newArr.fill('-');
 
-
-
-            _addNewRow: function (event) {
-                var dataTable = this.$.expressionTable;
+                if (event.model && event.model.index !== undefined) {
+                    var index = event.model.index;
+                    this._addToArray('data.ruleList', index, newArr);
+                } else {
+                    this.push('data.ruleList', newArr);
+                }
             },
-            _delteRow: function (event) {
-                var dataTable = this.$.expressionTable;
+            _deleteRule: function (event) {
+                var index = event.model.index;
+                this._removeFromArray('data.ruleList', index);
             },
-            _addNewInput: function (event) {
-                var dataTable = this.$.expressionTable;
+            _addNewColumn: function (event) {
+                var index = event.model.index;
+                var ele = event.currentTarget;
+                var column = ele.getAttribute('column');
+                if (column === "input") {
+                    this._addToArray('data.inputExpressionList', index, ("input-" + (this.data.inputValues.length +
+                        1)));
+                    this._addToArray('data.inputValues', index, '-');
+                } else {
+                    this._addToArray('data.outputs', index, ("output-" + (this.data.outputValues.length + 1)));
+                    this._addToArray('data.outputValues', index, '-');
+                    index += this.data.inputValues.length;
+                }
+                for (var i = 0, len = this.data.ruleList.length; i < len; i++) {
+                    this._addToArray('data.ruleList.' + i, index, '-');
+                }
             },
-            _deleteInput: function (event) {
-                var dataTable = this.$.expressionTable;
-            },
-            _addNewOutput: function (event) {
-                var dataTable = this.$.expressionTable;
-            },
-            _deleteOutput: function (event) {
-                var dataTable = this.$.expressionTable;
-            },
+            _deleteColumn: function (event) {
+                var index = event.model.index;
+                var ele = event.currentTarget;
+                var column = ele.getAttribute('column');
+                if (column === "input") {
+                    this._removeFromArray('data.inputExpressionList', index);
+                    this._removeFromArray('data.inputValues', index);
+                } else {
+                    this._removeFromArray('data.outputs', index);
+                    this._removeFromArray('data.outputValues', index);
+                    index += this.data.inputValues.length;
+                }
+                for (var i = 0, len = this.data.ruleList.length; i < len; i++) {
+                    this._removeFromArray('data.ruleList.' + i, index);
+                }
+            }
         })
     </script>
 </dom-module>
