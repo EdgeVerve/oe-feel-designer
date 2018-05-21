@@ -10,6 +10,9 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
 <link rel="import" href="oe-feel-connector.html">
 <link rel="import" href="oe-feel-connection-setting.html">
 <link rel="import" href="oe-feel-decision-table-setting.html">
+<link rel="import" href="oe-feel-boxed-invocation-setting.html">
+<link rel="import" href="oe-feel-boxed-context-setting.html">
+<link rel="import" href="oe-feel-business-model-setting.html">
 <dom-module id="oe-feel-editor">
     <template>
         <style include="iron-flex iron-flex-alignment">
@@ -59,6 +62,10 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             .node-setting{
                 padding:16px;
             }
+            #settingSelector{
+                height: 450px;
+                overflow: auto;
+            }
         </style>
         <div class="component-container">
             <iron-pages id="mainPageSelection" selected="[[_mainSection]]" attr-for-selected="mode">
@@ -81,6 +88,9 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                         <oe-input label="Node Name" value={{_selectedNode.name}}></oe-input>
                         <iron-pages id="settingSelector" selected="[[_selectedNode.nodeType]]" attr-for-selected="type">
                             <oe-feel-decision-table-setting type="DECISION_TABLE"></oe-feel-decision-table-setting>
+                            <oe-feel-boxed-context-setting type="BOXED_CONTEXT"></oe-feel-boxed-context-setting>
+                            <oe-feel-boxed-invocation-setting type="BOXED_INVOCATION"></oe-feel-boxed-invocation-setting>
+                            <oe-feel-business-model-setting type="BUSINESS_MODEL"></oe-feel-business-model-setting>
                         </iron-pages>
                     </div>
                 </div>
@@ -288,7 +298,18 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             // Handle node settings
             _handleOpenSetting:function(event){
                 var node = event.detail;
-                this.set('_selectedNode',JSON.parse(JSON.stringify(node)));
+                var selectedNode = JSON.parse(JSON.stringify(node));
+                var defaultDecisionTable = {
+                    hitPolicy: "U",
+                    inputExpressionList: ["Input 1"],
+                    inputValues: ["",],
+                    outputValues: [""],
+                    outputs: ["Output 1"],
+                    ruleList: [
+                        ["-", "-"]
+                    ]
+                }
+                this.set('_selectedNode',selectedNode);
                 var settingsPanel = this.$.settingSelector.selectedItem;
                 settingsPanel.set('data',this._selectedNode.data);
                 this.set('_mainSection', 'setting');

@@ -1,0 +1,142 @@
+<link rel="import" href="oe-feel-decision-table-setting.html">
+<link rel="import" href="oe-feel-boxed-context-setting.html">
+<dom-module id="oe-feel-business-model-setting">
+    <template>
+        <style>
+            :host {
+                position: relative;
+                display: block;
+                box-sizing: border-box;
+            }
+
+            .align-h {
+                @apply(--layout-horizontal);
+                @apply(--layout-end);
+            }
+
+            .align-v {
+                @apply(--layout-vertical);
+            }
+
+            iron-icon {
+                --iron-icon-width: 16px;
+                --iron-icon-height: 16px;
+            }
+
+            .heading-panel {
+                width: 50%;
+                margin-bottom: 8px;
+            }
+
+            .parameter-list {
+                padding-bottom: 16px;
+            }
+
+            .item-actions {
+                height: 100%;
+                box-sizing: border-box;
+                padding: 16px 0px;
+                width: 50px;
+                justify-content: space-around;
+            }
+
+            .parameter-item oe-input {
+                margin-right: 16px;
+            }
+        </style>
+        <div class="component-container">
+            <div class="heading-panel layout horizontal center justified">
+                <label>Results</label>
+                <oe-combo label="type" listdata="[[decisionTypes]]" displayproperty="label" valueproperty="code" value="{{data.decisionType}}"></oe-combo>
+            </div>
+            <div class="result-detail-panel">
+                <iron-pages selected={{data.decisionType}} attr-for-selected="result-type">
+                    <oe-feel-decision-table-setting data={{decisionTableData}} result-type="DECISION_TABLE"></oe-feel-decision-table-setting>
+                    <oe-feel-boxed-context-setting data={{boxedContextData}} result-type="BOXED_CONTEXT"></oe-feel-boxed-context-setting>
+                </iron-pages>
+            </div>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: "oe-feel-business-model-setting",
+            properties: {
+                data: {
+                    type: Object,
+                    observer: '_dataChanged'
+                }
+            },
+            behaviors: [],
+            listeners: {},
+            attached: function () {
+                this.set('decisionTypes', [{
+                        label: "Decision Table",
+                        code: "DECISION_TABLE"
+                    },
+                    {
+                        label: "Boxed context",
+                        code: "BOXED_CONTEXT"
+                    }
+                ])
+            },
+            _dataChanged: function (nval, oval) {
+                if (nval && nval !== oval) {
+                    this._resetResult();
+                    switch (this.data.decisionType) {
+                        case "DECISION_TABLE":
+                            this.set('decisionTableData', this.data.data);
+                            break;
+                        case "BOXED_CONTEXT":
+                            this.set('boxedContextData', this.data.result);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            },
+            _resetResult: function () {
+                var defaultDecisionTable = {
+                    hitPolicy: "U",
+                    inputExpressionList: ["Input 1"],
+                    inputValues: ["",],
+                    outputValues: [""],
+                    outputs: ["Output 1"],
+                    ruleList: [
+                        ["-", "-"]
+                    ]
+                }
+                var defaultBoxedContext = {
+                    parameters:[],
+                    result:{
+                        type:"DECISION_TABLE",
+                        data:JSON.parse(JSON.stringify(defaultDecisionTable))
+                    }
+                };
+                this.set('decisionTableData',defaultDecisionTable);
+                this.set('boxedContextData',defaultBoxedContext);
+            },
+            _removeFromArray: function (arrPath, removeIndex) {
+                this.splice(arrPath, removeIndex, 1);
+            },
+            _addToArray: function (arrPath, addIndex, data) {
+                this.splice(arrPath, addIndex, 0, data);
+            },
+            _addNewParameter: function (e) {
+                var newParam = {
+                    key: "field " + (this.data.parameters.length + 1),
+                    value: "value " + (this.data.parameters.length + 1)
+                }
+                if (event.model && event.model.index !== undefined) {
+                    var index = event.model.index;
+                    this._addToArray('data.parameters', index, newParam);
+                } else {
+                    this.push('data.parameters', newParam);
+                }
+            },
+            _deleteParameter: function (e) {
+                var index = event.model.index;
+                this._removeFromArray('data.parameters', index);
+            }
+        })
+    </script>
+</dom-module>

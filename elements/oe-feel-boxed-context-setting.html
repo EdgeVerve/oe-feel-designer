@@ -1,0 +1,142 @@
+<link rel="import" href="oe-feel-decision-table-setting.html">
+<link rel="import" href="oe-feel-parameter-list.html">
+<link rel="import" href="../../oe-input/oe-textarea.html">
+<link rel="import" href="../../oe-combo/oe-combo.html">
+<dom-module id="oe-feel-boxed-context-setting">
+    <template>
+        <style>
+            :host {
+                position: relative;
+                display: block;
+                box-sizing: border-box;
+            }
+
+            .align-h {
+                @apply(--layout-horizontal);
+                @apply(--layout-end);
+            }
+
+            .align-v {
+                @apply(--layout-vertical);
+            }
+
+            iron-icon {
+                --iron-icon-width: 16px;
+                --iron-icon-height: 16px;
+            }
+
+            .heading-panel {
+                width: 50%;
+                margin-bottom: 8px;
+            }
+
+            .parameter-list {
+                padding-bottom: 16px;
+            }
+
+            .item-actions {
+                height: 100%;
+                box-sizing: border-box;
+                padding: 16px 0px;
+                width: 50px;
+                justify-content: space-around;
+            }
+
+            .parameter-item oe-input {
+                margin-right: 16px;
+            }
+        </style>
+        <div class="component-container">
+            <oe-feel-parameter-list parameters={{data.parameters}}></oe-feel-parameter-list>
+            <div class="heading-panel layout horizontal center justified">
+                <label>Results</label>
+                <oe-combo label="type" listdata="[[resultTypes]]" displayproperty="label" valueproperty="code" value="{{data.result.type}}"></oe-combo>
+            </div>
+            <div class="result-detail-panel">
+                <iron-pages selected={{data.result.type}} attr-for-selected="result-type">
+                    <oe-feel-decision-table-setting data={{decisionTableData}} result-type="DECISION_TABLE"></oe-feel-decision-table-setting>
+                    <oe-textarea label="Feel expression" result-type="literal-expression" value="{{feelExpression}}"></oe-textarea>
+                </iron-pages>
+            </div>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: "oe-feel-boxed-context-setting",
+            properties: {
+                data: {
+                    type: Object,
+                    observer: '_dataChanged'
+                }
+            },
+            behaviors: [],
+            listeners: {},
+            attached: function () {
+                this.set('resultTypes', [{
+                        label: "Decision Table",
+                        code: "DECISION_TABLE"
+                    },
+                    {
+                        label: "Feel Expression",
+                        code: "literal-expression"
+                    }, {
+                        label: "None",
+                        code: "none"
+                    }
+                ])
+            },
+            _dataChanged: function (nval, oval) {
+                if (nval && nval !== oval) {
+                    this._resetResult();
+                    switch (this.data.result.type) {
+                        case "DECISION_TABLE":
+                            this.set('decisionTableData', this.data.result.data);
+                            break;
+                        case "literal-expression":
+                            this.set('feelExpression', this.data.result.value);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            },
+            _resetResult: function () {
+                var defaultDecisionTable = {
+                    hitPolicy: "U",
+                    inputExpressionList: ["Input 1"],
+                    inputValues: ["",],
+                    outputValues: [""],
+                    outputs: ["Output 1"],
+                    ruleList: [
+                        ["-", "-"]
+                    ]
+                }
+                var defaultFeel = "";
+                this.set('decisionTableData',defaultDecisionTable);
+                this.set('feelExpression',defaultFeel);
+            },
+            _removeFromArray: function (arrPath, removeIndex) {
+                this.splice(arrPath, removeIndex, 1);
+            },
+            _addToArray: function (arrPath, addIndex, data) {
+                this.splice(arrPath, addIndex, 0, data);
+            },
+            _addNewParameter: function (e) {
+                var newParam = {
+                    key: "field " + (this.data.parameters.length + 1),
+                    value: "value " + (this.data.parameters.length + 1)
+                }
+                if (event.model && event.model.index !== undefined) {
+                    var index = event.model.index;
+                    this._addToArray('data.parameters', index, newParam);
+                } else {
+                    this.push('data.parameters', newParam);
+                }
+            },
+            _deleteParameter: function (e) {
+                var index = event.model.index;
+                this._removeFromArray('data.parameters', index);
+            }
+        })
+    </script>
+</dom-module>

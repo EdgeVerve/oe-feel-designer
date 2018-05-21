@@ -43,10 +43,11 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
 
             .cell {
                 height: 40px;
-                width: 250px;
-                padding-left: 8px;
+                width: 180px;
                 border-right: 1px solid;
                 flex-shrink: 0;
+                align-items: center;
+                box-sizing: border-box;
             }
 
             .table-header {
@@ -61,14 +62,14 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
 
             .table-default .header-cell {
                 background: #eaeaea;
-                ;
             }
 
             .table-body {
-                height: 200px;
-                overflow-y: auto;
-                overflow-x: hidden;
                 width: fit-content;
+            }
+            .table-default .cell,
+            .table-body .cell{
+                padding-top: 4px;
             }
 
             .expression-table {
@@ -97,17 +98,32 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 box-sizing: border-box;
                 justify-content: center;
             }
+            .hit-policy-item{
+                padding: 0px 16px;
+                height: 40px;
+                cursor: pointer;
+                transition: background linear 300ms;
+            }
+            .hit-policy-item:hover{
+                background: rgba(0, 0, 0, 0.2);
+            }
+            #hit-selector{
+                width:50%;
+            }
         </style>
         <div class="component-container">
             <div class="hit-policy-selection">
-                <oe-combo label="Hit policy" listdata="[[hitPolicyList]]" value={{data.hitPolicy}} displayproperty="name" valueproperty="code">
+                <oe-combo label="Hit policy" id="hit-selector" listdata="[[hitPolicyList]]" value={{data.hitPolicy}} displayproperty="name" valueproperty="code">
                     <template item-template>
-                        <div class="layout horizontal center justified" on-tap="onItemSelected" data-item={{item}}>
+                        <div class="layout horizontal center justified hit-policy-item" on-tap="onItemSelected" data-item={{item}}>
                             <label class="hit-name">[[item.name]]</label>
                             <label class="hit-code">[[item.code]]</label>
                         </div>
                     </template>
                 </oe-combo>
+            </div>
+            <div>
+                <h3>Decision Table</h3>
             </div>
             <div class="expression-table">
                 <div class="table-header align-h">

@@ -1,0 +1,29 @@
+<link rel="import" href="oe-feel-parameter-list.html">
+<dom-module id="oe-feel-boxed-invocation-setting">
+    <template>
+        <style>
+            :host{
+                position:relative;
+                display:block;
+                box-sizing:border-box;
+            }
+        </style>
+        <div class="component-container">
+            <div>
+                <oe-input label="Target" value={{data.target}}></oe-input>
+            </div>
+            <oe-feel-parameter-list parameters={{data.parameters}}></oe-feel-parameter-list>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is:"oe-feel-boxed-invocation-setting",
+            properties: {
+                data: {
+                    type: Object,
+                    observer: '_dataChanged'
+                }
+            }
+        })
+    </script>
+</dom-module>

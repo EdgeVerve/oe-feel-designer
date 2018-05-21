@@ -148,8 +148,9 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     </paper-button>
                     <div class="dropdown-content layout horizontal justified">
                         <div class="server-graph-list layout vertical justified">
-                            <div class="header-panel">
-                                <label class="mini-heading">Load Graph</label>
+                            <div class="header-panel layout horizontal center justified">
+                                <label class="mini-heading">Graph List</label>
+                                <iron-icon icon="refresh" on-tap="_fetchGraphList"></iron-icon>
                             </div>
                             <div class="graph-list flex">
                                 <template is="dom-repeat" items="[[decisionGraphList]]" as="graph">
@@ -217,10 +218,17 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     'stack-updated':'_updateStackInfo'
                 },
                 attached: function () {
-                    this.makeAjaxCall('api/decisiongraphs', 'get', null, null, null, function (err, resp) {
-                        this.set('decisionGraphList', resp);
+                    this._fetchGraphList(function(){
                         this.set('selectedGraph', null);
                         this.set('_graphSelected', false);
+                    }.bind(this));
+                },
+                _fetchGraphList:function(cb){
+                    this.makeAjaxCall('api/decisiongraphs', 'get', null, null, null, function (err, resp) {
+                        this.set('decisionGraphList', resp);
+                        if(typeof cb === "function"){
+                            cb();
+                        }
                     }.bind(this));
                 },
                 _loadGraph:function(event){

@@ -1,0 +1,89 @@
+<link rel="import" href="../../oe-input/oe-input.html">
+<link rel="import" href="../../paper-button/paper-button.html">
+<link rel="import" href="../../iron-icon/iron-icon.html">
+<dom-module id="oe-feel-parameter-list">
+    <template>
+        <style>
+            :host {
+                position: relative;
+                display: block;
+                box-sizing: border-box;
+            }
+            .heading-panel{
+                width: 500px;
+                margin-bottom: 8px;
+            }
+
+            .align-h {
+                @apply(--layout-horizontal);
+                @apply(--layout-end);
+            }
+            iron-icon {
+                --iron-icon-width: 16px;
+                --iron-icon-height: 16px;
+            }
+
+
+            .parameter-list{
+                padding-bottom: 16px;
+            }
+
+            .item-actions{
+                height: 100%;
+                box-sizing: border-box;
+                padding: 16px 0px;
+                width: 50px;
+                justify-content: space-around;
+            }
+            .parameter-item oe-input{
+                margin-right: 16px;
+            }
+
+        </style>
+         <div class="heading-panel layout horizontal center justified">
+                <label>Parameters</label>
+                <paper-button primary raised on-tap="_addParameter">Add Parameter</paper-button>
+        </div>
+        <div class="parameter-list">
+            <template is="dom-repeat" items={{parameters}}>
+                <div class="parameter-item align-h">
+                    <oe-input label="Key" class="key-input" value={{item.key}} no-label-float></oe-input>
+                    <oe-input label="Value" class="value-input" value={{item.value}} no-label-float></oe-input>
+                    <div class="item-actions align-h">
+                        <iron-icon icon="remove" on-tap="_deleteParameter"></iron-icon>
+                        <iron-icon icon="add" on-tap="_addParameter"></iron-icon>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: "oe-feel-parameter-list",
+            properties:{
+                parameters:{
+                    type:Array,
+                    value:function(){
+                        return [];
+                    }
+                }
+            },
+            _addParameter:function(e){
+                var newParam = {
+                    key:"field-"+(this.parameters.length+1),
+                    value:"value-"+(this.parameters.length+1)
+                }
+                if (event.model && event.model.index !== undefined) {
+                    var index = event.model.index;
+                    this.splice('parameters', index, 0, newParam);
+                } else {
+                    this.push('parameters', newParam);
+                }
+            },
+            _deleteParameter:function(e){
+                var index = event.model.index;
+                this.splice('parameters', index, 1);
+            }
+        })
+    </script>
+</dom-module>
