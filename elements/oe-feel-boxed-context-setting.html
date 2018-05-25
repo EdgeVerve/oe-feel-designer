@@ -115,27 +115,16 @@
                 this.set('decisionTableData',defaultDecisionTable);
                 this.set('feelExpression',defaultFeel);
             },
-            _removeFromArray: function (arrPath, removeIndex) {
-                this.splice(arrPath, removeIndex, 1);
-            },
-            _addToArray: function (arrPath, addIndex, data) {
-                this.splice(arrPath, addIndex, 0, data);
-            },
-            _addNewParameter: function (e) {
-                var newParam = {
-                    key: "field " + (this.data.parameters.length + 1),
-                    value: "value " + (this.data.parameters.length + 1)
-                }
-                if (event.model && event.model.index !== undefined) {
-                    var index = event.model.index;
-                    this._addToArray('data.parameters', index, newParam);
+            getData:function(){
+                var data = this.data;
+                if(data.result.type === "DECISION_TABLE"){
+                    data.result.data = this.decisionTableData;
+                }else if(data.result.type === "literal-expression"){
+                    data.result.value = this.feelExpression;
                 } else {
-                    this.push('data.parameters', newParam);
+
                 }
-            },
-            _deleteParameter: function (e) {
-                var index = event.model.index;
-                this._removeFromArray('data.parameters', index);
+                return this.data;
             }
         })
     </script>

@@ -79,7 +79,6 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 </div>
                 <div id="configure-section" mode="setting">
                     <div class="configure-heading layout horizontal center justified">
-                        <iron-icon icon="settings"></iron-icon>
                         <label class="flex">Settings</label>
                         <iron-icon icon="save" on-tap="_applySetting"></iron-icon>
                         <iron-icon icon="close" on-tap="_closeSetting"></iron-icon>
@@ -299,20 +298,14 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             _handleOpenSetting:function(event){
                 var node = event.detail;
                 var selectedNode = JSON.parse(JSON.stringify(node));
-                var defaultDecisionTable = {
-                    hitPolicy: "U",
-                    inputExpressionList: ["Input 1"],
-                    inputValues: ["",],
-                    outputValues: [""],
-                    outputs: ["Output 1"],
-                    ruleList: [
-                        ["-", "-"]
-                    ]
-                }
                 this.set('_selectedNode',selectedNode);
                 var settingsPanel = this.$.settingSelector.selectedItem;
                 settingsPanel.set('data',this._selectedNode.data);
                 this.set('_mainSection', 'setting');
+            },
+            _applySetting:function(){
+                var settingsPanel = this.$.settingSelector.selectedItem;
+                var data = settingsPanel.getData();
             },
             _closeSetting:function(){
                 this.set('_mainSection', 'edit');

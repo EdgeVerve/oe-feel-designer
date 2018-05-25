@@ -7,6 +7,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
 
 
 <link rel="import" href="../../oe-combo/oe-combo.html">
+<link rel="import" href="../../oe-data-table/oe-data-table.html">
 <link rel="import" href="../../polymer-sortablejs/polymer-sortablejs.html">
 <dom-module id="oe-feel-decision-table-setting">
     <template>
@@ -26,14 +27,46 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 @apply(--layout-vertical);
             }
 
-            .expression-table oe-input {
-                --paper-input-container: {
-                    padding: 2px 8px;
-                    box-sizing: border-box;
+            .column-item.oe-feel-decision-table-setting {
+                padding: 0px 8px;
+                box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.2);
+                margin: 4px;
+            }
+
+            .column-item oe-input {
+                --paper-input-container-underline: {
+                    display: none;
                 }
-                --paper-input-container-input: {
-                    font-size: 12px;
+            }
+
+            .column-item oe-input[focused] {
+                --paper-input-container-underline: {
+                    display: block;
                 }
+            }
+
+            .column-configuration {
+                border: 1px solid;
+            }
+
+            .heading {
+                padding: 0px 8px;
+                border-bottom: 1px solid;
+                height: 32px;
+            }
+
+
+
+
+            .heading .options iron-icon {
+                --iron-icon-width: 24px;
+                --iron-icon-height: 24px;
+                margin: 0px 8px;
+            }
+
+            .expression-table {
+                padding: 0px 8px;
+                margin: 8px 0px;
             }
 
             .expression-table paper-checkbox {
@@ -41,79 +74,39 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 --paper-checkbox-label-spacing: 0px;
             }
 
-            .cell {
-                height: 40px;
-                width: 180px;
-                border-right: 1px solid;
-                flex-shrink: 0;
-                align-items: center;
-                box-sizing: border-box;
-            }
-
-            .table-header {
-                margin-bottom: 6px;
-                box-shadow: 1px 1px 1px 2px rgba(0, 0, 0, 0.2);
-                width: fit-content;
-            }
-
-            .table-header .header-cell {
-                background: #ccc;
-            }
-
-            .table-default .header-cell {
-                background: #eaeaea;
-            }
-
-            .table-body {
-                width: fit-content;
-            }
-            .table-default .cell,
-            .table-body .cell{
-                padding-top: 4px;
-            }
-
-            .expression-table {
-                width: 100%;
-                overflow-x: auto;
-                overflow-y: hidden;
-            }
-
             iron-icon {
-                --iron-icon-width: 16px;
-                --iron-icon-height: 16px;
+                --iron-icon-width: 20px;
+                --iron-icon-height: 20px;
             }
 
-            .actions {
-                height: 100%;
-                justify-content: space-between;
-                padding: 2px 0px;
-                box-sizing: border-box;
-                border-left: 1px solid rgba(0, 0, 0, 0.1);
-            }
-
-            .options-block {
-                width: 24px;
-                flex-shrink: 0;
-                height: 40px;
-                box-sizing: border-box;
-                justify-content: center;
-            }
-            .hit-policy-item{
+            .hit-policy-item {
                 padding: 0px 16px;
                 height: 40px;
                 cursor: pointer;
                 transition: background linear 300ms;
             }
-            .hit-policy-item:hover{
+
+            .hit-policy-item:hover {
                 background: rgba(0, 0, 0, 0.2);
             }
-            #hit-selector{
-                width:50%;
+
+            #hit-selector,
+            .column-configuration {
+                width: 50%;
+            }
+
+            .heading-panel {
+                margin: 8px 0px;
+                display: block;
+                width: 100%;
+                box-sizing: border-box;
+                padding: 0px 4px;
             }
         </style>
         <div class="component-container">
             <div class="hit-policy-selection">
-                <oe-combo label="Hit policy" id="hit-selector" listdata="[[hitPolicyList]]" value={{data.hitPolicy}} displayproperty="name" valueproperty="code">
+                <oe-combo label="Hit policy" id="hit-selector" listdata="[[hitPolicyList]]" value={{data.hitPolicy}} displayproperty="name"
+                    valueproperty="code">
                     <template item-template>
                         <div class="layout horizontal center justified hit-policy-item" on-tap="onItemSelected" data-item={{item}}>
                             <label class="hit-name">[[item.name]]</label>
@@ -122,60 +115,41 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     </template>
                 </oe-combo>
             </div>
-            <div>
-                <h3>Decision Table</h3>
-            </div>
             <div class="expression-table">
-                <div class="table-header align-h">
-                    <div class="options-block"></div>
-                    <template is="dom-repeat" items={{data.inputExpressionList}}>
-                        <div class="header-cell cell align-h">
-                            <oe-input class="flex" no-label-float value={{item}}></oe-input>
-                            <div class="actions align-v">
-                                <iron-icon icon="add" on-tap="_addNewColumn" column="input"></iron-icon>
-                                <iron-icon icon="remove" on-tap="_deleteColumn" column="input"></iron-icon>
-                            </div>
+                <oe-data-table hidden="[[showConfig]]" record-handling="local" label="Decision Table" disable-add disable-config-editor row-actions="[[decisionRowActions]]"
+                    toolbar-actions="[[decisionActions]]" columns=[[decisionColumns]] items="{{decisionRows}}"></oe-data-table>
+                <div class="column-configuration" hidden="[[!showConfig]]">
+                    <div class="heading layout horizontal justified center">
+                        <label>Configure Decision Table Columns</label>
+                        <div class="options layout horizontal justified center">
+                            <iron-icon icon="save" on-tap="_saveColumnConfig"></iron-icon>
+                            <iron-icon icon="clear" on-tap="_closeColumnConfig"></iron-icon>
                         </div>
-                    </template>
-                    <template is="dom-repeat" items={{data.outputs}}>
-                        <div class="header-cell cell align-h">
-                            <oe-input class="flex" no-label-float value={{item}}></oe-input>
-                            <div class="actions align-v">
-                                <iron-icon icon="add" on-tap="_addNewColumn" column="output"></iron-icon>
-                                <iron-icon icon="remove" on-tap="_deleteColumn" column="output"></iron-icon>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-                <div class="table-default align-h">
-                    <div class="options-block"></div>
-                    <template is="dom-repeat" items={{data.inputValues}}>
-                        <div class="header-cell cell">
-                            <oe-input no-label-float value={{item}}></oe-input>
-                        </div>
-                    </template>
-                    <template is="dom-repeat" items={{data.outputValues}}>
-                        <div class="header-cell cell">
-                            <oe-input no-label-float value={{item}}></oe-input>
-                        </div>
-                    </template>
-                </div>
-                <div class="table-body align-v">
-                    <sortable-js class="rule-list" draggable=".table-row">
-                        <template is="dom-repeat" items={{data.ruleList}} as="rule">
-                            <div class="table-row align-h">
-                                <div class="options-block align-v">
-                                    <iron-icon icon="delete" on-tap="_deleteRule"></iron-icon>
-                                    <iron-icon icon="add" on-tap="_addNewRule"></iron-icon>
+                    </div>
+                    <div class="layout horizontal justified column-list">
+                        <div class="flex input-columns">
+                            <label class="heading-panel">Input Columns
+                                <iron-icon icon="add" on-tap="_addColumn" data-col-type="inputColumnList"></iron-icon>
+                            </label>
+                            <template is="dom-repeat" items="[[inputColumnList]]">
+                                <div class="column-item layout horizontal center justified">
+                                    <oe-input no-label-float value="{{item}}"></oe-input>
+                                    <iron-icon icon="delete" on-tap="_deleteColumn" data-col-type="inputColumnList"></iron-icon>
                                 </div>
-                                <template is="dom-repeat" items={{rule}}>
-                                    <div class="cell">
-                                        <oe-input no-label-float value={{item}}></oe-input>
-                                    </div>
-                                </template>
-                            </div>
-                        </template>
-                    </sortable-js>
+                            </template>
+                        </div>
+                        <div class="flex output-columns">
+                            <label class="heading-panel">Output Columns
+                                <iron-icon icon="add" on-tap="_addColumn" data-col-type="outputColumnList"></iron-icon>
+                            </label>
+                            <template is="dom-repeat" items="[[outputColumnList]]">
+                                <div class="column-item layout horizontal center justified">
+                                    <oe-input no-label-float value="{{item}}"></oe-input>
+                                    <iron-icon icon="delete" on-tap="_deleteColumn" data-col-type="outputColumnList"></iron-icon>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -189,8 +163,11 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     observer: '_dataChanged'
                 }
             },
-            behaviors: [],
-
+            listeners: {
+                'oe-data-table-action-update-columns': '_launchColumnConfig',
+                'oe-data-table-action-add-rule': '_addRule',
+                'oe-data-table-row-action': '_handleRowAction'
+            },
             ready: function () {
                 var hitPolicies = [{
                         name: 'Unique',
@@ -238,107 +215,124 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     }
                 ];
                 this.set('hitPolicyList', hitPolicies);
-                var toolbarActions = [{
-                        'icon': 'add',
-                        'title': 'Add Row',
-                        'action': 'add-row'
-                    },
-                    {
-                        'icon': 'remove',
-                        'title': 'Delete Row',
-                        'action': 'delete-row'
-                    },
-                    {
-                        'icon': 'add',
-                        'title': 'Add Input',
-                        'action': 'add-input'
-                    },
-                    {
-                        'icon': 'remove',
-                        'title': 'Delete Input',
-                        'action': 'delete-input'
-                    },
-                    {
-                        'icon': 'add',
-                        'title': 'Add Output',
-                        'action': 'add-output'
-                    },
-                    {
-                        'icon': 'remove',
-                        'title': 'Delete Output',
-                        'action': 'delete-output'
-                    },
-                ]
-                this.set('_toolBarActions', toolbarActions);
-                this.set('_presetColumn', {
-                    key: 'Detail',
-                    label: 'Details',
-                    type: 'string',
-                    readOnly: true
-                })
+                this.set('decisionActions', [{
+                    icon: 'add',
+                    title: 'Add Rule',
+                    action: 'add-rule'
+                }, {
+                    icon: 'view-column',
+                    title: 'Edit Columns',
+                    action: 'update-columns'
+                }]);
+                this.set('decisionRowActions', [{
+                    icon: 'arrow-upward',
+                    action: 'move-up',
+                    title: 'Move Up'
+                }, {
+                    icon: 'arrow-downward',
+                    title: 'Move Down',
+                    action: 'move-down'
+                }]);
             },
             _dataChanged: function (nval, oval) {
                 if (nval && nval !== oval) {
-
+                    var columns = this.data.inputExpressionList.map(function (inp, idx) {
+                        var colConfig = {
+                            label: inp,
+                            key: idx.toString(),
+                            sort: false,
+                            filter: false,
+                            cellClass: "input-cell",
+                            type: "string"
+                        }
+                        return colConfig;
+                    });
+                    columns = columns.concat(this.data.outputs.map(function (out, idx) {
+                        var colConfig = {
+                            label: out,
+                            key: (columns.length + idx).toString(),
+                            sort: false,
+                            filter: false,
+                            cellClass: "output-cell",
+                            type: "string"
+                        }
+                        return colConfig;
+                    }));
+                    this.set('decisionColumns', columns);
+                    this.set('decisionRows', this.data.ruleList);
+                    this.set('showConfig', false);
                 }
             },
-            _getColumns: function (inputEle, outputEle) {
-                return [];
+
+
+            _handleRowAction: function (event) {
+                var row = event.detail.row;
+                var oldIdx = event.detail.rowIndex;
+                var newIdx;
+                if (event.detail.action.action == 'move-up') {
+                    if (oldIdx == 0) {
+                        return;
+                    }
+                    newIdx = oldIdx - 1;
+                } else {
+                    if (oldIdx == (this.decisionRows.length - 1)) {
+                        return;
+                    }
+                    newIdx = oldIdx + 1;
+                }
+                this._removeFromArray('decisionRows', oldIdx);
+                this._addToArray('decisionRows', newIdx, row);
             },
+            _launchColumnConfig: function () {
+                this.set('inputColumnList', JSON.parse(JSON.stringify(this.data.inputExpressionList)))
+                this.set('outputColumnList', JSON.parse(JSON.stringify(this.data.outputs)));
+                this.set('showConfig', true);
+            },
+            _addColumn: function (event) {
+                var ele = event.currentTarget;
+                var array = this[ele.dataset.colType];
+                this.push(ele.dataset.colType, '-');
+            },
+            _deleteColumn: function (event) {
+                var index = event.model.index;
+                var ele = event.currentTarget;
+                this._removeFromArray(ele.dataset.colType, index);
+            },
+            _saveColumnConfig: function () {
+                var oldData = JSON.parse(JSON.stringify(this.data));
+                var inputLength = oldData.inputExpressionList.length;
+                var rowList = oldData.ruleList.map(function(ruleItem){
+                    var rule = {
+                        input : ruleItem.slice(0,inputLength),
+                        output:ruleItem.slice(inputLength,ruleItem.length)
+                    }
+                });
+                debugger;
+                this._closeColumnConfig();
+            },
+            _closeColumnConfig: function () {
+                this.set('showConfig', false);
+            },
+
+
             _removeFromArray: function (arrPath, removeIndex) {
                 this.splice(arrPath, removeIndex, 1);
             },
             _addToArray: function (arrPath, addIndex, data) {
                 this.splice(arrPath, addIndex, 0, data);
             },
-            _addNewRule: function (event) {
-                var length = this.data.inputExpressionList.length + this.data.outputs.length;
+
+
+            _addRule: function (event) {
+                var length = this.decisionColumns.length;
                 var newArr = new Array(length);
                 newArr.fill('-');
+                this.push('decisionRows', newArr);
+            },
 
-                if (event.model && event.model.index !== undefined) {
-                    var index = event.model.index;
-                    this._addToArray('data.ruleList', index, newArr);
-                } else {
-                    this.push('data.ruleList', newArr);
-                }
-            },
-            _deleteRule: function (event) {
-                var index = event.model.index;
-                this._removeFromArray('data.ruleList', index);
-            },
-            _addNewColumn: function (event) {
-                var index = event.model.index;
-                var ele = event.currentTarget;
-                var column = ele.getAttribute('column');
-                if (column === "input") {
-                    this._addToArray('data.inputExpressionList', index, ("input-" + (this.data.inputValues.length +
-                        1)));
-                    this._addToArray('data.inputValues', index, '-');
-                } else {
-                    this._addToArray('data.outputs', index, ("output-" + (this.data.outputValues.length + 1)));
-                    this._addToArray('data.outputValues', index, '-');
-                    index += this.data.inputValues.length;
-                }
-                for (var i = 0, len = this.data.ruleList.length; i < len; i++) {
-                    this._addToArray('data.ruleList.' + i, index, '-');
-                }
-            },
-            _deleteColumn: function (event) {
-                var index = event.model.index;
-                var ele = event.currentTarget;
-                var column = ele.getAttribute('column');
-                if (column === "input") {
-                    this._removeFromArray('data.inputExpressionList', index);
-                    this._removeFromArray('data.inputValues', index);
-                } else {
-                    this._removeFromArray('data.outputs', index);
-                    this._removeFromArray('data.outputValues', index);
-                    index += this.data.inputValues.length;
-                }
-                for (var i = 0, len = this.data.ruleList.length; i < len; i++) {
-                    this._removeFromArray('data.ruleList.' + i, index);
-                }
+            getData: function () {
+                //needs implementation
+                return this.data;
             }
         })
     </script>

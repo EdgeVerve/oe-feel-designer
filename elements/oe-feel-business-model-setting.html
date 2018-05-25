@@ -51,8 +51,8 @@
             </div>
             <div class="result-detail-panel">
                 <iron-pages selected={{data.decisionType}} attr-for-selected="result-type">
-                    <oe-feel-decision-table-setting data={{decisionTableData}} result-type="DECISION_TABLE"></oe-feel-decision-table-setting>
-                    <oe-feel-boxed-context-setting data={{boxedContextData}} result-type="BOXED_CONTEXT"></oe-feel-boxed-context-setting>
+                    <oe-feel-decision-table-setting id="decisionTable" data={{decisionTableData}} result-type="DECISION_TABLE"></oe-feel-decision-table-setting>
+                    <oe-feel-boxed-context-setting id="boxedContext" data={{boxedContextData}} result-type="BOXED_CONTEXT"></oe-feel-boxed-context-setting>
                 </iron-pages>
             </div>
         </div>
@@ -115,27 +115,14 @@
                 this.set('decisionTableData',defaultDecisionTable);
                 this.set('boxedContextData',defaultBoxedContext);
             },
-            _removeFromArray: function (arrPath, removeIndex) {
-                this.splice(arrPath, removeIndex, 1);
-            },
-            _addToArray: function (arrPath, addIndex, data) {
-                this.splice(arrPath, addIndex, 0, data);
-            },
-            _addNewParameter: function (e) {
-                var newParam = {
-                    key: "field " + (this.data.parameters.length + 1),
-                    value: "value " + (this.data.parameters.length + 1)
-                }
-                if (event.model && event.model.index !== undefined) {
-                    var index = event.model.index;
-                    this._addToArray('data.parameters', index, newParam);
+            getData:function(){
+                var data = this.data;
+                if(data.decisionType === "DECISION_TABLE"){
+                    data.data = this.$.decisionTable.getData();
                 } else {
-                    this.push('data.parameters', newParam);
+                    data.data = this.$.boxedContext.getData();
                 }
-            },
-            _deleteParameter: function (e) {
-                var index = event.model.index;
-                this._removeFromArray('data.parameters', index);
+                return data;
             }
         })
     </script>
