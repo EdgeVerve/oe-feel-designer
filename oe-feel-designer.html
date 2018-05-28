@@ -39,10 +39,10 @@
                 'update-component-position':'_handlePositionUpdate',
                 'undo-decision-graph':'_handleUndoGraph',
                 'redo-decision-graph':'_handleRedoGraph',
-                'update-connection':'_handleConnectionUpdate'
+                'update-connection': '_handleConnectionUpdate',
+                'update-node-data': '_updateNodeData'
             },
-            behaviors: [
-            ],
+            behaviors: [],
             attached: function () {
                 this.set('showActions', false);
             },
@@ -137,6 +137,58 @@
                     decisiongraph.graph.connections.push(newConnection);
                 }
                 this._pushToStack(decisiongraph);
+            },
+            _updateNodeData: function (event) {
+                var detail = event.detail;
+                var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
+                var oldNode = decisiongraph.graph.nodes.find(function (node) {
+                    return node.id === detail.node.id;
+                });
+                delete decisiongraph.data[oldNode.name];
+                oldNode.data = detail.data;
+                oldNode.name = detail.node.name;
+                var feel = this._getFEEL(oldNode);
+                if(feel){
+                    decisiongraph.data[oldNode.name] = feel;
+                }
+                this._pushToStack(decisiongraph);
+            },
+            _getFEEL: function (node) {
+                var feelStr = "";
+                switch (node.nodeType) {
+                    case "DECISION_TABLE":feelStr = this._getDecisionTableFEEL(node.data,node.name);break;
+                    case "BOXED_INVOCATION":feelStr = this._getInvocationFeel(node.data);break;
+                    case "BOXED_CONTEXT":break;
+                    case "BUSINESS_MODEL":break;
+                }
+                return feelStr;
+            },
+            _getDecisionTableFEEL: function (data,name) {
+                function getArrayString(arr) {
+                    return "[" + arr.map(function (s) {
+                        return "'" + s + "'";
+                    }) + "]"
+                }
+
+                var feel = "decision table(\n";
+                feel += "input expression list :" + getArrayString(data.inputExpressionList) + ",\n";
+                feel += "outputs : " + getArrayString(data.outputs) + ",\n";
+                feel += "input values list : " + getArrayString(data.inputValues) + ",\n";
+                feel += "output values : " + getArrayString(data.outputValues) + ",\n";
+                feel += "rule list : [" + data.ruleList.map(function(arr){
+                    return getArrayString(arr)
+                }) + "],\n";
+                feel += "id : '" + name + "',\n";
+                feel += "hit policy : '" + data.hitPolicy + "' )";
+                return feel;
+            },
+            _getInvocationFeel:function(data){
+                var feel = ""+ data.target+"(\n";
+                feel += data.parameters.map(function(param){
+                    return param.key + ": '"+ param.value + "'\n";
+                });
+                feel += ")";
+                return feel;
             }
         })
     </script>

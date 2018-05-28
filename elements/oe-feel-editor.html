@@ -106,7 +106,6 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     observer: '_graphChanged'
                 }
             },
-            behaviors: [],
             listeners: {
                 'open-node-setting':'_handleOpenSetting',
                 'confirm-connection':'_handleNewConnection'
@@ -306,6 +305,11 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             _applySetting:function(){
                 var settingsPanel = this.$.settingSelector.selectedItem;
                 var data = settingsPanel.getData();
+                this.fire('update-node-data',{
+                    node:this._selectedNode,
+                    data:data
+                });
+                this._closeSetting();
             },
             _closeSetting:function(){
                 this.set('_mainSection', 'edit');

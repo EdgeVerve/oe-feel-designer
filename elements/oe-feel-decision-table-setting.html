@@ -102,6 +102,128 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 box-sizing: border-box;
                 padding: 0px 4px;
             }
+            /* Experimental */
+
+            .expression-table {
+                position: relative;
+            }
+
+            .column-config {
+                position: absolute;
+                top: 0px;
+                left: 8px;
+                /* opacity: 0.5; */
+                z-index: 20;
+                width: calc(100% - 16px);
+            }
+
+            .column-config-heading-panel {
+                height: 64px;
+                padding: 0 14px 0 24px;
+                box-sizing: border-box;
+                background: #FFFFFF;
+                box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, 0.16);
+                border-radius: 4px 4px 0 0;
+                margin-bottom: 4px;
+            }
+
+            .column-config-heading-panel>label {
+                font-size: 20px;
+                color: rgba(0, 0, 0, 0.87);
+                font-weight: 400;
+                font-style: normal;
+            }
+
+            .options>paper-button {
+                margin-right: 8px;
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+
+
+            .column-config-list {
+                font-size: 12px;
+                height: 55px;
+                color: rgba(0, 0, 0, 0.54);
+                font-weight: 700;
+                font-style: normal;
+                overflow-x: hidden;
+                border-bottom: 1px solid #ededed;
+                background: #FFF;
+            }
+
+            .column-config-item {
+                flex: 1;
+                min-width: 125px;
+                position: relative;
+                padding-right: 24px;
+                min-height: 47px;
+                /* padding-right: 56px; */
+                overflow: hidden;
+                box-sizing: border-box;
+
+                @apply(--layout-center);
+                @apply(--layout-inline);
+                @apply(--layout-flex);
+            }
+
+            .column-config-item:first-of-type {
+                padding-left: 24px;
+            }
+
+            .column-config-item oe-input {
+                width: 100%;
+                --paper-input-container-input: {
+                    font-size: 12px;
+                }
+                --paper-input-container-underline: {
+                    display: none;
+                }
+            }
+
+            .column-config-item oe-input[focused] {
+                --paper-input-container-underline: {
+                    display: block;
+                }
+            }
+
+            #decisionTable {
+                --oe-data-table-data: {
+                    padding-right: 24px;
+                }
+            }
+
+            .column-config-item iron-icon {
+                --iron-icon-width: 16px;
+                --iron-icon-height: 16px;
+                display: none;
+                position: absolute;
+                top: 0px;
+                right: 0px;
+                background: #FFF;
+                color: #333;
+                box-shadow: -1px 2px 2px 1px rgba(0, 0, 0, 0.2);
+                opacity: 0.7;
+            }
+
+            .column-config-item:hover iron-icon {
+                display: block;
+            }
+
+            .input-column {
+                background-color: rgba(143, 218, 241, 0.1);
+            }
+
+            .output-column {
+                background-color: rgba(242, 221, 220, 0.1);
+            }
+
+            .options-column {
+                flex: 0 0 144px;
+                padding: 0 24px;
+            }
+
+            
         </style>
         <div class="component-container">
             <div class="hit-policy-selection">
@@ -116,13 +238,10 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 </oe-combo>
             </div>
             <div class="expression-table">
-                <oe-data-table hidden="[[showConfig]]" record-handling="local" label="Decision Table" disable-add disable-config-editor row-actions="[[decisionRowActions]]"
-                    toolbar-actions="[[decisionActions]]" columns=[[decisionColumns]] items="{{decisionRows}}"></oe-data-table>
-                <div class="column-configuration" hidden="[[!showConfig]]">
+                <!-- <div class="column-configuration" hidden="[[!showConfig]]">
                     <div class="heading layout horizontal justified center">
                         <label>Configure Decision Table Columns</label>
                         <div class="options layout horizontal justified center">
-                            <iron-icon icon="save" on-tap="_saveColumnConfig"></iron-icon>
                             <iron-icon icon="clear" on-tap="_closeColumnConfig"></iron-icon>
                         </div>
                     </div>
@@ -133,7 +252,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                             </label>
                             <template is="dom-repeat" items="[[inputColumnList]]">
                                 <div class="column-item layout horizontal center justified">
-                                    <oe-input no-label-float value="{{item}}"></oe-input>
+                                    <oe-input no-label-float on-blur="_renameColumn" data-col-type="inputColumnList" value="{{item.label}}"></oe-input>
                                     <iron-icon icon="delete" on-tap="_deleteColumn" data-col-type="inputColumnList"></iron-icon>
                                 </div>
                             </template>
@@ -144,13 +263,42 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                             </label>
                             <template is="dom-repeat" items="[[outputColumnList]]">
                                 <div class="column-item layout horizontal center justified">
-                                    <oe-input no-label-float value="{{item}}"></oe-input>
+                                    <oe-input no-label-float on-blur="_renameColumn" data-col-type="outputColumnList" value="{{item.label}}"></oe-input>
                                     <iron-icon icon="delete" on-tap="_deleteColumn" data-col-type="outputColumnList"></iron-icon>
                                 </div>
                             </template>
                         </div>
                     </div>
+                </div> -->
+                <div class="column-config" hidden="[[!showConfig]]">
+                    <div class="column-config-heading-panel layout horizontal justified center">
+                        <label>Decision Table</label>
+                        <div class="options layout horizontal justified center">
+                            <paper-button class="input-column" on-tap="_addColumn" data-col-type="inputColumnList">Add Input</paper-button>
+                            <paper-button class="output-column" on-tap="_addColumn" data-col-type="outputColumnList">Add Output</paper-button>
+                            <paper-button class="rule-column" on-tap="_addRule">Add Rule</paper-button>
+                            <!-- <iron-icon icon="clear" on-tap="_closeColumnConfig"></iron-icon> -->
+                        </div>
+                    </div>
+                    <div class="layout horizontal justified column-config-list">
+                        <template is="dom-repeat" items="[[inputColumnList]]">
+                            <div class="column-config-item input-column">
+                                <oe-input no-label-float on-blur="_renameColumn" data-col-type="inputColumnList" value="{{item.label}}"></oe-input>
+                                <iron-icon icon="clear" on-tap="_deleteColumn" data-col-type="inputColumnList"></iron-icon>
+                            </div>
+                        </template>
+                        <template is="dom-repeat" items="[[outputColumnList]]">
+                            <div class="column-config-item output-column">
+                                <oe-input no-label-float on-blur="_renameColumn" data-col-type="outputColumnList" value="{{item.label}}"></oe-input>
+                                <iron-icon icon="clear" on-tap="_deleteColumn" data-col-type="outputColumnList"></iron-icon>
+                            </div>
+                        </template>
+                        <div class="column-config-item options-column"></div>
+                    </div>
                 </div>
+                <oe-data-table id="decisionTable" record-handling="local" disable-add disable-config-editor disable-selection label="Decision Table"
+                    row-actions="[[decisionRowActions]]" toolbar-actions="[[decisionActions]]" columns=[[_getColumns(data.inputExpressionList.*,data.outputs.*)]]
+                    items="{{decisionRows}}"></oe-data-table>
             </div>
         </div>
     </template>
@@ -225,6 +373,10 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     action: 'update-columns'
                 }]);
                 this.set('decisionRowActions', [{
+                    icon: 'delete',
+                    action: 'delete-rule',
+                    title: 'Delete'
+                }, {
                     icon: 'arrow-upward',
                     action: 'move-up',
                     title: 'Move Up'
@@ -236,39 +388,44 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             },
             _dataChanged: function (nval, oval) {
                 if (nval && nval !== oval) {
-                    var columns = this.data.inputExpressionList.map(function (inp, idx) {
-                        var colConfig = {
-                            label: inp,
-                            key: idx.toString(),
-                            sort: false,
-                            filter: false,
-                            cellClass: "input-cell",
-                            type: "string"
-                        }
-                        return colConfig;
-                    });
-                    columns = columns.concat(this.data.outputs.map(function (out, idx) {
-                        var colConfig = {
-                            label: out,
-                            key: (columns.length + idx).toString(),
-                            sort: false,
-                            filter: false,
-                            cellClass: "output-cell",
-                            type: "string"
-                        }
-                        return colConfig;
-                    }));
-                    this.set('decisionColumns', columns);
                     this.set('decisionRows', this.data.ruleList);
-                    this.set('showConfig', false);
+                    this._launchColumnConfig();
                 }
             },
-
+            _getColumns: function (inputDelta, outputDelta) {
+                var columns = this.data.inputExpressionList.map(function (inp, idx) {
+                    var colConfig = {
+                        label: inp,
+                        key: idx.toString(),
+                        sort: false,
+                        filter: false,
+                        type: "string"
+                    }
+                    return colConfig;
+                });
+                columns = columns.concat(this.data.outputs.map(function (out, idx) {
+                    var colConfig = {
+                        label: out,
+                        key: (columns.length + idx).toString(),
+                        sort: false,
+                        filter: false,
+                        type: "string"
+                    }
+                    return colConfig;
+                }));
+                return columns;
+            },
 
             _handleRowAction: function (event) {
                 var row = event.detail.row;
                 var oldIdx = event.detail.rowIndex;
                 var newIdx;
+                if (event.detail.action.action == 'delete-rule') {
+                    this._removeFromArray('decisionRows', oldIdx);
+                    return;
+                }
+
+
                 if (event.detail.action.action == 'move-up') {
                     if (oldIdx == 0) {
                         return;
@@ -284,31 +441,87 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 this._addToArray('decisionRows', newIdx, row);
             },
             _launchColumnConfig: function () {
-                this.set('inputColumnList', JSON.parse(JSON.stringify(this.data.inputExpressionList)))
-                this.set('outputColumnList', JSON.parse(JSON.stringify(this.data.outputs)));
+                var inputs = JSON.parse(JSON.stringify(this.data.inputExpressionList));
+                var outputs = JSON.parse(JSON.stringify(this.data.outputs));
+                this.set('inputColumnList', inputs.map(function (str) {
+                    return {
+                        col: str,
+                        label: str
+                    }
+                }));
+                this.set('outputColumnList', outputs.map(function (str) {
+                    return {
+                        col: str,
+                        label: str
+                    }
+                }));
                 this.set('showConfig', true);
             },
             _addColumn: function (event) {
                 var ele = event.currentTarget;
                 var array = this[ele.dataset.colType];
-                this.push(ele.dataset.colType, '-');
+                var name;
+                var index = this.data.inputExpressionList.length;
+                if (ele.dataset.colType === "outputColumnList") {
+                    name = "output" + this.data.outputs.length;
+                    index += this.data.outputs.length;
+                    this.push('data.outputs', name);
+                } else {
+                    name = "input" + this.data.inputExpressionList.length;
+                    this.push('data.inputExpressionList', name);
+                }
+                this.decisionRows.forEach(function (row, idx) {
+                    this.splice('decisionRows.' + idx, index, 0, '-');
+                }.bind(this));
+                this.push(ele.dataset.colType, {
+                    col: name,
+                    label: name
+                });
             },
             _deleteColumn: function (event) {
                 var index = event.model.index;
                 var ele = event.currentTarget;
                 this._removeFromArray(ele.dataset.colType, index);
+                if (ele.dataset.colType === "outputColumnList") {
+                    this.splice('data.outputs', index, 1);
+                    index += this.data.inputExpressionList.length;
+                } else {
+                    this.splice('data.inputExpressionList', index, 1);
+                }
+                this.decisionRows.forEach(function (row, idx) {
+                    this.splice('decisionRows.' + idx, index, 1);
+                }.bind(this));
             },
-            _saveColumnConfig: function () {
-                var oldData = JSON.parse(JSON.stringify(this.data));
-                var inputLength = oldData.inputExpressionList.length;
-                var rowList = oldData.ruleList.map(function(ruleItem){
-                    var rule = {
-                        input : ruleItem.slice(0,inputLength),
-                        output:ruleItem.slice(inputLength,ruleItem.length)
-                    }
+            _renameColumn: function (event) {
+                var item = event.model.item;
+                if(item.col === item.label){
+                    return;
+                }
+                var ele = event.currentTarget;
+                var array = this[ele.dataset.colType];
+                var isExists = array.find(function(column){
+                    return column.col !== item.col && column.label === item.label;
                 });
-                debugger;
-                this._closeColumnConfig();
+                if(isExists){
+                    this.fire('oe-show-error',"Column with same name already exists");
+                    this.set(ele.dataset.colType+"."+event.model.index+".label",item.col);
+                    return;
+                }
+
+                var prevColName = item.col;
+                var colIndex = -1;
+                if (ele.dataset.colType === "outputColumnList") {
+                    colIndex = this.data.outputs.findIndex(function (col) {
+                        return col === prevColName;
+                    });
+                    this.set('data.outputs.' + colIndex, item.label);
+                } else {
+                    colIndex = this.data.inputExpressionList.findIndex(function (col) {
+                        return col === prevColName;
+                    });
+                    this.set('data.inputExpressionList.' + colIndex, item.label);
+                }
+                item.col = item.label;
             },
             _closeColumnConfig: function () {
                 this.set('showConfig', false);
@@ -324,14 +537,14 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
 
 
             _addRule: function (event) {
-                var length = this.decisionColumns.length;
+                var length = this.data.outputs.length + this.data.inputExpressionList.length;
                 var newArr = new Array(length);
                 newArr.fill('-');
                 this.push('decisionRows', newArr);
             },
 
             getData: function () {
-                //needs implementation
+                this.data.ruleList = this.decisionRows;
                 return this.data;
             }
         })
