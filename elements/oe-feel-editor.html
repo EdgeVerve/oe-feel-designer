@@ -137,7 +137,10 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                         'INPUT': 0
                     })
                     this.decisionGraph.graph.nodes.forEach(this._createElementForNode.bind(this));
+                    Polymer.dom.flush();
+                    this.async(function(){
                     this.decisionGraph.graph.connections.forEach(this._createConnection.bind(this));
+                    },100);
                 }
             },
             _createElementForNode: function (node) {
@@ -299,12 +302,17 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 var selectedNode = JSON.parse(JSON.stringify(node));
                 this.set('_selectedNode',selectedNode);
                 var settingsPanel = this.$.settingSelector.selectedItem;
+                if(settingsPanel){
                 settingsPanel.set('data',this._selectedNode.data);
+                }
                 this.set('_mainSection', 'setting');
             },
             _applySetting:function(){
                 var settingsPanel = this.$.settingSelector.selectedItem;
-                var data = settingsPanel.getData();
+                var data = null;
+                if(settingsPanel){
+                    data = settingsPanel.getData();
+                }
                 this.fire('update-node-data',{
                     node:this._selectedNode,
                     data:data

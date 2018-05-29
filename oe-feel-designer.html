@@ -71,7 +71,8 @@
                     return node.id === nodeToDelete.id;
                 });
                 decisiongraph.graph.nodes.splice(removeIndex,1);
-                decisiongraph.graph.connections = decisiongraph.graph.connections.filter(function(connection){
+                decisiongraph.graph.connections = decisiongraph.graph.connections.filter(function (
+                    connection) {
                     return (connection.from !== nodeToDelete.i && nodeToDelete.i !== connection.to);
                 });
                 this._pushToStack(decisiongraph);
@@ -148,7 +149,7 @@
                 oldNode.data = detail.data;
                 oldNode.name = detail.node.name;
                 var feel = this._getFEEL(oldNode);
-                if(feel){
+                if (feel && feel.length > 0) {
                     decisiongraph.data[oldNode.name] = feel;
                 }
                 this._pushToStack(decisiongraph);
@@ -156,10 +157,22 @@
             _getFEEL: function (node) {
                 var feelStr = "";
                 switch (node.nodeType) {
-                    case "DECISION_TABLE":feelStr = this._getDecisionTableFEEL(node.data,node.name);break;
-                    case "BOXED_INVOCATION":feelStr = this._getInvocationFeel(node.data);break;
-                    case "BOXED_CONTEXT":break;
-                    case "BUSINESS_MODEL":break;
+                    case "DECISION_TABLE":
+                        feelStr = this._getDecisionTableFEEL(node.data, node.name);
+                        break;
+                    case "BOXED_INVOCATION":
+                        feelStr = this._getInvocationFEEL(node.data);
+                        break;
+                    case "BOXED_CONTEXT":
+                        feelStr = this._getContextFEEL(node.data, node.name);
+                        break;
+                    case "BUSINESS_MODEL":
+                        if (node.data.decisionType === "DECISION_TABLE") {
+                            feelStr = this._getDecisionTableFEEL(node.data.data, node.name)
+                        } else {
+                            feelStr = this._getContextFEEL(node.data.data, node.name);
+                        }
+                        break;
                 }
                 return feelStr;
             },
@@ -188,6 +201,26 @@
                     return param.key + ": '"+ param.value + "'\n";
                 });
                 feel += ")";
+                return feel;
+            },
+            _getContextFEEL: function (data, name) {
+                var feel = "{\n";
+                feel += data.parameters.map(function (param) {
+                    return param.key + ": '" + param.value + "'\n";
+                });
+                switch (data.result.type) {
+                    case "DECISION_TABLE":
+                        feel += "result : " + this._getDecisionTableFEEL(data.result.data, name);
+                        break;
+                    case "literal-expression":
+                        feel += "result : " + data.result.value;
+                        break;
+                    case "none":
+                        break;
+                    default:
+                        break;
+                }
+                feel += "}";
                 return feel;
             }
         })
