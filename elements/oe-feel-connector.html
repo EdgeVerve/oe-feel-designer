@@ -68,39 +68,44 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 toNode:{
                     type:Object
                 },
-                connection:{
-                    type:Object
+                connection: {
+                    type: Object
                 },
-                workSpace:{
-                    type:Object
+                workSpace: {
+                    type: Object
+                },
+                viewSetting: {
+                    type: Object
                 }
             },
-            behaviors:[],
-            _getRelativeRect:function(ele){
+            behaviors: [],
+            _getRelativeRect: function (ele) {
+                var scaleFactor = this.viewSetting.scaleFactor;
                 var rect = ele.getBoundingClientRect();
                 var rectw = this.workSpace.getBoundingClientRect();
                 var relativeRect = {
-                    "x": rect.x - rectw.x,
-                    "y": rect.y - rectw.y,
+                    "x": (rect.x - rectw.x) / scaleFactor,
+                    "y": (rect.y - rectw.y) / scaleFactor,
                     "width": rect.width,
                     "height": rect.height,
-                    "top": rect.top - rectw.top,
-                    "left": rect.left - rectw.left
-                  }
-                  
-                  relativeRect.bottom = relativeRect.top + relativeRect.height;
-                  relativeRect.right = relativeRect.left + relativeRect.width;
+                    "top": (rect.top - rectw.top) / scaleFactor,
+                    "left": (rect.left - rectw.left) / scaleFactor
+                }
+
+                relativeRect.bottom = relativeRect.top + relativeRect.height;
+                relativeRect.right = relativeRect.left + relativeRect.width;
                 return relativeRect;
             },
-            _renderConnection:function(){
+            _renderConnection: function () {
+                var scaleFactor = this.viewSetting.scaleFactor;
                 var rectw = this.workSpace.getBoundingClientRect();
                 var rect1 = this._getRelativeRect(this.fromNode);
                 var rect2 = this._getRelativeRect(this.toNode);
 
-                var cx1 = Math.round(rect1.left + rect1.width / 2);
-                var cy1 = Math.round(rect1.top + rect1.height / 2);
-                var cx2 = Math.round(rect2.left + rect2.width / 2);
-                var cy2 = Math.round(rect2.top + rect2.height / 2);
+                var cx1 = Math.round(rect1.left + (rect1.width / 2));
+                var cy1 = Math.round(rect1.top + (rect1.height / 2));
+                var cx2 = Math.round(rect2.left + (rect2.width / 2));
+                var cy2 = Math.round(rect2.top + (rect2.height / 2));
 
                 var length = Math.sqrt(((cx2 - cx1) * (cx2 - cx1)) + ((cy2 - cy1) * (cy2 - cy1)));
                 var angle = 180 + Math.atan2((cy1 - cy2), (cx1 - cx2)) * (180 / Math.PI);
@@ -111,31 +116,52 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     "deg); transform:rotate(" + angle + "deg);";
                 this.setAttribute('style', styleVal);
 
-                var sides = [
-                    {x1:rect2.left,y1:rect2.top,x2:rect2.right,y2:rect2.top},
-                    {x1:rect2.right,y1:rect2.top,x2:rect2.right,y2:rect2.bottom},
-                    {x1:rect2.right,y1:rect2.bottom,x2:rect2.left,y2:rect2.bottom},
-                    {x1:rect2.left,y1:rect2.bottom,x2:rect2.left,y2:rect2.top},
+                var sides = [{
+                        x1: rect2.left,
+                        y1: rect2.top,
+                        x2: rect2.right,
+                        y2: rect2.top
+                    },
+                    {
+                        x1: rect2.right,
+                        y1: rect2.top,
+                        x2: rect2.right,
+                        y2: rect2.bottom
+                    },
+                    {
+                        x1: rect2.right,
+                        y1: rect2.bottom,
+                        x2: rect2.left,
+                        y2: rect2.bottom
+                    },
+                    {
+                        x1: rect2.left,
+                        y1: rect2.bottom,
+                        x2: rect2.left,
+                        y2: rect2.top
+                    },
                 ]
 
-               var intersectPoint;
-               var intersectSide =  sides.find(function(side){
-                    var intr = this._intersectPoint(cx1,cy1,cx2,cy2,side.x1,side.y1,side.x2,side.y2);
-                    if(intr && intr.x && intr.y){
+                var intersectPoint;
+                var intersectSide = sides.find(function (side) {
+                    var intr = this._intersectPoint(cx1, cy1, cx2, cy2, side.x1, side.y1, side.x2,
+                        side.y2);
+                    if (intr && intr.x && intr.y) {
                         intersectPoint = intr;
                         return true;
                     }
                 }.bind(this));
 
-                if(!intersectPoint){
+                if (!intersectPoint) {
                     return;
                 }
 
                 var arrow = this.$.arrow;
-                var rightOffset = Math.sqrt(((cx2 - intersectPoint.x) * (cx2 - intersectPoint.x)) + ((cy2 - intersectPoint.y) * (cy2 - intersectPoint.y)));
-                arrow.style.right = rightOffset +'px';
+                var rightOffset = Math.sqrt(((cx2 - intersectPoint.x) * (cx2 - intersectPoint.x)) + ((cy2 -
+                    intersectPoint.y) * (cy2 - intersectPoint.y)));
+                arrow.style.right = rightOffset + 'px';
             },
-            _renderTo:function(cx2,cy2){
+            _renderTo: function (cx2, cy2) {
                 var rect1 = this._getRelativeRect(this.fromNode);
                
                 var cx1 = Math.round(rect1.left + rect1.width / 2);

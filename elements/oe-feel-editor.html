@@ -1,4 +1,4 @@
-<!-- ©2017-2018 EdgeVerve Systems Limited (a fully owned Infosys subsidiary), Bangalore, India. All Rights Reserved.
+<!-- �2017-2018 EdgeVerve Systems Limited (a fully owned Infosys subsidiary), Bangalore, India. All Rights Reserved.
 The EdgeVerve proprietary software program ("Program"), is protected by copyrights laws, international treaties and other pending or existing intellectual property rights in India, the United States and other countries.
 The Program may contain/reference third party or open source components, the rights to which continue to
 remain with the applicable third party licensors or the open source community as the case may be and nothing
@@ -32,8 +32,23 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 height: calc(100vh - 40px);
             }
 
-            #workSpace {
+            .wrapper {
                 position: relative;
+                height: calc(100vh - 40px);
+                overflow: auto;
+                user-select: none;
+            }
+
+            #workSpace {
+                padding: 16px;
+                box-sizing: border-box;
+                position: absolute;
+                height: 100%;
+                width: calc(100vw - 34px);
+                font-size: 12px;
+                transition: 0.1s all ease-out;
+                left: 0px;
+                transform-origin: top left;
             }
 
             oe-feel-component {
@@ -48,23 +63,35 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 height: calc(100vh - 40px);
             }
 
-            .configure-heading{
-                height:40px;
+            .configure-heading {
+                height: 40px;
                 box-shadow: 1px 2px 2px 3px rgba(0, 0, 0, 0.2);
                 background: var(--default-primary-color);
-                padding:0px 16px;
+                padding: 0px 16px;
                 color: var(--default-text-color);
             }
-            .configure-heading iron-icon{
+
+            .configure-heading iron-icon {
                 margin-right: 16px;
             }
 
-            .node-setting{
-                padding:16px;
+            .node-setting {
+                padding: 16px;
             }
-            #settingSelector{
+
+            #settingSelector {
                 height: 450px;
                 overflow: auto;
+            }
+
+            #workspace-actions {
+                position: fixed;
+                bottom: 54px;
+                right: 16px;
+                width: 100px;
+                height: 32px;
+                background: rgba(0, 0, 0, 0.6);
+                color: #FFF;
             }
         </style>
         <div class="component-container">
@@ -74,8 +101,14 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 </div>
                 <div id="editor-section" mode="edit" class="layout horizontal justified">
                     <oe-feel-element-list id="element-list"></oe-feel-element-list>
-                    <div class="flex" id="workSpace" on-drop="_handleDrop" on-dragover="_handleDragOver"></div>
-                    <div id="workspace-actions"></div>
+                    <div class="wrapper flex" on-track="_panWorkSpace" on-drop="_handleDrop" on-dragover="_handleDragOver">
+                        <div class="flex" id="workSpace" style$="[[_calculateStyle(_viewSetting.scaleFactor,_viewSetting.currentX,_viewSetting.currentY)]]"></div>
+                    </div>
+                    <div id="workspace-actions" class="layout horizontal center around-justified">
+                        <iron-icon icon="zoom-in" on-tap="_zoomIn"></iron-icon>
+                        <iron-icon icon="zoom-out" on-tap="_zoomOut"></iron-icon>
+                        <iron-icon icon="autorenew" on-tap="_resetWorkSpaceView"></iron-icon>
+                    </div>
                 </div>
                 <div id="configure-section" mode="setting">
                     <div class="configure-heading layout horizontal center justified">
@@ -107,8 +140,9 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 }
             },
             listeners: {
-                'open-node-setting':'_handleOpenSetting',
-                'confirm-connection':'_handleNewConnection'
+                'open-node-setting': '_handleOpenSetting',
+                'confirm-connection': '_handleNewConnection',
+                'reset-workspace-view': '_resetWorkSpaceView'
             },
             attached: function () {
                 this.set('_mainSection', 'empty');
@@ -119,7 +153,8 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     'knowledge': 'KNOWLEDGE_SOURCE',
                     'business-model': 'BUSINESS_MODEL',
                     'input': 'INPUT'
-                })
+                });
+                this._resetWorkSpaceView();
             },
             // Render graph
             _graphChanged: function (nval, oval) {
@@ -135,12 +170,13 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                         'KNOWLEDGE_SOURCE': 0,
                         'BUSINESS_MODEL': 0,
                         'INPUT': 0
-                    })
+                    });
                     this.decisionGraph.graph.nodes.forEach(this._createElementForNode.bind(this));
                     Polymer.dom.flush();
-                    this.async(function(){
-                    this.decisionGraph.graph.connections.forEach(this._createConnection.bind(this));
-                    },100);
+                    this.async(function () {
+                        this.decisionGraph.graph.connections.forEach(this._createConnection.bind(
+                            this));
+                    }, 100);
                 }
             },
             _createElementForNode: function (node) {
@@ -169,15 +205,17 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             },
             _drawConnection: function (fromNode, toNode, connection) {
                 var workSpace = this.$.workSpace;
-                var prevConnection = workSpace.querySelector('oe-feel-connector[id="' + connection.id + '"]');
+                var prevConnection = workSpace.querySelector('oe-feel-connector[id="' + connection.id +
+                    '"]');
                 if (!prevConnection) {
                     prevConnection = document.createElement('oe-feel-connector');
                     prevConnection.classList.add(this.is);
                     prevConnection.setAttribute('id', connection.id);
-                    prevConnection.set('fromNode',fromNode);
-                    prevConnection.set('toNode',toNode);
-                    prevConnection.set('connection',connection);
-                    prevConnection.set('workSpace',workSpace);
+                    prevConnection.set('viewSetting', this._viewSetting);
+                    prevConnection.set('fromNode', fromNode);
+                    prevConnection.set('toNode', toNode);
+                    prevConnection.set('connection', connection);
+                    prevConnection.set('workSpace', workSpace);
                     workSpace.appendChild(prevConnection);
                 }
                 prevConnection._renderConnection();
@@ -187,140 +225,206 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             _nodeTrackHandler: function (event) {
                 event.stopPropagation();
                 var elem = event.currentTarget;
+                var rectw = this.$.workSpace.getBoundingClientRect();
+                var rect = elem.getBoundingClientRect();
                 var detail = event.detail;
                 switch (detail.state) {
                     case "start":
-                        var rect = elem.getBoundingClientRect();
                         var iVar = elem.node.i;
                         var connections = this.decisionGraph.graph.connections.filter(function (connection) {
                             return (connection.from === iVar || connection.to === iVar)
                         });
                         this.set('__currentDragData', {
                             ele: elem,
-                            originalTop: rect.top,
-                            originalLeft: rect.left,
+                            originalTop: (rect.top - rectw.top) / this._viewSetting.scaleFactor,
+                            originalLeft: (rect.left - rectw.left) / this._viewSetting.scaleFactor,
                             connections: connections
                         })
                         break;
                     case "track":
                         //Move dragged element
-                        elem.style.top = this.__currentDragData.originalTop + detail.dy + 'px';
-                        elem.style.left = this.__currentDragData.originalLeft + detail.dx + 'px';
+                        elem.style.top = this.__currentDragData.originalTop + detail.dy / this._viewSetting
+                            .scaleFactor + 'px';
+                        elem.style.left = this.__currentDragData.originalLeft + detail.dx / this._viewSetting
+                            .scaleFactor + 'px';
                         this.__currentDragData.connections.forEach(this._createConnection.bind(this));
                         break;
                     case "end":
-                        var finalRect = elem.getBoundingClientRect();
-                        var rectw = workSpace.getBoundingClientRect();
-                        this.fire('update-component-position',{
-                            x:(finalRect.left - rectw.left),
-                            y:(finalRect.top - rectw.top),
-                            nodeIndex:elem.node.i
+                        this.fire('update-component-position', {
+                            x: (rect.left - rectw.left) / this._viewSetting.scaleFactor,
+                            y: (rect.top - rectw.top) / this._viewSetting.scaleFactor,
+                            nodeIndex: elem.node.i
                         });
-                        this.set('__currentDragData',null);
+                        this.set('__currentDragData', null);
                         break;
-                    default:break;
+                    default:
+                        break;
                 }
             },
             _handleDrop: function (eve) {
                 var configStr = eve.dataTransfer.getData('type');
+                if (!configStr) {
+                    return;
+                }
                 var compConfig = JSON.parse(configStr);
-                var nodeType = this.componentMap[compConfig.type]
+                var nodeType = this.componentMap[compConfig.type];
+                var workSpaceRect = this.$.workSpace.getBoundingClientRect();
                 var nodeData = {
                     'id': OEUtils.generateGuid(),
                     'i': (this.counter.lastNodeIndex + 1),
-                    'name': compConfig.name + " " + (this.counter[nodeType]+1),
-                    'nodeType':nodeType,
-                    'x':eve.offsetX,
-                    'y':eve.offsetY,
-                    'data':{}
+                    'name': compConfig.name + " " + (this.counter[nodeType] + 1),
+                    'nodeType': nodeType,
+                    'x': (eve.x - workSpaceRect.x) / this._viewSetting.scaleFactor,
+                    'y': (eve.y - workSpaceRect.y) / this._viewSetting.scaleFactor,
+                    'data': {}
                 };
-                this.fire('add-feel-component',nodeData);
+                this.fire('add-feel-component', nodeData);
                 //handle Add node on drop location
             },
             _handleDragOver: function (eve) {
                 eve.preventDefault();
             },
-            _connectorHandler:function(eve){
+            _connectorHandler: function (eve) {
                 var fromNode = eve.detail.node;
                 var trackEvent = eve.detail.event;
+                var pos = {
+                    x: trackEvent.detail.x / this._viewSetting.scaleFactor,
+                    y: trackEvent.detail.y / this._viewSetting.scaleFactor,
+                }
                 switch (trackEvent.detail.state) {
                     case "start":
-                            var workSpace = this.$.workSpace;
-                            var tempConnection = document.createElement('oe-feel-connector');
-                            tempConnection.classList.add(this.is);
-                            tempConnection.setAttribute('id', 'temp');
-                            tempConnection.set('fromNode',fromNode);
-                            tempConnection.set('workSpace',workSpace);
-                            tempConnection.set('connection',{type:"INFORMATION_REQUIREMENT"});
-                            workSpace.appendChild(tempConnection);
-                            this.set('__tempConnector',tempConnection);
-                            break;
+                        var workSpace = this.$.workSpace;
+                        var tempConnection = document.createElement('oe-feel-connector');
+                        tempConnection.classList.add(this.is);
+                        tempConnection.setAttribute('id', 'temp');
+                        tempConnection.set('fromNode', fromNode);
+                        tempConnection.set('viewSetting', this._viewSetting);
+                        tempConnection.set('workSpace', workSpace);
+                        tempConnection.set('connection', {
+                            type: "INFORMATION_REQUIREMENT"
+                        });
+                        workSpace.appendChild(tempConnection);
+                        this.set('__tempConnector', tempConnection);
+                        break;
                     case "track":
-                            this.__tempConnector._renderTo(trackEvent.detail.x,trackEvent.detail.y);
-                            break;
+                        this.__tempConnector._renderTo(pos.x, pos.y);
+                        break;
                     case "end":
-                            var endPoint = document.elementFromPoint(trackEvent.detail.x,trackEvent.detail.y);
-                            var endNode = this._getComponent(endPoint);
-                            if(endNode && endNode != fromNode){
-                                this.fire('confirm-connection',{
-                                    from:fromNode.node,
-                                    to:endNode.node,
-                                    connection:{type:"INFORMATION_REQUIREMENT"}
-                                });
-                            }
-                            this.__tempConnector.parentElement.removeChild(this.__tempConnector);
-                            this.set('__tempConnector',null);
-                            break;
+                        var endPoint = document.elementFromPoint(pos.x, pos.y);
+                        var endNode = this._getComponent(endPoint);
+                        if (endNode && endNode != fromNode) {
+                            this.fire('confirm-connection', {
+                                from: fromNode.node,
+                                to: endNode.node,
+                                connection: {
+                                    type: "INFORMATION_REQUIREMENT"
+                                }
+                            });
+                        }
+                        this.__tempConnector.parentElement.removeChild(this.__tempConnector);
+                        this.set('__tempConnector', null);
+                        break;
                     default:
-                            break;
+                        break;
                 }
             },
-            _getComponent:function(node){
+            _getComponent: function (node) {
                 var workSpace = this.$.workSpace;
-                if(node.is === "oe-feel-component"){
+                if (node.is === "oe-feel-component") {
                     return node;
-                }else if(node === workSpace){
+                } else if (node === workSpace) {
                     return null;
-                }else{
+                } else {
                     return this._getComponent(node.parentElement);
                 }
             },
-            _handleNewConnection:function(event){
-                this.$.connectionSetting.set('isNewConnection',true);
-                this.$.connectionSetting.set('connectionDetail',event.detail);
+            _handleNewConnection: function (event) {
+                this.$.connectionSetting.set('isNewConnection', true);
+                this.$.connectionSetting.set('connectionDetail', event.detail);
                 this.$.connectionSetting.openDialog();
             },
-            _handleEditConnection:function(event){
-                this.$.connectionSetting.set('isNewConnection',false);
-                this.$.connectionSetting.set('connectionDetail',event.detail);
+            _handleEditConnection: function (event) {
+                this.$.connectionSetting.set('isNewConnection', false);
+                this.$.connectionSetting.set('connectionDetail', event.detail);
                 this.$.connectionSetting.openDialog();
             },
 
             // Handle node settings
-            _handleOpenSetting:function(event){
+            _handleOpenSetting: function (event) {
                 var node = event.detail;
                 var selectedNode = JSON.parse(JSON.stringify(node));
-                this.set('_selectedNode',selectedNode);
+                this.set('_selectedNode', selectedNode);
                 var settingsPanel = this.$.settingSelector.selectedItem;
-                if(settingsPanel){
-                settingsPanel.set('data',this._selectedNode.data);
+                if (settingsPanel) {
+                    settingsPanel.set('data', this._selectedNode.data);
                 }
                 this.set('_mainSection', 'setting');
             },
-            _applySetting:function(){
+            _applySetting: function () {
                 var settingsPanel = this.$.settingSelector.selectedItem;
                 var data = null;
-                if(settingsPanel){
+                if (settingsPanel) {
                     data = settingsPanel.getData();
                 }
-                this.fire('update-node-data',{
-                    node:this._selectedNode,
-                    data:data
+                this.fire('update-node-data', {
+                    node: this._selectedNode,
+                    data: data
                 });
                 this._closeSetting();
             },
-            _closeSetting:function(){
+            _closeSetting: function () {
                 this.set('_mainSection', 'edit');
+            },
+
+            //WorkSpace manipulation
+            _zoomIn: function () {
+                if (this._viewSetting.scaleFactor < 1.4) {
+                    this.set('_viewSetting.scaleFactor', this._viewSetting.scaleFactor + 0.1);
+                }
+            },
+            _zoomOut: function () {
+                if (this._viewSetting.scaleFactor > 0.6) {
+                    this.set('_viewSetting.scaleFactor', this._viewSetting.scaleFactor - 0.1);
+                }
+            },
+            _panWorkSpace: function (event) {
+                event.stopPropagation();
+                var elem = event.currentTarget;
+                var detail = event.detail;
+                switch (detail.state) {
+                    case "start":
+                        elem.style.cursor = '-webkit-grabbing';
+                        this.set('__currentPanData', {
+                            currentX: this._viewSetting.currentX,
+                            currentY: this._viewSetting.currentY
+                        })
+                        break;
+                    case "track":
+                        //Pan workSpace
+                        elem.style.cursor = '-webkit-grabbing';
+                        this.set('_viewSetting.currentX', this.__currentPanData.currentX + detail.dx);
+                        this.set('_viewSetting.currentY', this.__currentPanData.currentY + detail.dy);
+                        break;
+                    case "end":
+                        elem.style.cursor = '-webkit-grab';
+                        break;
+                    default:
+                        break;
+                }
+            },
+            _resetWorkSpaceView: function () {
+                this.set('_viewSetting', {
+                    scaleFactor: 1,
+                    currentX: 0,
+                    currentY: 0
+                })
+            },
+            _calculateStyle: function (scaleFactor, currentX, currentY) {
+                var style = "width:calc((100vw - 34px)/" + scaleFactor + ");"
+                style += "height:calc(100% / " + scaleFactor + ");"
+                style += "transform:scale(" + scaleFactor + ") translate(" + currentX + "px," + currentY +
+                    "px);";
+                return style;
             }
         })
     </script>

@@ -16,6 +16,9 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 box-sizing: border-box;
             }
 
+            *{
+                user-select: none;
+            }
             .element,
             .association {
                 position: relative;
@@ -38,6 +41,8 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 opacity: 0;
                 transition: opacity linear 100ms;
                 box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.4);
+                z-index: 20;
+                overflow: none;
             }
 
             .hover-display label {
@@ -54,11 +59,11 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             <div class="layout vertical">
                 <template is="dom-repeat" items="{{icons}}">
                     <div class="element" title="[[item.name]]">
-                        <iron-icon icon="oe-feel-icons:[[item.type]]"></iron-icon>
-                        <div class="hover-display layout horizontal center justified" draggable="true" on-dragstart="dragStart">
+                        <iron-icon icon="oe-feel-icons:[[item.type]]"  draggable="true" on-dragstart="dragStart"></iron-icon>
+                        <!-- <div class="hover-display layout horizontal center justified" draggable="true" on-dragstart="dragStart">
                             <iron-icon icon="oe-feel-icons:[[item.type]]"></iron-icon>
                             <label>[[item.name]]</label>
-                        </div>
+                        </div> -->
                     </div>
                 </template>
                 <hr>
@@ -97,10 +102,6 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     {
                         name: 'Business Model',
                         type: 'business-model'
-                    },
-                    {
-                        name: 'Input',
-                        type: 'input'
                     }
                 ];
                 this.set('icons', icons);

@@ -173,10 +173,6 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                                 <iron-icon icon="file-upload"></iron-icon>
                                 <span class="flex option-name">Upload Graph</span>
                             </div>
-                            <div class="list-option layout horizontal center" on-tap="_downloadGraph">
-                                <iron-icon icon="file-download"></iron-icon>
-                                <span class="flex option-name">Download Graph</span>
-                            </div>
                         </div>
                     </div>
                 </paper-menu-button>
@@ -200,10 +196,10 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                                 <iron-icon icon="save"></iron-icon>
                                 <span> Save</span>
                             </paper-item>
-                            <paper-item id="save-as-btn" on-tap="_saveGraphAs">
+                            <!-- <paper-item id="save-as-btn" on-tap="_saveGraphAs">
                                 <iron-icon icon="save"></iron-icon>
                                 <span> Save As</span>
-                            </paper-item>
+                            </paper-item> -->
                         </paper-menu>
                     </paper-menu-button>
                     <paper-icon-button id="code-view-btn" icon="delete" class="toolbar-item" on-tap="_deleteGraph"></paper-icon-button>
@@ -215,7 +211,8 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 is: "oe-feel-footer",
                 behaviors: [OEUtils.AjaxBehavior],
                 listeners: {
-                    'stack-updated':'_updateStackInfo'
+                    'stack-updated':'_updateStackInfo',
+                    'save-graph':'_saveGraphToDB'
                 },
                 attached: function () {
                     this._fetchGraphList(function(){
@@ -228,6 +225,19 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                         this.set('decisionGraphList', resp);
                         if(typeof cb === "function"){
                             cb();
+                        }
+                    }.bind(this));
+                },
+                _saveGraphToDB:function(event){
+                    var payload = event.detail;
+                    var method = "POST";
+                    if(payload._version){
+                        method = "PUT";
+                    }
+                    this.makeAjaxCall('api/decisiongraphs', method, payload, null, null, function (err, resp) {
+                        if(resp){
+                            this.fire('oe-show-success','Graph saved successfully');
+                            this._moduleFire('decision-graph-selected',resp);
                         }
                     }.bind(this));
                 },
@@ -253,6 +263,9 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 },
                 _redoGraph:function(e){
                     this._moduleFire('redo-decision-graph');
+                },
+                _saveGraph:function(e){
+                    this._moduleFire('init-save-graph');
                 }
             })
         </script>

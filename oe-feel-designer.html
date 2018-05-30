@@ -21,7 +21,7 @@
         </style>
         <div class="component-container layout vertical">
             <div class="component-workspace layout horizontal flex">
-                <oe-feel-editor decision-graph="[[_getCurrentGraph(_currentStackIndex)]]"></oe-feel-editor>
+                <oe-feel-editor id="editor" decision-graph="[[_getCurrentGraph(_currentStackIndex)]]"></oe-feel-editor>
             </div>
         </div>
         <oe-feel-footer studio-footer hidden></oe-feel-footer>
@@ -40,7 +40,8 @@
                 'undo-decision-graph':'_handleUndoGraph',
                 'redo-decision-graph':'_handleRedoGraph',
                 'update-connection': '_handleConnectionUpdate',
-                'update-node-data': '_updateNodeData'
+                'update-node-data': '_updateNodeData',
+                'init-save-graph':'_initSaveGraph'
             },
             behaviors: [],
             attached: function () {
@@ -53,6 +54,7 @@
             _graphSelected: function (e) {
                 var self = this;
                 var graph = e.detail;
+                this.$.editor.fire('reset-workspace-view');
                 this._clearStack();
                 if(graph){
                     this._pushToStack(graph);
@@ -222,7 +224,11 @@
                 }
                 feel += "}";
                 return feel;
-            }
+            },
+            _initSaveGraph:function(){
+                var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
+                this._footerFire('save-graph',decisiongraph);
+            },
         })
     </script>
 </dom-module>
