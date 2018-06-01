@@ -41,7 +41,8 @@
                 'redo-decision-graph':'_handleRedoGraph',
                 'update-connection': '_handleConnectionUpdate',
                 'update-node-data': '_updateNodeData',
-                'init-save-graph':'_initSaveGraph'
+                'init-save-graph':'_initSaveGraph',
+                'init-save-graph-as':'_initSaveAsGraph'
             },
             behaviors: [],
             attached: function () {
@@ -228,6 +229,10 @@
             _initSaveGraph:function(){
                 var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
                 this._footerFire('save-graph',decisiongraph);
+            },
+            _initSaveAsGraph:function(){
+                var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
+                this._footerFire('save-graph-as',decisiongraph);
             },
         })
     </script>

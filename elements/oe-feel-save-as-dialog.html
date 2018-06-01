@@ -1,0 +1,79 @@
+<!-- �2017-2018 EdgeVerve Systems Limited (a fully owned Infosys subsidiary), Bangalore, India. All Rights Reserved.
+The EdgeVerve proprietary software program ("Program"), is protected by copyrights laws, international treaties and other pending or existing intellectual property rights in India, the United States and other countries.
+The Program may contain/reference third party or open source components, the rights to which continue to
+remain with the applicable third party licensors or the open source community as the case may be and nothing
+here transfers the rights to the third party and open source components, except as expressly permitted.
+Any unauthorized reproduction, storage, transmission in any form or by any means (including without limitation to electronic, mechanical, printing, photocopying, recording or  otherwise), or any distribution of this Program,or any portion of it, may result in severe civil and criminal penalties, and will be prosecuted to the maximum extent possible under the law. -->
+
+<dom-module id="oe-feel-save-as-dialog">
+    <template>
+        <style>
+            :host{
+                position:relative;
+                display:block;
+                box-sizing:border-box;
+            }
+            #getNameDialog{
+                width:400px;
+            }
+        </style>
+        <paper-dialog id="getNameDialog" modal>
+            <div class="dialog-header">
+                Save Graph
+            </div>
+            <div class="dialog-body">
+                <oe-input id="name" label="Graph Name" value="{{graph.name}}"
+                invalid=[[_nameInvalid]]></oe-input>
+            </div>
+            <div class="dialog-footer layout horizontal center end-justified">
+                <paper-button disabled=[[_nameInvalid]] on-tap="_saveNewGraph">Save</paper-button>
+                <paper-button on-tap="closeDialog">Cancel</paper-button>
+            </div>
+        </paper-dialog>
+    </template>
+    <script>
+        Polymer({
+            is:"oe-feel-save-as-dialog",
+            properties:{
+                graph:{
+                    type:Object
+                },
+                graphList:{
+                    type:Array
+                }
+            },
+            behaviors:[OEUtils.AjaxBehavior],
+            observers:['_validationName(graph.name)'],
+            _validationName:function(name){
+                var valid = true;
+                if(!name || name.length === 0){
+                    this.set('_nameInvalid',true);
+                    return;
+                }
+                
+                var idx = this.graphList.findIndex(function(graph){
+                    return graph.name === name;
+                })
+                this.set('_nameInvalid',(idx !== -1));
+            },
+            _saveNewGraph:function(){
+                var payload = this.graph;
+                delete payload._version;
+                this.makeAjaxCall('api/decisiongraphs', "PUT", payload, null, null, function (err, resp) {
+                    if(resp){
+                        this.push('graphList',resp);
+                        this.fire('load-graph',resp);
+                        this.fire('oe-show-success','Graph saved successfully');
+                        this.closeDialog();
+                    }
+                }.bind(this));
+            },
+            openDialog:function(){
+                this.$.getNameDialog.open();
+            },
+            closeDialog:function(){
+                this.$.getNameDialog.close();
+            },
+        })
+    </script>
+</dom-module>

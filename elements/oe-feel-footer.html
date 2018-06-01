@@ -5,7 +5,7 @@ remain with the applicable third party licensors or the open source community as
 here transfers the rights to the third party and open source components, except as expressly permitted.
 Any unauthorized reproduction, storage, transmission in any form or by any means (including without limitation to electronic, mechanical, printing, photocopying, recording or  otherwise), or any distribution of this Program,or any portion of it, may result in severe civil and criminal penalties, and will be prosecuted to the maximum extent possible under the law. -->
 
-
+<link rel="import" href="oe-feel-save-as-dialog.html">
 <dom-module id="oe-feel-footer">
         <template>
             <style>
@@ -60,7 +60,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     content: "";
                     position: absolute;
                     left: 12px;
-                    bottom: -8px;
+                    bottom: -10px;
                     border-style: solid;
                     border-width: 10px 10px 0 10px;
                     border-color: var(--default-primary-color) transparent transparent transparent;
@@ -97,6 +97,9 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     box-shadow: 1px 2px 1px rgba(0, 0, 0, 0.20), 1px -2px 1px rgba(0, 0, 0, 0.20);
                 }
     
+                .list-option.selected-graph{
+                    background: var(--dark-primary-color);
+                }
                 .list-option iron-icon {
                     --iron-icon-height: 16px;
                     --iron-icon-width: 16px;
@@ -138,6 +141,9 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 .graph-icon{
                     padding: 0px 16px;
                 }
+                .graph-list{
+                    overflow: auto;
+                }
             </style>
             <div class="footer-container layout horizontal">
                 <paper-menu-button no-animations no-overlap vertical-align="bottom" id="graphSelectMenu" ignore-select>
@@ -154,7 +160,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                             </div>
                             <div class="graph-list flex">
                                 <template is="dom-repeat" items="[[decisionGraphList]]" as="graph">
-                                    <div class="list-option layout horizontal center" on-tap="_loadGraph">
+                                    <div class$="list-option layout horizontal center [[_isSeletedGraph(graph,selectedGraph)]]" on-tap="_loadCurrentGraph">
                                         <iron-icon icon="settings-ethernet" class="graph-icon"></iron-icon>
                                         <span class="flex page-name">[[graph.name]]</span>
                                     </div>
@@ -196,15 +202,16 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                                 <iron-icon icon="save"></iron-icon>
                                 <span> Save</span>
                             </paper-item>
-                            <!-- <paper-item id="save-as-btn" on-tap="_saveGraphAs">
+                            <paper-item id="save-as-btn" on-tap="_saveGraphAs">
                                 <iron-icon icon="save"></iron-icon>
                                 <span> Save As</span>
-                            </paper-item> -->
+                            </paper-item>
                         </paper-menu>
                     </paper-menu-button>
                     <paper-icon-button id="code-view-btn" icon="delete" class="toolbar-item" on-tap="_deleteGraph"></paper-icon-button>
                 </div>
             </div>
+            <oe-feel-save-as-dialog id="saveAsDialog" graph-list={{decisionGraphList}}></oe-feel-save-as-dialog>
         </template>
         <script>
             Polymer({
@@ -212,7 +219,9 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 behaviors: [OEUtils.AjaxBehavior],
                 listeners: {
                     'stack-updated':'_updateStackInfo',
-                    'save-graph':'_saveGraphToDB'
+                    'save-graph':'_saveGraphToDB',
+                    'save-graph-as':'_saveGraphAsToDB',
+                    'load-graph':'_loadGraph'
                 },
                 attached: function () {
                     this._fetchGraphList(function(){
@@ -232,21 +241,46 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     var payload = event.detail;
                     var method = "POST";
                     if(payload._version){
-                        method = "PUT";
-                    }
-                    this.makeAjaxCall('api/decisiongraphs', method, payload, null, null, function (err, resp) {
+                        this.makeAjaxCall('api/decisiongraphs', "PUT", payload, null, null, function (err, resp) {
                         if(resp){
                             this.fire('oe-show-success','Graph saved successfully');
                             this._moduleFire('decision-graph-selected',resp);
                         }
                     }.bind(this));
+                    }else{
+                        this._openSaveAsDialog(payload);
+                    }
+                },
+                _saveGraphAsToDB:function(event){
+                    var payload = event.detail;
+                    this._openSaveAsDialog(payload);
+                },
+                _openSaveAsDialog:function(payload){
+                    this.$.saveAsDialog.set('graph',payload);
+                    this.$.saveAsDialog.openDialog();
+                },
+                _loadCurrentGraph:function(event){
+                    var graph = event.model.graph;
+                    this.fire('load-graph',graph);
                 },
                 _loadGraph:function(event){
-                    var graph = event.model.graph;
+                    var graph = event.detail;
                     this.set('selectedGraph',graph);
                     this.set('_graphSelected',true);               
                     this._moduleFire('decision-graph-selected',graph);
                     this.$.graphSelectMenu.close();
+                },
+                _createGraph:function(e){
+                    var emptyGraph = {
+                        data:{},
+                        graph:{
+                            nodes:[],
+                            connections:[]
+                        },
+                        name:"",
+                        payload:""
+                    }
+                    this.fire('load-graph',emptyGraph);
                 },
                 _moduleFire: function (name, detail) {
                     this.fire('oe-studio-module-action', {
@@ -266,6 +300,13 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 },
                 _saveGraph:function(e){
                     this._moduleFire('init-save-graph');
+                },
+                _saveGraphAs:function(e){
+                    this._moduleFire('init-save-graph-as');
+                },
+                _isSeletedGraph:function(graph,selected){
+
+                    return (selected && (graph.name === selected.name))?"selected-graph":"";
                 }
             })
         </script>
