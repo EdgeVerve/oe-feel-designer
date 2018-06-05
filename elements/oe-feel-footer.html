@@ -105,8 +105,11 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     --iron-icon-width: 16px;
                 }
     
-                .page-name {
+                .graph-name {
                     margin-left: 16px;
+                    width: 120px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
     
                 .toolbar-menu {
@@ -139,7 +142,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     padding: 11px;
                 }
                 .graph-icon{
-                    padding: 0px 16px;
+                    padding-right:16px;
                 }
                 .graph-list{
                     overflow: auto;
@@ -162,7 +165,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                                 <template is="dom-repeat" items="[[decisionGraphList]]" as="graph">
                                     <div class$="list-option layout horizontal center [[_isSeletedGraph(graph,selectedGraph)]]" on-tap="_loadCurrentGraph">
                                         <iron-icon icon="settings-ethernet" class="graph-icon"></iron-icon>
-                                        <span class="flex page-name">[[graph.name]]</span>
+                                        <span class="flex graph-name">[[graph.name]]</span>
                                     </div>
                                 </template>
                             </div>
@@ -208,7 +211,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                             </paper-item>
                         </paper-menu>
                     </paper-menu-button>
-                    <paper-icon-button id="code-view-btn" icon="delete" class="toolbar-item" on-tap="_deleteGraph"></paper-icon-button>
+                    <paper-icon-button id="code-view-btn" icon="delete" class="toolbar-item" on-tap="_initDeleteGraph"></paper-icon-button>
                 </div>
             </div>
             <oe-feel-save-as-dialog id="saveAsDialog" graph-list={{decisionGraphList}}></oe-feel-save-as-dialog>
@@ -221,6 +224,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     'stack-updated':'_updateStackInfo',
                     'save-graph':'_saveGraphToDB',
                     'save-graph-as':'_saveGraphAsToDB',
+                    'delete-graph':'_deleteGraph',
                     'load-graph':'_loadGraph'
                 },
                 attached: function () {
@@ -234,6 +238,20 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                         this.set('decisionGraphList', resp);
                         if(typeof cb === "function"){
                             cb();
+                        }
+                    }.bind(this));
+                },
+                _fetchServiceList:function(name,cb){
+                    var params = {
+                        filter:{
+                            where:{
+                                graphId:name
+                            }
+                        }
+                    }
+                    this.makeAjaxCall('api/decisionservices', 'get', null, null, params, function (err, resp) {
+                        if(typeof cb === "function"){
+                            cb(resp);
                         }
                     }.bind(this));
                 },
@@ -267,7 +285,12 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     var graph = event.detail;
                     this.set('selectedGraph',graph);
                     this.set('_graphSelected',true);               
-                    this._moduleFire('decision-graph-selected',graph);
+                    this._fetchServiceList(graph.name,function(resp){
+                        this._moduleFire('decision-graph-selected',{
+                            graph:graph,
+                            service:resp
+                        });
+                    }.bind(this))              
                     this.$.graphSelectMenu.close();
                 },
                 _createGraph:function(e){
@@ -307,6 +330,24 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 _isSeletedGraph:function(graph,selected){
 
                     return (selected && (graph.name === selected.name))?"selected-graph":"";
+                },
+                _deleteGraph:function(eve){
+                    var graph = eve.detail;
+                    this.makeAjaxCall('api/decisiongraphs/'+graph.name, "Delete", null, null, null, function (err, resp) {
+                            if(resp){
+                                this.fire('oe-show-success','Graph deleted successfully');
+                                this._moduleFire('decision-graph-selected',null);
+                                this.set('_graphSelected',false);
+                            }
+                    }.bind(this));
+                },
+                _initDeleteGraph:function(e){
+                    this.fire('oe-show-confirm',{
+                        message:"Do you want to delete the graph ?",
+                        ok:function(){
+                            this.fire('delete-graph',this.selectedGraph);
+                        }.bind(this)
+                    })
                 }
             })
         </script>

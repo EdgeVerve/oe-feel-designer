@@ -54,9 +54,15 @@
             },
             _graphSelected: function (e) {
                 var self = this;
-                var graph = e.detail;
                 this.$.editor.fire('reset-workspace-view');
                 this._clearStack();
+                if(!e.detail){
+                    this.set('curGraphStack',[]);
+                    this.set('_currentStackIndex',0);
+                    return;
+                }
+                var graph = e.detail.graph;
+                this.set('serviceList',e.detail.service);
                 if(graph){
                     this._pushToStack(graph);
                 }

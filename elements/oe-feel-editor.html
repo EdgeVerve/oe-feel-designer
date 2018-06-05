@@ -154,6 +154,42 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     'business-model': 'BUSINESS_MODEL',
                     'input': 'INPUT'
                 });
+                this.set('defaultData', {
+                    'DECISION_TABLE': {
+                        "inputExpressionList": [
+                            "Input0"
+                        ],
+                        "outputs": [
+                            "Output0"
+                        ],
+                        "hitPolicy": "U",
+                        "ruleList": [],
+                        "inputValues": ['-'],
+                        "outputValues": ['-']
+                    },
+                    'BOXED_INVOCATION': {
+                        "target": "",
+                        "parameters": [{
+                            "key": "key",
+                            "value": "value"
+                        }]
+                    },
+                    'BOXED_CONTEXT': {
+                        "result": {
+                            "type": "none"
+                        },
+                        "parameters": [{
+                            "key": "key",
+                            "value": "value"
+                        }]
+                    },
+                    'KNOWLEDGE_SOURCE': {},
+                    'BUSINESS_MODEL': {},
+                });
+                this.set('defaultData.BUSINESS_MODEL',{
+                    "decisionType": "DECISION_TABLE",
+                    "data":this.defaultData['DECISION_TABLE']
+                });
                 this._resetWorkSpaceView();
             },
             // Render graph
@@ -177,6 +213,8 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                         this.decisionGraph.graph.connections.forEach(this._createConnection.bind(
                             this));
                     }, 100);
+                }else{
+                    this.set('_mainSection', 'empty');
                 }
             },
             _createElementForNode: function (node) {
@@ -269,6 +307,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 var compConfig = JSON.parse(configStr);
                 var nodeType = this.componentMap[compConfig.type];
                 var workSpaceRect = this.$.workSpace.getBoundingClientRect();
+                var defaultData = this.defaultData[nodeType] || {};
                 var nodeData = {
                     'id': OEUtils.generateGuid(),
                     'i': (this.counter.lastNodeIndex + 1),
@@ -276,7 +315,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     'nodeType': nodeType,
                     'x': (eve.x - workSpaceRect.x) / this._viewSetting.scaleFactor,
                     'y': (eve.y - workSpaceRect.y) / this._viewSetting.scaleFactor,
-                    'data': {}
+                    'data': JSON.parse(JSON.stringify(defaultData))
                 };
                 this.fire('add-feel-component', nodeData);
                 //handle Add node on drop location
