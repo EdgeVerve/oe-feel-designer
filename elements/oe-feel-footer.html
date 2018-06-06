@@ -1,4 +1,4 @@
-<!-- ©2017-2018 EdgeVerve Systems Limited (a fully owned Infosys subsidiary), Bangalore, India. All Rights Reserved.
+<!-- �2017-2018 EdgeVerve Systems Limited (a fully owned Infosys subsidiary), Bangalore, India. All Rights Reserved.
 The EdgeVerve proprietary software program ("Program"), is protected by copyrights laws, international treaties and other pending or existing intellectual property rights in India, the United States and other countries.
 The Program may contain/reference third party or open source components, the rights to which continue to
 remain with the applicable third party licensors or the open source community as the case may be and nothing
@@ -6,349 +6,432 @@ here transfers the rights to the third party and open source components, except 
 Any unauthorized reproduction, storage, transmission in any form or by any means (including without limitation to electronic, mechanical, printing, photocopying, recording or  otherwise), or any distribution of this Program,or any portion of it, may result in severe civil and criminal penalties, and will be prosecuted to the maximum extent possible under the law. -->
 
 <link rel="import" href="oe-feel-save-as-dialog.html">
+<link rel="import" href="../../oe-utils/oe-common-behaviors.html">
 <dom-module id="oe-feel-footer">
-        <template>
-            <style>
-                :host {
-                    position: relative;
-                    display: block;
-                    box-sizing: border-box;
-                    font-family: Roboto;
-                }
-    
-                iron-icon+* {
-                    margin-left: 8px;
-                }
-    
-                .footer-container {
-                    background: #455A64;
-                }
-    
-                #graphSelectMenu {
-                    box-sizing: border-box;
-                    height: 40px;
-                    padding: 0px;
-                    width: 200px;
-                    background: var(--default-primary-color);
-                    --paper-menu-button-content: {
-                        border-radius: 0px;
-                        box-shadow: none;
-                    }
-                }
-    
-                #graphSelectMenu paper-button.dropdown-trigger {
-                    font-size: 12px;
-                    border-radius: 0px;
-                    padding: 12px;
-                    width: 200px;
-                    background: var(--dark-primary-color);
-                    font-family: Roboto;
-                    font-weight: 500;
-                    letter-spacing: 0.7px;
-                }
-    
-                #graphSelectMenu .dropdown-content {
-                    margin-bottom: 12px;
-                    position: relative;
-                    width: 450px;
-                    height: 500px;
-                    background: var(--default-primary-color);
-                    color: var(--default-text-color);
-                }
-    
-                #graphSelectMenu .dropdown-content:after {
-                    content: "";
-                    position: absolute;
-                    left: 12px;
-                    bottom: -10px;
-                    border-style: solid;
-                    border-width: 10px 10px 0 10px;
-                    border-color: var(--default-primary-color) transparent transparent transparent;
-                }
-    
-                #graphSelectMenu .dropdown-content.create-component-1:after {
-                    border-color: var(--dark-primary-color) transparent transparent transparent;
-                }
-    
-    
-    
-                .server-graph-list {
-                    width: 200px;
-                    border-right: 1px solid rgba(255, 255, 255, 0.4);
-                }
-    
-                .header-panel {
-                    height: 40px;
-                    box-sizing: border-box;
-                    padding: 8px 16px;
-                    margin-bottom: 2px;
-                    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-                }
-    
-                .list-option {
-                    height: 48px;
-                    padding: 0 16px;
-                    cursor: pointer;
-                    position: relative;
-                    color: var(--default-text-color);
-                }
-    
-                .list-option:hover {
-                    box-shadow: 1px 2px 1px rgba(0, 0, 0, 0.20), 1px -2px 1px rgba(0, 0, 0, 0.20);
-                }
-    
-                .list-option.selected-graph{
-                    background: var(--dark-primary-color);
-                }
-                .list-option iron-icon {
-                    --iron-icon-height: 16px;
-                    --iron-icon-width: 16px;
-                }
-    
-                .graph-name {
-                    margin-left: 16px;
-                    width: 120px;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-    
-                .toolbar-menu {
-                    border-left: 1px solid rgba(255, 255, 255, 0.12);
-                }
-    
-                .toolbar-menu iron-icon {
-                    --iron-icon-height: 20px;
-                    --iron-icon-width: 20px;
-                }
-    
-    
-    
-                .toolbar-menu .toolbar-item {
-                    height: 40px;
-                    border-right: 1px solid rgba(255, 255, 255, 0.12);
-                }
-    
-                .toolbar-menu .toolbar-item:not([disabled]){
-                    color: #FFF;
-                }
+    <template>
+        <style>
+            :host {
+                position: relative;
+                display: block;
+                box-sizing: border-box;
+                font-family: Roboto;
+            }
 
-                .toolbar-menu paper-menu-button {
-                    padding: 0px;
+            iron-icon+* {
+                margin-left: 8px;
+            }
+
+            .footer-container {
+                background: #455A64;
+            }
+
+            #graphSelectMenu {
+                box-sizing: border-box;
+                height: 40px;
+                padding: 0px;
+                width: 200px;
+                background: var(--default-primary-color);
+                --paper-menu-button-content: {
+                    border-radius: 0px;
+                    box-shadow: none;
                 }
-    
-                .toolbar-menu paper-icon-button {
-                    width: 40px;
-                    height: 40px;
-                    padding: 11px;
+            }
+
+            #graphSelectMenu paper-button.dropdown-trigger {
+                font-size: 12px;
+                border-radius: 0px;
+                padding: 12px;
+                width: 200px;
+                background: var(--dark-primary-color);
+                font-family: Roboto;
+                font-weight: 500;
+                letter-spacing: 0.7px;
+            }
+
+            #graphSelectMenu .dropdown-content {
+                margin-bottom: 12px;
+                position: relative;
+                width: 450px;
+                height: 500px;
+                background: var(--default-primary-color);
+                color: var(--default-text-color);
+            }
+
+            #graphSelectMenu .dropdown-content:after {
+                content: "";
+                position: absolute;
+                left: 12px;
+                bottom: -10px;
+                border-style: solid;
+                border-width: 10px 10px 0 10px;
+                border-color: var(--default-primary-color) transparent transparent transparent;
+            }
+
+            #graphSelectMenu .dropdown-content.create-component-1:after {
+                border-color: var(--dark-primary-color) transparent transparent transparent;
+            }
+
+
+
+            .server-graph-list {
+                width: 200px;
+                border-right: 1px solid rgba(255, 255, 255, 0.4);
+            }
+
+            .header-panel {
+                height: 40px;
+                box-sizing: border-box;
+                margin-bottom: 2px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+            }
+
+            .header-panel iron-icon {
+                --iron-icon-width: 18px;
+                --iron-icon-height: 18px;
+            }
+
+            .graph-options .header-panel {
+                padding: 8px 16px;
+            }
+
+            .heading-panel {
+                padding: 8px 16px;
+                height: 100%;
+                box-sizing: border-box;
+            }
+
+            .search-panel {
+                padding: 0px 16px;
+            }
+
+            #search-graph {
+                --paper-input-container-color: #AAA;
+                --paper-input-container-input-color: #FFF;
+                --paper-input-container-underline: {
+                    display: none;
                 }
-                .graph-icon{
-                    padding-right:16px;
-                }
-                .graph-list{
-                    overflow: auto;
-                }
-            </style>
-            <div class="footer-container layout horizontal">
-                <paper-menu-button no-animations no-overlap vertical-align="bottom" id="graphSelectMenu" ignore-select>
-                    <paper-button class="dropdown-trigger">
-                        <iron-icon icon="settings-ethernet" class="graph-icon" hidden=[[!_graphSelected]]></iron-icon>
-                        <label hidden=[[_graphSelected]]>Select Decision Graph</label>
-                        <label hidden=[[!_graphSelected]]>[[selectedGraph.name]]</label>
-                    </paper-button>
-                    <div class="dropdown-content layout horizontal justified">
-                        <div class="server-graph-list layout vertical justified">
-                            <div class="header-panel layout horizontal center justified">
+            }
+
+            .list-option {
+                height: 48px;
+                padding: 0 16px;
+                cursor: pointer;
+                position: relative;
+                color: var(--default-text-color);
+            }
+
+            .list-option:hover {
+                box-shadow: 1px 2px 1px rgba(0, 0, 0, 0.20), 1px -2px 1px rgba(0, 0, 0, 0.20);
+            }
+
+            .list-option.selected-graph {
+                background: var(--dark-primary-color);
+            }
+
+
+            .list-option iron-icon {
+                --iron-icon-height: 16px;
+                --iron-icon-width: 16px;
+            }
+
+            .graph-name {
+                margin-left: 16px;
+                width: 120px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .toolbar-menu {
+                border-left: 1px solid rgba(255, 255, 255, 0.12);
+            }
+
+            .toolbar-menu iron-icon {
+                --iron-icon-height: 20px;
+                --iron-icon-width: 20px;
+            }
+
+
+
+            .toolbar-menu .toolbar-item {
+                height: 40px;
+                border-right: 1px solid rgba(255, 255, 255, 0.12);
+            }
+
+            .toolbar-menu .toolbar-item:not([disabled]) {
+                color: #FFF;
+            }
+
+            .toolbar-menu paper-menu-button {
+                padding: 0px;
+            }
+
+            .toolbar-menu paper-icon-button {
+                width: 40px;
+                height: 40px;
+                padding: 11px;
+            }
+
+            .graph-icon {
+                padding-right: 16px;
+            }
+
+            .graph-list {
+                overflow: auto;
+            }
+        </style>
+        <div class="footer-container layout horizontal">
+            <paper-menu-button no-animations no-overlap vertical-align="bottom" id="graphSelectMenu" ignore-select>
+                <paper-button class="dropdown-trigger">
+                    <iron-icon icon="settings-ethernet" class="graph-icon" hidden=[[!_graphSelected]]></iron-icon>
+                    <label hidden=[[_graphSelected]]>Select Decision Graph</label>
+                    <label hidden=[[!_graphSelected]]>[[selectedGraph.name]]</label>
+                </paper-button>
+                <div class="dropdown-content layout horizontal justified">
+                    <div class="server-graph-list layout vertical justified">
+                        <div class="header-panel">
+                            <div class="search-panel layout horizontal center justified" hidden=[[!showSeachBar]]>
+                                <oe-input id="search-graph" value="{{graphSearchText}}" no-label-float label="Search Graph...">
+                                    <iron-icon icon="clear" suffix on-tap="_clearGraphSearch"></iron-icon>
+                                </oe-input>
+                            </div>
+                            <div class="heading-panel layout horizontal center justified" hidden=[[showSeachBar]]>
+                                <iron-icon icon="search" on-tap="_toggleGraphSearch"></iron-icon>
                                 <label class="mini-heading">Graph List</label>
                                 <iron-icon icon="refresh" on-tap="_fetchGraphList"></iron-icon>
                             </div>
-                            <div class="graph-list flex">
-                                <template is="dom-repeat" items="[[decisionGraphList]]" as="graph">
-                                    <div class$="list-option layout horizontal center [[_isSeletedGraph(graph,selectedGraph)]]" on-tap="_loadCurrentGraph">
-                                        <iron-icon icon="settings-ethernet" class="graph-icon"></iron-icon>
-                                        <span class="flex graph-name">[[graph.name]]</span>
-                                    </div>
-                                </template>
-                            </div>
                         </div>
-                        <div class="graph-options flex">
-                            <div class="header-panel">
-                                <label class="mini-heading">Options</label>
-                            </div>
-                            <div class="list-option layout horizontal center" on-tap="_createGraph">
-                                <iron-icon icon="star"></iron-icon>
-                                <span class="flex option-name">Create New Graph</span>
-                            </div>
-                            <div class="list-option layout horizontal center" on-tap="_uploadGraph">
-                                <iron-icon icon="file-upload"></iron-icon>
-                                <span class="flex option-name">Upload Graph</span>
-                            </div>
+                        <div class="graph-list flex">
+                            <template is="dom-repeat" items="[[_filterGraphList(graphSearchText,decisionGraphList)]]" as="graph">
+                                <div class$="list-option layout horizontal center [[_isSeletedGraph(graph,selectedGraph)]]" on-tap="_loadCurrentGraph">
+                                    <iron-icon icon="settings-ethernet" class="graph-icon"></iron-icon>
+                                    <span class="flex graph-name">[[graph.name]]</span>
+                                </div>
+                            </template>
                         </div>
                     </div>
-                </paper-menu-button>
-                <div class="flex">
-    
+                    <div class="graph-options flex">
+                        <div class="header-panel">
+                            <label class="mini-heading">Options</label>
+                        </div>
+                        <div class="list-option layout horizontal center" on-tap="_createGraph">
+                            <iron-icon icon="add"></iron-icon>
+                            <span class="flex option-name">Create New Graph</span>
+                        </div>
+                        <!-- <div class="list-option layout horizontal center" on-tap="_uploadGraph">
+                            <iron-icon icon="file-upload"></iron-icon>
+                            <span class="flex option-name">Upload Graph</span>
+                        </div> -->
+                    </div>
                 </div>
-                <div class="layout horizontal toolbar-menu" hidden=[[!_graphSelected]]>
-                    <paper-icon-button id="undo-btn" icon="undo" 
-                        disabled=[[_isUndoDisabled]]
-                        class="toolbar-item" on-tap="_undoGraph"></paper-icon-button>
-                    <paper-icon-button id="redo-btn" icon="redo" 
-                        disabled=[[_isRedoDisabled]]
-                        class="toolbar-item" on-tap="_redoGraph"></paper-icon-button>
-                    <paper-menu-button class="toolbar-item" no-animations no-overlap vertical-align="bottom" close-on-activate>
-                        <paper-button class="dropdown-trigger">
+            </paper-menu-button>
+            <div class="flex"></div>
+            <div class="layout horizontal toolbar-menu" hidden=[[!_graphSelected]]>
+                <paper-icon-button id="undo-btn" icon="undo" disabled=[[_isUndoDisabled]] class="toolbar-item" on-tap="_undoGraph"></paper-icon-button>
+                <paper-icon-button id="redo-btn" icon="redo" disabled=[[_isRedoDisabled]] class="toolbar-item" on-tap="_redoGraph"></paper-icon-button>
+                <paper-menu-button class="toolbar-item" no-animations no-overlap vertical-align="bottom" close-on-activate>
+                    <paper-button class="dropdown-trigger">
+                        <iron-icon icon="save"></iron-icon>
+                        <iron-icon icon="icons:arrow-drop-down"></iron-icon>
+                    </paper-button>
+                    <paper-menu class="dropdown-content">
+                        <paper-item id="save-btn" on-tap="_saveGraph">
                             <iron-icon icon="save"></iron-icon>
-                            <iron-icon icon="icons:arrow-drop-down"></iron-icon>
-                        </paper-button>
-                        <paper-menu class="dropdown-content">
-                            <paper-item id="save-btn" on-tap="_saveGraph">
-                                <iron-icon icon="save"></iron-icon>
-                                <span> Save</span>
-                            </paper-item>
-                            <paper-item id="save-as-btn" on-tap="_saveGraphAs">
-                                <iron-icon icon="save"></iron-icon>
-                                <span> Save As</span>
-                            </paper-item>
-                        </paper-menu>
-                    </paper-menu-button>
-                    <paper-icon-button id="code-view-btn" icon="delete" class="toolbar-item" on-tap="_initDeleteGraph"></paper-icon-button>
-                </div>
+                            <span> Save</span>
+                        </paper-item>
+                        <paper-item id="save-as-btn" on-tap="_saveGraphAs">
+                            <iron-icon icon="save"></iron-icon>
+                            <span> Save As</span>
+                        </paper-item>
+                    </paper-menu>
+                </paper-menu-button>
+                <paper-icon-button id="code-view-btn" icon="delete" class="toolbar-item" on-tap="_initDeleteGraph"></paper-icon-button>
             </div>
-            <oe-feel-save-as-dialog id="saveAsDialog" graph-list={{decisionGraphList}}></oe-feel-save-as-dialog>
-        </template>
-        <script>
-            Polymer({
-                is: "oe-feel-footer",
-                behaviors: [OEUtils.AjaxBehavior],
-                listeners: {
-                    'stack-updated':'_updateStackInfo',
-                    'save-graph':'_saveGraphToDB',
-                    'save-graph-as':'_saveGraphAsToDB',
-                    'delete-graph':'_deleteGraph',
-                    'load-graph':'_loadGraph'
-                },
-                attached: function () {
-                    this._fetchGraphList(function(){
-                        this.set('selectedGraph', null);
-                        this.set('_graphSelected', false);
-                    }.bind(this));
-                },
-                _fetchGraphList:function(cb){
-                    this.makeAjaxCall('api/decisiongraphs', 'get', null, null, null, function (err, resp) {
-                        this.set('decisionGraphList', resp);
-                        if(typeof cb === "function"){
-                            cb();
-                        }
-                    }.bind(this));
-                },
-                _fetchServiceList:function(name,cb){
-                    var params = {
-                        filter:{
-                            where:{
-                                graphId:name
-                            }
-                        }
-                    }
-                    this.makeAjaxCall('api/decisionservices', 'get', null, null, params, function (err, resp) {
-                        if(typeof cb === "function"){
-                            cb(resp);
-                        }
-                    }.bind(this));
-                },
-                _saveGraphToDB:function(event){
-                    var payload = event.detail;
-                    var method = "POST";
-                    if(payload._version){
-                        this.makeAjaxCall('api/decisiongraphs', "PUT", payload, null, null, function (err, resp) {
-                        if(resp){
-                            this.fire('oe-show-success','Graph saved successfully');
-                            this._moduleFire('decision-graph-selected',resp);
-                        }
-                    }.bind(this));
-                    }else{
-                        this._openSaveAsDialog(payload);
-                    }
-                },
-                _saveGraphAsToDB:function(event){
-                    var payload = event.detail;
-                    this._openSaveAsDialog(payload);
-                },
-                _openSaveAsDialog:function(payload){
-                    this.$.saveAsDialog.set('graph',payload);
-                    this.$.saveAsDialog.openDialog();
-                },
-                _loadCurrentGraph:function(event){
-                    var graph = event.model.graph;
-                    this.fire('load-graph',graph);
-                },
-                _loadGraph:function(event){
-                    var graph = event.detail;
-                    this.set('selectedGraph',graph);
-                    this.set('_graphSelected',true);               
-                    this._fetchServiceList(graph.name,function(resp){
-                        this._moduleFire('decision-graph-selected',{
-                            graph:graph,
-                            service:resp
-                        });
-                    }.bind(this))              
-                    this.$.graphSelectMenu.close();
-                },
-                _createGraph:function(e){
-                    var emptyGraph = {
-                        data:{},
-                        graph:{
-                            nodes:[],
-                            connections:[]
-                        },
-                        name:"",
-                        payload:""
-                    }
-                    this.fire('load-graph',emptyGraph);
-                },
-                _moduleFire: function (name, detail) {
-                    this.fire('oe-studio-module-action', {
-                        'event': name,
-                        'payload': detail
-                    });
-                },
-                _updateStackInfo:function(eve){
-                    this.set('_isUndoDisabled',eve.detail.curIndex === 0);
-                    this.set('_isRedoDisabled',eve.detail.curIndex === (eve.detail.stackLength-1));
-                },
-                _undoGraph:function(e){
-                    this._moduleFire('undo-decision-graph');
-                },
-                _redoGraph:function(e){
-                    this._moduleFire('redo-decision-graph');
-                },
-                _saveGraph:function(e){
-                    this._moduleFire('init-save-graph');
-                },
-                _saveGraphAs:function(e){
-                    this._moduleFire('init-save-graph-as');
-                },
-                _isSeletedGraph:function(graph,selected){
+        </div>
+        <oe-feel-save-as-dialog id="saveAsDialog" graph-list={{decisionGraphList}}></oe-feel-save-as-dialog>
+    </template>
+    <script>
+        Polymer({
+            is: "oe-feel-footer",
+            behaviors: [OEUtils.AjaxBehavior],
+            listeners: {
+                'stack-updated': '_updateStackInfo',
+                'save-graph': '_saveGraphToDB',
+                'save-graph-as': '_saveGraphAsToDB',
+                'delete-graph': '_deleteGraph',
+                'load-graph': '_loadGraph'
+            },
+            attached: function () {
+                this.set('graphSearchText', "");
+                this.showSeachBar = false;
+                this._fetchGraphList(function () {
+                    this.set('selectedGraph', null);
+                    this.set('_graphSelected', false);
+                }.bind(this));
+            },
 
-                    return (selected && (graph.name === selected.name))?"selected-graph":"";
-                },
-                _deleteGraph:function(eve){
-                    var graph = eve.detail;
-                    this.makeAjaxCall('api/decisiongraphs/'+graph.name, "Delete", null, null, null, function (err, resp) {
-                            if(resp){
-                                this.fire('oe-show-success','Graph deleted successfully');
-                                this._moduleFire('decision-graph-selected',null);
-                                this.set('_graphSelected',false);
-                            }
-                    }.bind(this));
-                },
-                _initDeleteGraph:function(e){
-                    this.fire('oe-show-confirm',{
-                        message:"Do you want to delete the graph ?",
-                        ok:function(){
-                            this.fire('delete-graph',this.selectedGraph);
-                        }.bind(this)
+            //fetch Details
+            _fetchGraphList: function (cb) {
+                this.makeAjaxCall('api/decisiongraphs', 'get', null, null, null, function (err, resp) {
+                    this.set('decisionGraphList', resp);
+                    if (typeof cb === "function") {
+                        cb();
+                    }
+                }.bind(this));
+            },
+            _fetchServiceList: function (name, cb) {
+                var params = {
+                    filter: {
+                        where: {
+                            graphId: name
+                        }
+                    }
+                }
+                this.makeAjaxCall('api/decisionservices', 'get', null, null, params, function (err, resp) {
+                    this.set('graphServices', resp)
+                    if (typeof cb === "function") {
+                        cb(resp);
+                    }
+                }.bind(this));
+            },
+
+            //Search Graphs
+            _toggleGraphSearch: function () {
+                this.set('showSeachBar', !this.showSeachBar);
+                if(this.showSeachBar){
+                    this.$$("#search-graph").focus();
+                }
+            },
+            _clearGraphSearch: function () {
+                this.set('graphSearchText', "");
+                this.set('showSeachBar', false);
+            },
+            _filterGraphList: function (searchKey, list) {
+                if (!searchKey || searchKey.length == 0) {
+                    return list;
+                } else {
+                    return list.filter(function (graph) {
+                        return graph.name.toLowerCase().match(searchKey.toLowerCase());
                     })
                 }
-            })
-        </script>
-    </dom-module>
+            },
+
+
+            //Load Graph
+            _loadCurrentGraph: function (event) {
+                var graph = event.model.graph;
+                this.fire('load-graph', graph);
+            },
+            _loadGraph: function (event) {
+                var graph = event.detail;
+                this.set('selectedGraph', graph);
+                this.set('_graphSelected', true);
+                this._fetchServiceList(graph.name, function (resp) {
+                    this._moduleFire('decision-graph-selected', {
+                        graph: graph,
+                        service: resp
+                    });
+                }.bind(this));
+                this._clearGraphSearch();
+                this.$.graphSelectMenu.close();
+            },
+            _createGraph: function (e) {
+                var emptyGraph = {
+                    data: {},
+                    graph: {
+                        nodes: [],
+                        connections: []
+                    },
+                    name: "",
+                    payload: ""
+                }
+                this.fire('load-graph', emptyGraph);
+            },
+
+
+
+            //Save Graph
+            _saveGraphToDB: function (event) {
+                var payload = event.detail;
+                var method = "POST";
+                if (payload._version) {
+                    this.makeAjaxCall('api/decisiongraphs', "PUT", payload, null, null, function (err, resp) {
+                        if (resp) {
+                            this.fire('oe-show-success', 'Graph saved successfully');
+                            this._moduleFire('decision-graph-selected', {
+                                graph: resp,
+                                service: this.graphServices
+                            });
+                        }
+                    }.bind(this));
+                } else {
+                    this._openSaveAsDialog(payload);
+                }
+            },
+            _saveGraphAsToDB: function (event) {
+                var payload = event.detail;
+                this._openSaveAsDialog(payload);
+            },
+            _openSaveAsDialog: function (payload) {
+                this.$.saveAsDialog.set('graph', payload);
+                this.$.saveAsDialog.openDialog();
+            },
+            _saveGraph: function (e) {
+                this._moduleFire('init-save-graph');
+            },
+            _saveGraphAs: function (e) {
+                this._moduleFire('init-save-graph-as');
+            },
+
+
+
+
+            //Delete Graph
+            _deleteGraph: function (eve) {
+                var graph = eve.detail;
+                var idx = this.decisionGraphList.findIndex(function (g) {
+                    return g.name === graph.name;
+                })
+                this.makeAjaxCall('api/decisiongraphs/' + graph.name, "Delete", null, null, null, function (
+                    err, resp) {
+                    if (resp) {
+                        this.fire('oe-show-success', 'Graph deleted successfully');
+                        this._moduleFire('decision-graph-selected', null);
+                        this.splice('decisionGraphList', idx, 1);
+                        this.set('_graphSelected', false);
+                    }
+                }.bind(this));
+            },
+            _initDeleteGraph: function (e) {
+                this.fire('oe-show-confirm', {
+                    message: "Do you want to delete the graph ?",
+                    ok: function () {
+                        this.fire('delete-graph', this.selectedGraph);
+                    }.bind(this)
+                })
+            },
+
+            // Undo & Redo
+            _updateStackInfo: function (eve) {
+                this.set('_isUndoDisabled', eve.detail.curIndex === 0);
+                this.set('_isRedoDisabled', eve.detail.curIndex === (eve.detail.stackLength - 1));
+            },
+            _undoGraph: function (e) {
+                this._moduleFire('undo-decision-graph');
+            },
+            _redoGraph: function (e) {
+                this._moduleFire('redo-decision-graph');
+            },
+
+            //Utils
+            _isSeletedGraph: function (graph, selected) {
+                return (selected && (graph.name === selected.name)) ? "selected-graph" : "";
+            },
+            _moduleFire: function (name, detail) {
+                this.fire('oe-studio-module-action', {
+                    'event': name,
+                    'payload': detail
+                });
+            },
+        })
+    </script>
+</dom-module>

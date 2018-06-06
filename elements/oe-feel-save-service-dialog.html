@@ -1,0 +1,78 @@
+<!-- �2017-2018 EdgeVerve Systems Limited (a fully owned Infosys subsidiary), Bangalore, India. All Rights Reserved.
+The EdgeVerve proprietary software program ("Program"), is protected by copyrights laws, international treaties and other pending or existing intellectual property rights in India, the United States and other countries.
+The Program may contain/reference third party or open source components, the rights to which continue to
+remain with the applicable third party licensors or the open source community as the case may be and nothing
+here transfers the rights to the third party and open source components, except as expressly permitted.
+Any unauthorized reproduction, storage, transmission in any form or by any means (including without limitation to electronic, mechanical, printing, photocopying, recording or  otherwise), or any distribution of this Program,or any portion of it, may result in severe civil and criminal penalties, and will be prosecuted to the maximum extent possible under the law. -->
+
+<dom-module id="oe-feel-save-service-dialog">
+        <template>
+            <style>
+                :host{
+                    position:relative;
+                    display:block;
+                    box-sizing:border-box;
+                }
+                #getNameDialog{
+                    width:400px;
+                }
+            </style>
+            <paper-dialog id="getNameDialog" modal>
+                <div class="dialog-header">
+                    Save Service
+                </div>
+                <div class="dialog-body">
+                    <oe-input id="name" label="Service Name" value="{{service.name}}"
+                    invalid=[[_nameInvalid]]></oe-input>
+                </div>
+                <div class="dialog-footer layout horizontal center end-justified">
+                    <paper-button disabled=[[_nameInvalid]] on-tap="_saveNewService">Save</paper-button>
+                    <paper-button on-tap="closeDialog">Cancel</paper-button>
+                </div>
+            </paper-dialog>
+        </template>
+        <script>
+            Polymer({
+                is:"oe-feel-save-service-dialog",
+                properties:{
+                    service:{
+                        type:Object
+                    },
+                    serviceList:{
+                        type:Array
+                    }
+                },
+                behaviors:[OEUtils.AjaxBehavior],
+                observers:['_validationName(service.name)'],
+                _validationName:function(name){
+                    var valid = true;
+                    if(!name || name.length === 0){
+                        this.set('_nameInvalid',true);
+                        return;
+                    }    
+                    var idx = this.serviceList.findIndex(function(service){
+                        return service.name === name;
+                    })
+                    this.set('_nameInvalid',(idx !== -1));
+                },
+                _saveNewService:function(){
+                    var payload = this.service;
+                    delete payload._version;
+                    this.makeAjaxCall('api/decisionservices', "PUT", payload, null, null, function (err, resp) {
+                        if(resp){
+                            this.push('serviceList',resp);
+                            this.fire('load-service',resp);
+                            this.fire('oe-show-success','Service saved successfully');
+                            this.closeDialog();
+                        }
+                    }.bind(this));
+                },
+                openDialog:function(){
+                    this.$.getNameDialog.open();
+                },
+                closeDialog:function(){
+                    this.$.getNameDialog.close();
+                },
+            })
+        </script>
+    </dom-module>

@@ -116,36 +116,41 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 cursor: crosshair;
                 border: 2px solid;
             }
+            .component-panel.selected-true .selectable-background{
+                background: deepskyblue;
+                fill:deepskyblue;
+            }
         </style>
-        <div class$="component-panel [[node.nodeType]]">
+        <div class$="component-panel [[node.nodeType]] selected-[[selected]]">
             <div class="component-header layout horizontal justified center">
+                <iron-icon icon="[[_computeIcon(selected)]]" on-tap="toggleSelection"></iron-icon>
                 <iron-icon icon="icons:settings" on-tap="_launchSetting"></iron-icon>
                 <iron-icon icon="delete" on-tap="_deleteComponent"></iron-icon>
             </div>
             <div class="component-container">
                 <iron-pages selected="[[node.nodeType]]" attr-for-selected="id">
-                    <div id="DECISION_TABLE" class="rect-container">
+                    <div id="DECISION_TABLE" class="rect-container selectable-background">
                         <label class="node-name">[[node.name]]</label>
                         <template is="dom-repeat" items="[[node.data.inputExpressionList]]">
                             <label class="input-name">[[item]]</label>
                         </template>
                     </div>
-                    <div id="BOXED_INVOCATION" class="rect-container">
+                    <div id="BOXED_INVOCATION" class="rect-container selectable-background">
                         <label class="node-name">[[node.name]]</label>
                     </div>
-                    <div id="BOXED_CONTEXT" class="rect-container">
+                    <div id="BOXED_CONTEXT" class="rect-container selectable-background">
                         <label class="node-name">[[node.name]]</label>
                     </div>
                     <div id="BUSINESS_MODEL">
                         <label class="node-name">[[node.name]]</label>
                         <svg class="background" viewBox="0 0 150 32" preserveAspectRatio="none">
-                            <path d="M 0 0 m 10 0 h 140 v 22 l -10 10 h -140 v -22 z" stroke-width="2" stroke="#222" fill="#33ccff" />
+                            <path class="selectable-background" d="M 0 0 m 10 0 h 140 v 22 l -10 10 h -140 v -22 z" stroke-width="1" stroke="#222" fill="#fff" />
                         </svg>
                     </div>
                     <div id="KNOWLEDGE_SOURCE" class="layout horizontal center-center">
                         <label class="node-name">[[node.name]]</label>
                         <svg class="background" viewBox="0 0 150 100" preserveAspectRatio="none">
-                            <path d="M 0 0 h 150 v 80 q -40 -20 -75 0 q -40 20 -75 0 z" stroke="#222" stroke-width="2" fill="#0099ff" />
+                            <path class="selectable-background" d="M 0 0 h 150 v 80 q -40 -20 -75 0 q -40 20 -75 0 z" stroke="#222" stroke-width="1" fill="#fff" />
                         </svg>
                     </div>
                 </iron-pages>
@@ -162,50 +167,25 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 }
             },
             ready: function () {
-                var icons = [{
-                        nodeType: 'DECISION_TABLE',
-                        icon: 'decision'
-                    },
-                    {
-                        nodeType: 'BOXED_INVOCATION',
-                        icon: 'invocation'
-                    },
-                    {
-                        nodeType: 'BOXED_CONTEXT',
-                        icon: 'context'
-                    },
-                    {
-                        nodeType: 'KNOWLEDGE_SOURCE',
-                        icon: 'knowledge'
-                    },
-                    {
-                        nodeType: 'BUSINESS_MODEL',
-                        icon: 'business-model'
-                    },
-                    {
-                        nodeType: 'INPUT',
-                        icon: 'input'
-                    }
-                ];
-                this.set('iconsList', icons);
+                this.selected = false;
             },
-            _getNodeIcon: function (nodeType) {
-                var selectedIcon = this.iconsList.find(function (icon) {
-                    return icon.nodeType === nodeType;
-                });
-                return selectedIcon.icon;
+            _computeIcon:function(selected){
+                return selected?"check-box-outline-blank":"check";
             },
-            _launchSetting:function(){
-                this.fire('open-node-setting',this.node);
+            _launchSetting: function () {
+                this.fire('open-node-setting', this.node);
             },
-            _deleteComponent:function(){
-                this.fire('delete-component',this.node);
+            _deleteComponent: function () {
+                this.fire('delete-component', this.node);
             },
-            _handleConnectorLaunch:function(e){
+            toggleSelection:function(){
+                this.fire('toggle-selection',this);
+            },
+            _handleConnectorLaunch: function (e) {
                 e.stopPropagation();
-                this.fire('connector-drag',{
-                    node:this,
-                    event:e
+                this.fire('connector-drag', {
+                    node: this,
+                    event: e
                 })
             },
             behaviors: [],

@@ -21,7 +21,8 @@
         </style>
         <div class="component-container layout vertical">
             <div class="component-workspace layout horizontal flex">
-                <oe-feel-editor id="editor" decision-graph="[[_getCurrentGraph(_currentStackIndex)]]"></oe-feel-editor>
+                <oe-feel-editor id="editor" services="{{serviceList}}"
+                decision-graph="[[_getCurrentGraph(_currentStackIndex)]]"></oe-feel-editor>
             </div>
         </div>
         <oe-feel-footer studio-footer hidden></oe-feel-footer>
@@ -70,6 +71,10 @@
             _handleAddNode:function(e){
                 var node = e.detail;
                 var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
+                var feel = this._getFEEL(node);
+                if (feel && feel.length > 0) {
+                    decisiongraph.data[node.name] = feel;
+                }
                 decisiongraph.graph.nodes.push(node);
                 this._pushToStack(decisiongraph);
             },
@@ -84,6 +89,7 @@
                     connection) {
                     return (connection.from !== nodeToDelete.i && nodeToDelete.i !== connection.to);
                 });
+                delete decisiongraph.data[nodeToDelete.name];
                 this._pushToStack(decisiongraph);
             },
             _handlePositionUpdate:function(e){
@@ -192,30 +198,30 @@
                     }) + "]"
                 }
 
-                var feel = "decision table(\n";
-                feel += "input expression list :" + getArrayString(data.inputExpressionList) + ",\n";
-                feel += "outputs : " + getArrayString(data.outputs) + ",\n";
-                feel += "input values list : " + getArrayString(data.inputValues) + ",\n";
-                feel += "output values : " + getArrayString(data.outputValues) + ",\n";
+                var feel = "decision table(";
+                feel += "input expression list :" + getArrayString(data.inputExpressionList) + ",";
+                feel += "outputs : " + getArrayString(data.outputs) + ",";
+                feel += "input values list : " + getArrayString(data.inputValues) + ",";
+                feel += "output values : " + getArrayString(data.outputValues) + ",";
                 feel += "rule list : [" + data.ruleList.map(function(arr){
-                    return getArrayString(arr)
-                }) + "],\n";
-                feel += "id : '" + name + "',\n";
+                    return "["+arr.join(',')+"]"
+                }) + "],";
+                feel += "id : '" + name + "',";
                 feel += "hit policy : '" + data.hitPolicy + "' )";
                 return feel;
             },
             _getInvocationFeel:function(data){
-                var feel = ""+ data.target+"(\n";
+                var feel = "" + data.target + "(";
                 feel += data.parameters.map(function(param){
-                    return param.key + ": '"+ param.value + "'\n";
+                    return param.key + ": " + param.value + "";
                 });
                 feel += ")";
                 return feel;
             },
             _getContextFEEL: function (data, name) {
-                var feel = "{\n";
+                var feel = "{";
                 feel += data.parameters.map(function (param) {
-                    return param.key + ": '" + param.value + "'\n";
+                    return param.key + ": " + param.value + "";
                 });
                 switch (data.result.type) {
                     case "DECISION_TABLE":

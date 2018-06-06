@@ -1,0 +1,155 @@
+<!-- �2017-2018 EdgeVerve Systems Limited (a fully owned Infosys subsidiary), Bangalore, India. All Rights Reserved.
+The EdgeVerve proprietary software program ("Program"), is protected by copyrights laws, international treaties and other pending or existing intellectual property rights in India, the United States and other countries.
+The Program may contain/reference third party or open source components, the rights to which continue to
+remain with the applicable third party licensors or the open source community as the case may be and nothing
+here transfers the rights to the third party and open source components, except as expressly permitted.
+Any unauthorized reproduction, storage, transmission in any form or by any means (including without limitation to electronic, mechanical, printing, photocopying, recording or  otherwise), or any distribution of this Program,or any portion of it, may result in severe civil and criminal penalties, and will be prosecuted to the maximum extent possible under the law. -->
+
+<link rel="import" href="../../oe-input/oe-json-input.html">
+<dom-module id="oe-feel-simulate">
+    <template>
+        <style>
+            :host {
+                position: relative;
+                display: block;
+                box-sizing: border-box;
+                min-width: 350px;
+            }
+
+            .heading-panel {
+                height: 30px;
+            }
+
+            .payload-container{
+                border-top: 1px solid rgba(0, 0, 0, 0.4);
+                border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+                padding: 8px;
+            }
+
+            .payload-container oe-json-input{
+
+            }
+
+            .custom-input {
+
+            --paper-input-container:{
+                padding-top:0px;
+            }
+            --paper-input-container-input: {
+              border: 1px solid var(--secondary-text-color);
+              border-radius: 4px;
+              padding: 12px 8px 4px 8px;
+              box-sizing: border-box;
+              overflow: hidden;
+            }
+            --paper-input-container-input-focus: {
+              border-bottom-color: var(--primary-color);
+            }
+            --paper-input-container-input-invalid: {
+              border-bottom-color: var(--error-color);
+            }
+            --paper-input-container-label: {
+              top: 12px;
+              left: 8px;
+            }
+            --paper-input-container-label-floating: {
+              z-index: 2;
+              top: 10px;
+              display: flex;
+            }
+            --paper-input-container-underline: {
+              display: none;
+            }
+            --paper-input-container-underline-focus: {
+              display: none;
+            }
+          }
+
+          .custom-input ::content label oe-i18n-msg,
+          .custom-input ::content label span {
+            background: #FFF;
+            padding: 0px 4px;
+          }
+          .custom-input ::content .floated-label-placeholder{
+            line-height: 8px;
+          }
+
+
+
+            .payload-container paper-button{
+                border: 1px solid dodgerblue;
+            }
+
+
+            .output-container{
+                padding: 8px;
+            }
+            .output-container pre{
+                background: dodgerblue;
+                margin: 0px;
+                min-height: 100px;
+                padding: 8px;
+            }
+
+        </style>
+        <div class="component-container">
+            <div class="heading-panel layout horizontal center-center">
+                <label>Simulate</label>
+            </div>
+            <div class="payload-container">
+                <oe-json-input class="custom-input" label="Payload" value="{{simulation.payload}}"></oe-json-input>
+                <paper-button on-tap="_runSimulation" disabled=[[!_isValid(simulation.payload)]]>Execute</paper-button>
+            </div>
+            <div class="output-container" hidden=[[!_isValid(simulation.output)]]>
+                <pre>
+[[_getJSONString(simulation.output)]]                    
+                </pre>
+            </div>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: "oe-feel-simulate",
+            properties: {
+                selectedNodes: {
+                    type: Array,
+                    value: []
+                },
+                graph: {
+                    type: Object,
+                    value: {}
+                }
+            },
+            behaviors: [OEUtils.AjaxBehavior],
+            attached: function () {
+                this.set('simulation', {
+                    payload: {},
+                    output: null
+                })
+            },
+            _isValid: function (obj) {
+                return (obj !== undefined && obj !== null);
+            },
+            _runSimulation: function () {
+                var body = {
+                    decisions: this.selectedNodes.map(function (node) {
+                        return node.node.name
+                    }),
+                    jsonFeel: this.graph.data,
+                    payload: this.simulation.payload
+                }
+                this.makeAjaxCall('api/decisiongraphs/execute', 'POST', body, null, null, null, function (
+                    err, resp) {
+                    if (!err) {
+                        this.set('simulation.output', resp)
+                    }else{
+                        this.resolveError(err);
+                    }
+                }.bind(this))
+            },
+            _getJSONString: function (obj) {
+                return JSON.stringify(obj, null, 2);
+            }
+        })
+    </script>
+</dom-module>
