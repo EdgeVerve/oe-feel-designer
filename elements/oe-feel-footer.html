@@ -201,7 +201,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                             </div>
                         </div>
                         <div class="graph-list flex">
-                            <template is="dom-repeat" items="[[_filterGraphList(graphSearchText,decisionGraphList)]]" as="graph">
+                            <template id="graphList" is="dom-repeat" items="[[_filterGraphList(graphSearchText,decisionGraphList.*)]]" as="graph">
                                 <div class$="list-option layout horizontal center [[_isSeletedGraph(graph,selectedGraph)]]" on-tap="_loadCurrentGraph">
                                     <iron-icon icon="settings-ethernet" class="graph-icon"></iron-icon>
                                     <span class="flex graph-name">[[graph.name]]</span>
@@ -305,9 +305,10 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 this.set('graphSearchText', "");
                 this.set('showSeachBar', false);
             },
-            _filterGraphList: function (searchKey, list) {
+            _filterGraphList: function (searchKey, change) {
+                var list = this.decisionGraphList;
                 if (!searchKey || searchKey.length == 0) {
-                    return list;
+                    return list.slice();
                 } else {
                     return list.filter(function (graph) {
                         return graph.name.toLowerCase().match(searchKey.toLowerCase());

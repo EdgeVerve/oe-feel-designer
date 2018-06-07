@@ -36,10 +36,12 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 is:"oe-feel-save-service-dialog",
                 properties:{
                     service:{
-                        type:Object
+                        type:Object,
+                        notify:true
                     },
                     serviceList:{
-                        type:Array
+                        type:Array,
+                        notify:true
                     }
                 },
                 behaviors:[OEUtils.AjaxBehavior],
@@ -60,6 +62,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     delete payload._version;
                     this.makeAjaxCall('api/decisionservices', "PUT", payload, null, null, function (err, resp) {
                         if(resp){
+                            this.set('service',resp);
                             this.push('serviceList',resp);
                             this.fire('load-service',resp);
                             this.fire('oe-show-success','Service saved successfully');

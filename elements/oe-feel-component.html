@@ -144,13 +144,15 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     <div id="BUSINESS_MODEL">
                         <label class="node-name">[[node.name]]</label>
                         <svg class="background" viewBox="0 0 150 32" preserveAspectRatio="none">
-                            <path class="selectable-background" d="M 0 0 m 10 0 h 140 v 22 l -10 10 h -140 v -22 z" stroke-width="1" stroke="#222" fill="#fff" />
+                            <path class="selectable-background" d="M 0 0 m 10 0 h 140 v 22 l -10 10 h -140 v -22 z" stroke-width="1" stroke="#222" fill="#fff"
+                            />
                         </svg>
                     </div>
                     <div id="KNOWLEDGE_SOURCE" class="layout horizontal center-center">
                         <label class="node-name">[[node.name]]</label>
                         <svg class="background" viewBox="0 0 150 100" preserveAspectRatio="none">
-                            <path class="selectable-background" d="M 0 0 h 150 v 80 q -40 -20 -75 0 q -40 20 -75 0 z" stroke="#222" stroke-width="1" fill="#fff" />
+                            <path class="selectable-background" d="M 0 0 h 150 v 80 q -40 -20 -75 0 q -40 20 -75 0 z" stroke="#222" stroke-width="1"
+                                fill="#fff" />
                         </svg>
                     </div>
                 </iron-pages>
@@ -170,7 +172,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 this.selected = false;
             },
             _computeIcon:function(selected){
-                return selected?"check-box-outline-blank":"check";
+                return selected ? "check-box" : "check-box-outline-blank";
             },
             _launchSetting: function () {
                 this.fire('open-node-setting', this.node);
@@ -178,7 +180,8 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             _deleteComponent: function () {
                 this.fire('delete-component', this.node);
             },
-            toggleSelection:function(){
+            toggleSelection: function (e) {
+                e.stopPropagation();
                 this.fire('toggle-selection',this);
             },
             _handleConnectorLaunch: function (e) {
@@ -187,9 +190,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     node: this,
                     event: e
                 })
-            },
-            behaviors: [],
-            listeners: {}
+            }
         })
     </script>
 </dom-module>

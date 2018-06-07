@@ -78,6 +78,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
 
             .payload-container paper-button{
                 border: 1px solid dodgerblue;
+                align-self: flex-end;
             }
 
 
@@ -96,7 +97,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             <div class="heading-panel layout horizontal center-center">
                 <label>Simulate</label>
             </div>
-            <div class="payload-container">
+            <div class="payload-container layout vertical">
                 <oe-json-input class="custom-input" label="Payload" value="{{simulation.payload}}"></oe-json-input>
                 <paper-button on-tap="_runSimulation" disabled=[[!_isValid(simulation.payload)]]>Execute</paper-button>
             </div>

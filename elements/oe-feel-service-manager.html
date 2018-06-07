@@ -1,0 +1,257 @@
+<!-- �2017-2018 EdgeVerve Systems Limited (a fully owned Infosys subsidiary), Bangalore, India. All Rights Reserved.
+The EdgeVerve proprietary software program ("Program"), is protected by copyrights laws, international treaties and other pending or existing intellectual property rights in India, the United States and other countries.
+The Program may contain/reference third party or open source components, the rights to which continue to
+remain with the applicable third party licensors or the open source community as the case may be and nothing
+here transfers the rights to the third party and open source components, except as expressly permitted.
+Any unauthorized reproduction, storage, transmission in any form or by any means (including without limitation to electronic, mechanical, printing, photocopying, recording or  otherwise), or any distribution of this Program,or any portion of it, may result in severe civil and criminal penalties, and will be prosecuted to the maximum extent possible under the law. -->
+
+<link rel="import" href="oe-feel-save-service-dialog.html">
+<link rel="import" href="oe-feel-simulate.html">
+<link rel="import" href="../../oe-utils/oe-common-behaviors.html">
+<dom-module id="oe-feel-service-manager">
+    <template>
+        <style>
+            :host{
+                position:relative;
+                display:block;
+                box-sizing:border-box;
+            }
+            .icons-panel paper-fab {
+                background: #FFF;
+                color: #222;
+                margin-bottom: 4px;
+            }
+
+            .service-list {
+                min-width: 200px;
+            }
+
+            .list-header {
+                height: 30px;
+                display: block;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+                padding: 0px 8px;
+            }
+
+            .service-item {
+                height: 30px;
+                padding: 0px 8px;
+                cursor: pointer;
+            }
+
+            .service-item iron-icon {
+                --iron-icon-width: 16px;
+                --iron-icon-height: 16px;
+                margin-left: 8px;
+            }
+
+            .service-label {
+                padding: 8px;
+                font-size: 14px;
+                background: rgba(0, 0, 0, 0.6);
+                color: #FFF;
+                display: flex;
+                margin-top: 16px;
+            }
+
+            .service-label iron-icon {
+                --iron-icon-width: 16px;
+                --iron-icon-height: 16px;
+                margin:0px 8px;
+            }
+
+            #simulation-menu{
+                --paper-menu-button-dropdown:{
+                    height:400px;
+                }
+            }
+        </style>
+        <div class="layout horizontal">
+            <div class="selected-service" hidden=[[!_hasSelected(selectedService)]]>
+                <label class="service-label">
+                    <iron-icon icon="create" hidden=[[!_editServiceMode]]></iron-icon>
+                    [[selectedService.name]]
+                    <iron-icon icon="clear" on-tap="_clearSelectedService"></iron-icon>
+                </label>
+            </div>
+            <div class="icons-panel layout vertical center">
+                <paper-menu-button class="toolbar-item" no-animations no-overlap horizontal-align="right" vertical-align="bottom" ignore-select
+                    close-on-activate>
+                    <paper-fab icon="menu" class="dropdown-trigger"></paper-fab>
+                    <paper-card class="dropdown-content service-list layout vertical">
+                        <label class="list-header layout horizontal center-center">Services List</label>
+                        <template is="dom-repeat" items="{{serviceList}}">
+                            <div class="service-item layout horizontal center justified" on-tap="_selectService">
+                                <label class="service-name">[[item.name]]</label>
+                                <div class="actions-items layout horizontal">
+                                    <iron-icon icon="create" on-tap="_editDecisionService"></iron-icon>
+                                    <iron-icon icon="delete" on-tap="_deleteDecisionService"></iron-icon>
+                                </div>
+                            </div>
+                        </template>
+                        <div class="service-item empty-state" hidden="[[serviceList.length]]">
+                            <label class="service-name layout horizontal center">No Services Found</label>
+                        </div>
+                    </paper-card>
+                </paper-menu-button>
+                <paper-fab mini hidden=[[!_showSaveBtn(selectedNodes.*,decisionGraph.name)]] icon="[[_getIcon(_editServiceMode)]]" on-tap="_saveAsService"></paper-fab>
+                <paper-menu-button hidden=[[!_showSimulateBtn(selectedNodes.*)]] id="simulation-menu" class="toolbar-item" no-animations ignore-select horizontal-align="right" horizontal-offset="0" vertical-align="top">
+                    <paper-fab mini icon="av:play-arrow" class="dropdown-trigger"></paper-fab>
+                    <paper-card class="dropdown-content simulation-container">
+                        <oe-feel-simulate graph={{decisionGraph}} selected-nodes={{selectedNodes}}></oe-feel-simulate>
+                    </paper-card>
+                </paper-menu-button>
+            </div>
+            <oe-feel-save-service-dialog id="saveServiceDialog" service="{{selectedService}}" service-list="{{serviceList}}"></oe-feel-save-service-dialog>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is:"oe-feel-service-manager",
+            properties:{
+                selectedService:{
+                    type:Object,
+                    notify:true
+                },
+                serviceList:{
+                    type:Array,
+                    value:[],
+                    notify:true
+                },
+                decisionGraph:{
+                    type:Object
+                },
+                selectedNodes:{
+                    type:Array,
+                    value:[]
+                }
+            },
+            behaviors:[OEUtils.AjaxBehavior],
+            observers:['_selectedNodeObserver(selectedNodes.*)'],
+            attached:function(){
+                this.set('_editServiceMode', false);
+                this.set('selectedService',null);
+            },
+            _getIcon:function(isEditMode){
+                return isEditMode?"save":"add";
+            },
+            _showSaveBtn:function(change,name,editMode){
+                if(editMode){
+                    return (this.selectedNodes && this.selectedNodes.length > 0);
+                }else{
+                    return (name && name.length > 0);
+                }
+            },
+            _showSimulateBtn:function(change){
+                return (this.selectedNodes && this.selectedNodes.length > 0)
+            },
+            _selectService: function (event) {
+                event.stopPropagation();
+                var item = event.model.item;
+                this.set('_editServiceMode', false);
+                this.fire('load-service',item);
+            },
+            _hasSelected: function (service) {
+                return !!(service && service.id);
+            },
+            _deleteDecisionService: function (event) {
+                event.stopPropagation();
+                var item = event.model.item;
+                this.fire('oe-show-confirm', {
+                    message: 'Confirm deleting service : ' + item.name + ' ?',
+                    ok: function () {
+                        this._deleteService(item);
+                    }.bind(this)
+                })
+            },
+            _editDecisionService: function (event) {
+                event.stopPropagation();
+                var item = event.model.item;
+                this.set('_editServiceMode', true);
+                this.fire('load-service',item);
+            },
+            _saveAsService: function () {
+                var nodeName = this.selectedNodes.map(function (el) {
+                    return el.node.name;
+                });
+                var service
+                if (this._editServiceMode) {
+                    service = this.selectedService;
+                    service.decisions = nodeName;
+                    this._updateService(service);
+                } else {
+                    //Creating new service
+                    service = {
+                        name: "",
+                        graphId: this.decisionGraph.name
+                    }
+                    service.decisions = nodeName;
+                    this.set('selectedService', service);
+                    this.$.saveServiceDialog.openDialog();
+                }
+            },
+            _updateService: function (service) {
+                this.makeAjaxCall('api/decisionservices', "PUT", service, null, null, null, function (err,
+                    resp) {
+                    if (!err) {
+                        var idx = this.serviceList.findIndex(function (s) {
+                            return s.id === resp.id;
+                        });
+                        if (idx == -1) {
+                            this.push('serviceList', resp);
+                        } else {
+                            this.splice('serviceList', idx, 1, resp);
+                        }
+                        this.set('selectedService',resp);
+                        this.fire('oe-show-success', "Service created successfully");
+                    }
+                }.bind(this));
+            },
+            _deleteService: function (service) {
+                this.makeAjaxCall('api/decisionservices', 'delete', service, null, null, null, function (
+                    err, resp) {
+                    if (!err) {
+                        var idx = this.serviceList.findIndex(function (s) {
+                            return s.id === service.id;
+                        });
+                        this.splice('serviceList', idx, 1);
+                        this.fire('oe-show-success', "Service deleted successfully");
+                    }
+                }.bind(this));
+            },
+            _clearSelectedService:function(){
+                this.set('selectedService',null);
+                this.fire('load-service',null);
+                this.set('_editServiceMode', false);
+            },
+            _selectedNodeObserver:function(change){
+                if(!this._editServiceMode){
+                    var nodeNames = this.selectedNodes.map(function (el) {
+                        return el.node.name;
+                    });
+                    var matchingService = this.serviceList.find(function(ser){
+                        return this._isEqualArrays(ser.decisions,nodeNames);
+                    }.bind(this));
+                    if(matchingService){
+                        this.set('selectedService',matchingService);
+                    }else{
+                        this.set('selectedService',null);
+                    }
+                }
+            },
+            _isEqualArrays:function(arr1,arr2){
+                if(arr1.length !== arr2.length){
+                    return false;
+                }
+                arr1.sort();
+                arr2.sort();
+                for(var i = 0,len=arr1.length;i<len;i++){
+                    if(arr2[i] !== arr1[i]){
+                        return false;
+                    }
+                }
+                return true;
+            }
+        })
+    </script>
+</dom-module>
