@@ -35,6 +35,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
         </style>
         <paper-dialog id="dialog">
             <div class="dialog-header">
+                <iron-icon icon="[[_getIcon(isNewConnection)]]"></iron-icon>
                 <label>Connection settings</label>
             </div>
             <div class="dialog-body layout horizontal center justified">
@@ -55,6 +56,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             </div>
             <div class="dialog-footer layout horizontal center end-justified">
                 <paper-button on-tap="_confirmConnection">Accept</paper-button>
+                <paper-button hidden=[[isNewConnection]] on-tap="_confirmDelete">Delete</paper-button>
                 <paper-button on-tap="closeDialog">Cancel</paper-button>
             </div>
         </paper-dialog>
@@ -107,6 +109,9 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 this.set('associtaions', associtaions);
                 this.set('connectionMap',connectionMap);
             },
+            _getIcon:function(isNew){
+                return isNew?"add":"create";
+            },
             _getListData:function(fromType,toType){
                 var connectionMap = this.connectionMap;
                 var list = this.associtaions.filter(function(associtaion){
@@ -139,6 +144,14 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 connection.to = this.connectionDetail.to.i;
                 connection.id = connection.id || OEUtils.generateGuid();
                 this.fire('update-connection', connection);
+                this.closeDialog();
+            },
+            _confirmDelete:function(){
+                var connection = this.connectionDetail.connection;
+                connection.from = this.connectionDetail.from.i;
+                connection.to = this.connectionDetail.to.i;
+                connection.id = connection.id || OEUtils.generateGuid();
+                this.fire('delete-connection', connection);
                 this.closeDialog();
             }
         })

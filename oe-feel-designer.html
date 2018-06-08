@@ -8,7 +8,7 @@
 <dom-module id="oe-feel-designer">
     <template>
         <style>
-             :host {
+            :host {
                 position: relative;
                 display: block;
                 box-sizing: border-box;
@@ -30,29 +30,46 @@
     <script>
         Polymer({
             is: "oe-feel-designer",
-            properties: {
-                
-            },
             listeners: {
-                'decision-graph-selected':'_graphSelected',
-                'add-feel-component':'_handleAddNode',
-                'delete-component':'_handleDeleteNode',
-                'update-component-position':'_handlePositionUpdate',
-                'undo-decision-graph':'_handleUndoGraph',
-                'redo-decision-graph':'_handleRedoGraph',
+                'decision-graph-selected': '_graphSelected',
+                'add-feel-component': '_handleAddNode',
+                'delete-component': '_handleDeleteNode',
+                'update-component-position': '_handlePositionUpdate',
+                'undo-decision-graph': '_handleUndoGraph',
+                'redo-decision-graph': '_handleRedoGraph',
                 'update-connection': '_handleConnectionUpdate',
+                'delete-connection':'_handleDeleteConnection',
                 'update-node-data': '_updateNodeData',
                 'init-save-graph':'_initSaveGraph',
                 'init-save-graph-as':'_initSaveAsGraph'
             },
-            behaviors: [],
-            attached: function () {
-                this.set('showActions', false);
+            _clearStack: function () {
+                this.set('curGraphStack', []);
+                this.set('_currentStackIndex', -1);
             },
-            _clearStack:function(){
-                this.set('curGraphStack',[]);
-                this.set('_currentStackIndex',-1);
+            _getCurrentGraph: function (index) {
+                if (index > -1) {
+                    var graph = JSON.parse(JSON.stringify(this.curGraphStack[index]));
+                    return graph;
+                }
             },
+            _pushToStack: function (graph) {
+                this.curGraphStack.splice(this._currentStackIndex + 1);
+                this.push('curGraphStack', JSON.parse(JSON.stringify(graph)));
+                this.set('_currentStackIndex', this._currentStackIndex + 1);
+                this._footerFire('stack-updated', {
+                    curIndex: this._currentStackIndex,
+                    stackLength: this.curGraphStack.length
+                })
+            },
+            _footerFire: function (name, detail) {
+                this.fire('oe-studio-footer-action', {
+                    'event': name,
+                    'payload': detail
+                });
+            },
+
+            //Event Handlers
             _graphSelected: function (e) {
                 var self = this;
                 this.$.editor.fire('reset-workspace-view');
@@ -64,11 +81,11 @@
                 }
                 var graph = e.detail.graph;
                 this.set('serviceList',e.detail.service);
-                if(graph){
+                if (graph) {
                     this._pushToStack(graph);
                 }
             },
-            _handleAddNode:function(e){
+            _handleAddNode: function (e) {
                 var node = e.detail;
                 var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
                 var feel = this._getFEEL(node);
@@ -78,13 +95,13 @@
                 decisiongraph.graph.nodes.push(node);
                 this._pushToStack(decisiongraph);
             },
-            _handleDeleteNode:function(e){
+            _handleDeleteNode: function (e) {
                 var nodeToDelete = e.detail;
                 var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
-                var removeIndex = decisiongraph.graph.nodes.findIndex(function(node){
+                var removeIndex = decisiongraph.graph.nodes.findIndex(function (node) {
                     return node.id === nodeToDelete.id;
                 });
-                decisiongraph.graph.nodes.splice(removeIndex,1);
+                decisiongraph.graph.nodes.splice(removeIndex, 1);
                 decisiongraph.graph.connections = decisiongraph.graph.connections.filter(function (
                     connection) {
                     return (connection.from !== nodeToDelete.i && nodeToDelete.i !== connection.to);
@@ -92,67 +109,65 @@
                 delete decisiongraph.data[nodeToDelete.name];
                 this._pushToStack(decisiongraph);
             },
-            _handlePositionUpdate:function(e){
+            _handlePositionUpdate: function (e) {
                 var detail = e.detail;
                 var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
-                var updatedNode = decisiongraph.graph.nodes.find(function(node){
+                var updatedNode = decisiongraph.graph.nodes.find(function (node) {
                     return node.i === detail.nodeIndex
                 });
                 updatedNode.x = detail.x;
                 updatedNode.y = detail.y;
                 this._pushToStack(decisiongraph);
             },
-            _getCurrentGraph:function(index){
-                if(index > -1){
-                    var graph = JSON.parse(JSON.stringify(this.curGraphStack[index]));
-                    return graph;
-                }
-            },
-            _pushToStack:function(graph){
-                this.curGraphStack.splice(this._currentStackIndex+1);
-                this.push('curGraphStack',JSON.parse(JSON.stringify(graph)));
-                this.set('_currentStackIndex',this._currentStackIndex+1);
-                this._footerFire('stack-updated',{
-                    curIndex:this._currentStackIndex,
-                    stackLength:this.curGraphStack.length
-                })
-            },
-            _footerFire: function (name, detail) {
-                this.fire('oe-studio-footer-action', {
-                    'event': name,
-                    'payload': detail
-                });
-            },
-            _handleUndoGraph:function(){
-                if(this._currentStackIndex > 0){
-                    this.set('_currentStackIndex',this._currentStackIndex-1);
-                    this._footerFire('stack-updated',{
-                        curIndex:this._currentStackIndex,
-                        stackLength:this.curGraphStack.length
+            _handleUndoGraph: function () {
+                if (this._currentStackIndex > 0) {
+                    this.set('_currentStackIndex', this._currentStackIndex - 1);
+                    this._footerFire('stack-updated', {
+                        curIndex: this._currentStackIndex,
+                        stackLength: this.curGraphStack.length
                     })
                 }
             },
-            _handleRedoGraph:function(){
-                if(this._currentStackIndex < (this.curGraphStack.length-1)){
-                    this.set('_currentStackIndex',this._currentStackIndex+1);
-                    this._footerFire('stack-updated',{
-                        curIndex:this._currentStackIndex,
-                        stackLength:this.curGraphStack.length
+            _handleRedoGraph: function () {
+                if (this._currentStackIndex < (this.curGraphStack.length - 1)) {
+                    this.set('_currentStackIndex', this._currentStackIndex + 1);
+                    this._footerFire('stack-updated', {
+                        curIndex: this._currentStackIndex,
+                        stackLength: this.curGraphStack.length
                     })
                 }
             },
-            _handleConnectionUpdate:function(event){
+            _handleConnectionUpdate: function (event) {
                 var newConnection = event.detail;
                 var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
-                var prevIndex = decisiongraph.graph.connections.findIndex(function(conn){
+                var prevIndex = decisiongraph.graph.connections.findIndex(function (conn) {
                     return conn.from == newConnection.from && conn.to == newConnection.to;
                 });
-                if(prevIndex >= 0){
-                    decisiongraph.graph.connections.splice(prevIndex,1,newConnection);
-                }else{
+                if (prevIndex >= 0) {
+                    decisiongraph.graph.connections.splice(prevIndex, 1, newConnection);
+                } else {
                     decisiongraph.graph.connections.push(newConnection);
                 }
                 this._pushToStack(decisiongraph);
+            },
+            _handleDeleteConnection:function(event){
+                var newConnection = event.detail;
+                var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
+                var prevIndex = decisiongraph.graph.connections.findIndex(function (conn) {
+                    return conn.from == newConnection.from && conn.to == newConnection.to;
+                });
+                if (prevIndex >= 0) {
+                    decisiongraph.graph.connections.splice(prevIndex, 1);
+                }
+                this._pushToStack(decisiongraph);
+            },
+            _initSaveGraph:function(){
+                var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
+                this._footerFire('save-graph',decisiongraph);
+            },
+            _initSaveAsGraph:function(){
+                var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
+                this._footerFire('save-graph-as',decisiongraph);
             },
             _updateNodeData: function (event) {
                 var detail = event.detail;
@@ -169,6 +184,8 @@
                 }
                 this._pushToStack(decisiongraph);
             },
+
+            //FEEl Creation
             _getFEEL: function (node) {
                 var feelStr = "";
                 switch (node.nodeType) {
@@ -191,7 +208,8 @@
                 }
                 return feelStr;
             },
-            _getDecisionTableFEEL: function (data,name) {
+            _getDecisionTableFEEL: function (data, name) {
+
                 function getArrayString(arr) {
                     return "[" + arr.map(function (s) {
                         return "'" + s + "'";
@@ -203,16 +221,16 @@
                 feel += "outputs : " + getArrayString(data.outputs) + ",";
                 feel += "input values list : " + getArrayString(data.inputValues) + ",";
                 feel += "output values : " + getArrayString(data.outputValues) + ",";
-                feel += "rule list : [" + data.ruleList.map(function(arr){
+                feel += "rule list : [" + data.ruleList.map(function (arr) {
                     return "["+arr.join(',')+"]"
                 }) + "],";
                 feel += "id : '" + name + "',";
                 feel += "hit policy : '" + data.hitPolicy + "' )";
                 return feel;
             },
-            _getInvocationFeel:function(data){
+            _getInvocationFEEL: function (data) {
                 var feel = "" + data.target + "(";
-                feel += data.parameters.map(function(param){
+                feel += data.parameters.map(function (param) {
                     return param.key + ": " + param.value + "";
                 });
                 feel += ")";
@@ -237,15 +255,7 @@
                 }
                 feel += "}";
                 return feel;
-            },
-            _initSaveGraph:function(){
-                var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
-                this._footerFire('save-graph',decisiongraph);
-            },
-            _initSaveAsGraph:function(){
-                var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
-                this._footerFire('save-graph-as',decisiongraph);
-            },
+            }
         })
     </script>
 </dom-module>

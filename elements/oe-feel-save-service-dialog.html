@@ -60,14 +60,16 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 _saveNewService:function(){
                     var payload = this.service;
                     delete payload._version;
-                    this.makeAjaxCall('api/decisionservices', "PUT", payload, null, null, function (err, resp) {
+                    this.makeAjaxCall(OEUtils._getRestApiUrl('/decisionservices'), "PUT", payload, null, null, function (err, resp) {
                         if(resp){
                             this.set('service',resp);
                             this.push('serviceList',resp);
                             this.fire('load-service',resp);
                             this.fire('oe-show-success','Service saved successfully');
                             this.closeDialog();
-                        }
+                        }else{
+                        this.resolveError(err);
+                    }
                     }.bind(this));
                 },
                 openDialog:function(){

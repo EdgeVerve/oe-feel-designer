@@ -11,15 +11,20 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
 <dom-module id="oe-feel-service-manager">
     <template>
         <style>
-            :host{
-                position:relative;
-                display:block;
-                box-sizing:border-box;
+            :host {
+                position: relative;
+                display: block;
+                box-sizing: border-box;
             }
+
+            paper-menu-button{
+                padding: 0px;
+            }
+
             .icons-panel paper-fab {
                 background: #FFF;
                 color: #222;
-                margin-bottom: 4px;
+                margin-bottom: 10px;
             }
 
             .service-list {
@@ -57,17 +62,33 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             .service-label iron-icon {
                 --iron-icon-width: 16px;
                 --iron-icon-height: 16px;
-                margin:0px 8px;
+                margin: 0px 8px;
             }
 
-            #simulation-menu{
-                --paper-menu-button-dropdown:{
-                    height:400px;
+            #simulation-menu {
+                --paper-menu-button-dropdown: {
+                    height: 400px;
                 }
+            }
+
+            #simulateDialog {
+                top: 0px;
+                right: 0px;
+                position: fixed;
+                height: calc(100vh - 40px);
+                width: 400px;
+                overflow: auto;
+                margin: 0px;
+                box-shadow: 0px 4px 3px 1px rgba(0, 0, 0, 0.2);
+            }
+
+            #simulateDialog oe-feel-simulate {
+                margin: 0px;
+                padding: 0px 16px;
             }
         </style>
         <div class="layout horizontal">
-            <div class="selected-service" hidden=[[!_hasSelected(selectedService)]]>
+            <div class="selected-service" hidden=[[!_hasSelectedService]]>
                 <label class="service-label">
                     <iron-icon icon="create" hidden=[[!_editServiceMode]]></iron-icon>
                     [[selectedService.name]]
@@ -94,65 +115,57 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                         </div>
                     </paper-card>
                 </paper-menu-button>
-                <paper-fab mini hidden=[[!_showSaveBtn(selectedNodes.*,decisionGraph.name)]] icon="[[_getIcon(_editServiceMode)]]" on-tap="_saveAsService"></paper-fab>
-                <paper-menu-button hidden=[[!_showSimulateBtn(selectedNodes.*)]] id="simulation-menu" class="toolbar-item" no-animations ignore-select horizontal-align="right" horizontal-offset="0" vertical-align="top">
-                    <paper-fab mini icon="av:play-arrow" class="dropdown-trigger"></paper-fab>
-                    <paper-card class="dropdown-content simulation-container">
-                        <oe-feel-simulate graph={{decisionGraph}} selected-nodes={{selectedNodes}}></oe-feel-simulate>
-                    </paper-card>
-                </paper-menu-button>
+                <paper-fab mini hidden=[[!_showSaveBtn(_hasNodesSelected,decisionGraph.name,_editServiceMode,_hasSelectedService)]] icon="[[_getIcon(_editServiceMode)]]"
+                    on-tap="_saveAsService"></paper-fab>
+                <paper-fab mini icon="av:play-arrow" on-tap="_showSimulateDialog" hidden=[[!_hasNodesSelected]]></paper-fab>
             </div>
             <oe-feel-save-service-dialog id="saveServiceDialog" service="{{selectedService}}" service-list="{{serviceList}}"></oe-feel-save-service-dialog>
+            <paper-dialog id="simulateDialog">
+                <oe-feel-simulate graph={{decisionGraph}} selected-nodes={{selectedNodes}}></oe-feel-simulate>
+            </paper-dialog>
         </div>
     </template>
     <script>
         Polymer({
-            is:"oe-feel-service-manager",
-            properties:{
-                selectedService:{
-                    type:Object,
-                    notify:true
+            is: "oe-feel-service-manager",
+            properties: {
+                selectedService: {
+                    type: Object,
+                    notify: true
                 },
-                serviceList:{
-                    type:Array,
-                    value:[],
-                    notify:true
+                serviceList: {
+                    type: Array,
+                    value: [],
+                    notify: true
                 },
-                decisionGraph:{
-                    type:Object
+                decisionGraph: {
+                    type: Object
                 },
-                selectedNodes:{
-                    type:Array,
-                    value:[]
+                selectedNodes: {
+                    type: Array,
+                    value: []
                 }
             },
-            behaviors:[OEUtils.AjaxBehavior],
-            observers:['_selectedNodeObserver(selectedNodes.*)'],
-            attached:function(){
+            behaviors: [OEUtils.AjaxBehavior],
+            observers: ['_selectedNodeObserver(selectedNodes.*)', '_selectedServiceObserver(selectedService.*)'],
+            attached: function () {
                 this.set('_editServiceMode', false);
-                this.set('selectedService',null);
+                this.set('selectedService', null);
             },
-            _getIcon:function(isEditMode){
-                return isEditMode?"save":"add";
+            _getIcon: function (isEditMode) {
+                return isEditMode ? "save" : "add";
             },
-            _showSaveBtn:function(change,name,editMode){
-                if(editMode){
-                    return (this.selectedNodes && this.selectedNodes.length > 0);
-                }else{
-                    return (name && name.length > 0);
+            _showSaveBtn: function (hasNodesSelected, decisionName, editMode, hasService) {
+                if (!decisionName.length || !hasNodesSelected) {
+                    return false;
                 }
-            },
-            _showSimulateBtn:function(change){
-                return (this.selectedNodes && this.selectedNodes.length > 0)
+                return editMode ? true : !hasService;
             },
             _selectService: function (event) {
                 event.stopPropagation();
                 var item = event.model.item;
                 this.set('_editServiceMode', false);
-                this.fire('load-service',item);
-            },
-            _hasSelected: function (service) {
-                return !!(service && service.id);
+                this.fire('load-service', item);
             },
             _deleteDecisionService: function (event) {
                 event.stopPropagation();
@@ -168,7 +181,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 event.stopPropagation();
                 var item = event.model.item;
                 this.set('_editServiceMode', true);
-                this.fire('load-service',item);
+                this.fire('load-service', item);
             },
             _saveAsService: function () {
                 var nodeName = this.selectedNodes.map(function (el) {
@@ -191,7 +204,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 }
             },
             _updateService: function (service) {
-                this.makeAjaxCall('api/decisionservices', "PUT", service, null, null, null, function (err,
+                this.makeAjaxCall(OEUtils._getRestApiUrl('/decisionservices'), "PUT", service, null, null, null, function (err,
                     resp) {
                     if (!err) {
                         var idx = this.serviceList.findIndex(function (s) {
@@ -202,13 +215,15 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                         } else {
                             this.splice('serviceList', idx, 1, resp);
                         }
-                        this.set('selectedService',resp);
+                        this.set('selectedService', resp);
                         this.fire('oe-show-success', "Service created successfully");
+                    }else{
+                        this.resolveError(err);
                     }
                 }.bind(this));
             },
             _deleteService: function (service) {
-                this.makeAjaxCall('api/decisionservices', 'delete', service, null, null, null, function (
+                this.makeAjaxCall(OEUtils._getRestApiUrl('/decisionservices'), 'delete', service, null, null, null, function (
                     err, resp) {
                     if (!err) {
                         var idx = this.serviceList.findIndex(function (s) {
@@ -216,41 +231,50 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                         });
                         this.splice('serviceList', idx, 1);
                         this.fire('oe-show-success', "Service deleted successfully");
+                    }else{
+                        this.resolveError(err);
                     }
                 }.bind(this));
             },
-            _clearSelectedService:function(){
-                this.set('selectedService',null);
-                this.fire('load-service',null);
+            _clearSelectedService: function () {
+                this.set('selectedService', null);
+                this.fire('load-service', null);
                 this.set('_editServiceMode', false);
             },
-            _selectedNodeObserver:function(change){
-                if(!this._editServiceMode){
+            _selectedNodeObserver: function (change) {
+                if (!this._editServiceMode) {
                     var nodeNames = this.selectedNodes.map(function (el) {
                         return el.node.name;
                     });
-                    var matchingService = this.serviceList.find(function(ser){
-                        return this._isEqualArrays(ser.decisions,nodeNames);
+                    var matchingService = this.serviceList.find(function (ser) {
+                        return this._isEqualArrays(ser.decisions, nodeNames);
                     }.bind(this));
-                    if(matchingService){
-                        this.set('selectedService',matchingService);
-                    }else{
-                        this.set('selectedService',null);
+                    if (matchingService) {
+                        this.set('selectedService', matchingService);
+                    } else {
+                        this.set('selectedService', null);
                     }
                 }
+                this.set('_hasNodesSelected', (this.selectedNodes && this.selectedNodes.length > 0))
             },
-            _isEqualArrays:function(arr1,arr2){
-                if(arr1.length !== arr2.length){
+            _selectedServiceObserver: function (change) {
+                this.set('_hasSelectedService', !!(this.selectedService && this.selectedService.id))
+            },
+            _isEqualArrays: function (arr1, arr2) {
+                if (arr1.length !== arr2.length) {
                     return false;
                 }
                 arr1.sort();
                 arr2.sort();
-                for(var i = 0,len=arr1.length;i<len;i++){
-                    if(arr2[i] !== arr1[i]){
+                for (var i = 0, len = arr1.length; i < len; i++) {
+                    if (arr2[i] !== arr1[i]) {
                         return false;
                     }
                 }
                 return true;
+            },
+            _showSimulateDialog: function () {
+                this.$.simulateDialog.open();
             }
         })
     </script>

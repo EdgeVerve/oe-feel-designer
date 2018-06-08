@@ -271,10 +271,14 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
 
             //fetch Details
             _fetchGraphList: function (cb) {
-                this.makeAjaxCall('api/decisiongraphs', 'get', null, null, null, function (err, resp) {
+                this.makeAjaxCall(OEUtils._getRestApiUrl('/decisiongraphs'), 'get', null, null, null, function (err, resp) {
+                    if(!err){
                     this.set('decisionGraphList', resp);
                     if (typeof cb === "function") {
                         cb();
+                    }
+                    }else{
+                        this.resolveError(err);
                     }
                 }.bind(this));
             },
@@ -286,10 +290,14 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                         }
                     }
                 }
-                this.makeAjaxCall('api/decisionservices', 'get', null, null, params, function (err, resp) {
+                this.makeAjaxCall(OEUtils._getRestApiUrl('/decisionservices'), 'get', null, null, params, function (err, resp) {
+                    if(!err){
                     this.set('graphServices', resp)
                     if (typeof cb === "function") {
                         cb(resp);
+                    }
+                    }else{
+                        this.resolveError(err);
                     }
                 }.bind(this));
             },
@@ -355,13 +363,15 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 var payload = event.detail;
                 var method = "POST";
                 if (payload._version) {
-                    this.makeAjaxCall('api/decisiongraphs', "PUT", payload, null, null, function (err, resp) {
+                    this.makeAjaxCall(OEUtils._getRestApiUrl('/decisiongraphs'), "PUT", payload, null, null, function (err, resp) {
                         if (resp) {
                             this.fire('oe-show-success', 'Graph saved successfully');
                             this._moduleFire('decision-graph-selected', {
                                 graph: resp,
                                 service: this.graphServices
                             });
+                        }else{
+                            this.resolveError(err);
                         }
                     }.bind(this));
                 } else {
@@ -391,14 +401,17 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 var graph = eve.detail;
                 var idx = this.decisionGraphList.findIndex(function (g) {
                     return g.name === graph.name;
-                })
-                this.makeAjaxCall('api/decisiongraphs/' + graph.name, "Delete", null, null, null, function (
+                });
+                var url = OEUtils._getRestApiUrl('/decisiongraphs/' + graph.name);
+                this.makeAjaxCall(url, "Delete", null, null, null, function (
                     err, resp) {
                     if (resp) {
                         this.fire('oe-show-success', 'Graph deleted successfully');
                         this._moduleFire('decision-graph-selected', null);
                         this.splice('decisionGraphList', idx, 1);
                         this.set('_graphSelected', false);
+                    }else{
+                        this.resolveError(err);
                     }
                 }.bind(this));
             },

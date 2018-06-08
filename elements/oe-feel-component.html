@@ -1,4 +1,4 @@
-<!-- ©2017-2018 EdgeVerve Systems Limited (a fully owned Infosys subsidiary), Bangalore, India. All Rights Reserved.
+<!-- �2017-2018 EdgeVerve Systems Limited (a fully owned Infosys subsidiary), Bangalore, India. All Rights Reserved.
 The EdgeVerve proprietary software program ("Program"), is protected by copyrights laws, international treaties and other pending or existing intellectual property rights in India, the United States and other countries.
 The Program may contain/reference third party or open source components, the rights to which continue to
 remain with the applicable third party licensors or the open source community as the case may be and nothing
@@ -18,9 +18,10 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 --knowledge-source-color: #0099ff;
             }
 
-            *{
+            * {
                 user-select: none;
             }
+
             .component-header {
                 height: 30px;
                 padding: 0px 8px;
@@ -35,7 +36,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
 
             :host:hover .component-header {
                 visibility: visible;
-                width: auto;
+                width: 60px;
             }
 
             .component-container label {
@@ -80,8 +81,8 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 border: 2px solid var(--boxed-context-color);
             }
 
-            #KNOWLEDGE_SOURCE{
-                height:100px;
+            #KNOWLEDGE_SOURCE {
+                height: 100px;
             }
 
             .rect-container {
@@ -97,11 +98,12 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 height: 100%;
             }
 
-            :host:hover .background{
-                filter: drop-shadow(5px 5px 1px rgba(0,0,0,0.2));
+            :host:hover .background {
+                filter: drop-shadow(5px 5px 1px rgba(0, 0, 0, 0.2));
             }
-            :host:hover .rect-container{
-                box-shadow: 5px 5px 1px rgba(0,0,0,0.2);
+
+            :host:hover .rect-container {
+                box-shadow: 5px 5px 1px rgba(0, 0, 0, 0.2);
             }
 
             #connectorTrigger {
@@ -116,9 +118,10 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 cursor: crosshair;
                 border: 2px solid;
             }
-            .component-panel.selected-true .selectable-background{
+
+            .component-panel.selected-true .selectable-background {
                 background: deepskyblue;
-                fill:deepskyblue;
+                fill: deepskyblue;
             }
         </style>
         <div class$="component-panel [[node.nodeType]] selected-[[selected]]">
@@ -171,7 +174,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             ready: function () {
                 this.selected = false;
             },
-            _computeIcon:function(selected){
+            _computeIcon: function (selected) {
                 return selected ? "check-box" : "check-box-outline-blank";
             },
             _launchSetting: function () {
@@ -182,7 +185,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             },
             toggleSelection: function (e) {
                 e.stopPropagation();
-                this.fire('toggle-selection',this);
+                this.fire('toggle-selection', this);
             },
             _handleConnectorLaunch: function (e) {
                 e.stopPropagation();

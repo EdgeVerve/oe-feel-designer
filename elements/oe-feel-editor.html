@@ -205,6 +205,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 'open-node-setting': '_handleOpenSetting',
                 'toggle-selection': '_toggleSelection',
                 'confirm-connection': '_handleNewConnection',
+                'edit-connection':'_handleEditConnection',
                 'reset-workspace-view': '_resetWorkSpaceView',
                 'load-service': '_loadService'
             },
@@ -458,7 +459,52 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     return this._getComponent(node.parentElement);
                 }
             },
+            _isGraphCyclic:function(nodes,connections){
+                var graph = {};
+                var path = [];
+                nodes.forEach(function(node){
+                    graph[node.i] = [];
+                });
+                connections.forEach(function(connection){
+                    graph[connection.from].push(connection.to);
+                });
+                
+                function visitNode(node){
+                    if(path.indexOf(node) !== -1){
+                        return false;
+                    }
+                    path.push(node);
+                    var edge = graph[node];
+                    for(var i = 0,len = edge.length;i<len;i++){
+                        var isValid = visitNode(edge[i]);
+                        if(!isValid){
+                            return false;
+                        }
+                    }
+                    var idx = path.indexOf(node);
+                    path.splice(idx,1);
+                    return true;
+                }
+                var isValid = visitNode(nodes[0]["i"]);
+                return !isValid;
+            },
             _handleNewConnection: function (event) {
+                var nodes = this.decisionGraph.graph.nodes.slice();
+                var connections = this.decisionGraph.graph.connections.slice();
+                var newConnection = {from:event.detail.from.i,to:event.detail.to.i};
+                var alreadyExist = connections.findIndex(function(connection){
+                    return ((connection.from === newConnection.from) && (connection.to === newConnection.to))
+                })
+                if(alreadyExist !== -1){
+                    this.fire('oe-show-error',"Connection already exists");
+                    return;
+                }
+				
+                connections.push(newConnection);
+                if(this._isGraphCyclic(nodes,connections)){
+                    this.fire('oe-show-error',"Cannot create cycle in the graph");
+                    return;
+                }
                 this.$.connectionSetting.set('isNewConnection', true);
                 this.$.connectionSetting.set('connectionDetail', event.detail);
                 this.$.connectionSetting.openDialog();

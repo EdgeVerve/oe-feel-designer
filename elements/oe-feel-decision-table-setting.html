@@ -1,4 +1,4 @@
-<!-- ©2017-2018 EdgeVerve Systems Limited (a fully owned Infosys subsidiary), Bangalore, India. All Rights Reserved.
+<!-- �2017-2018 EdgeVerve Systems Limited (a fully owned Infosys subsidiary), Bangalore, India. All Rights Reserved.
 The EdgeVerve proprietary software program ("Program"), is protected by copyrights laws, international treaties and other pending or existing intellectual property rights in India, the United States and other countries.
 The Program may contain/reference third party or open source components, the rights to which continue to
 remain with the applicable third party licensors or the open source community as the case may be and nothing
@@ -102,6 +102,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 box-sizing: border-box;
                 padding: 0px 4px;
             }
+
             /* Experimental */
 
             .expression-table {
@@ -191,6 +192,10 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 --oe-data-table-data: {
                     padding-right: 24px;
                 }
+
+                --oe-data-table-row-first:{
+                    background: rgba(0, 0, 0, 0.2);
+                }
             }
 
             .column-config-item iron-icon {
@@ -223,6 +228,9 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 padding: 0 24px;
             }
 
+            #decisionTable ::content .table-row:first-of-type .row-actions{
+                visibility: hidden !important;
+            }
             
         </style>
         <div class="component-container">
@@ -238,38 +246,6 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 </oe-combo>
             </div>
             <div class="expression-table">
-                <!-- <div class="column-configuration" hidden="[[!showConfig]]">
-                    <div class="heading layout horizontal justified center">
-                        <label>Configure Decision Table Columns</label>
-                        <div class="options layout horizontal justified center">
-                            <iron-icon icon="clear" on-tap="_closeColumnConfig"></iron-icon>
-                        </div>
-                    </div>
-                    <div class="layout horizontal justified column-list">
-                        <div class="flex input-columns">
-                            <label class="heading-panel">Input Columns
-                                <iron-icon icon="add" on-tap="_addColumn" data-col-type="inputColumnList"></iron-icon>
-                            </label>
-                            <template is="dom-repeat" items="[[inputColumnList]]">
-                                <div class="column-item layout horizontal center justified">
-                                    <oe-input no-label-float on-blur="_renameColumn" data-col-type="inputColumnList" value="{{item.label}}"></oe-input>
-                                    <iron-icon icon="delete" on-tap="_deleteColumn" data-col-type="inputColumnList"></iron-icon>
-                                </div>
-                            </template>
-                        </div>
-                        <div class="flex output-columns">
-                            <label class="heading-panel">Output Columns
-                                <iron-icon icon="add" on-tap="_addColumn" data-col-type="outputColumnList"></iron-icon>
-                            </label>
-                            <template is="dom-repeat" items="[[outputColumnList]]">
-                                <div class="column-item layout horizontal center justified">
-                                    <oe-input no-label-float on-blur="_renameColumn" data-col-type="outputColumnList" value="{{item.label}}"></oe-input>
-                                    <iron-icon icon="delete" on-tap="_deleteColumn" data-col-type="outputColumnList"></iron-icon>
-                                </div>
-                            </template>
-                        </div>
-                    </div>
-                </div> -->
                 <div class="column-config" hidden="[[!showConfig]]">
                     <div class="column-config-heading-panel layout horizontal justified center">
                         <label>Decision Table</label>
@@ -388,7 +364,10 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             },
             _dataChanged: function (nval, oval) {
                 if (nval && nval !== oval) {
-                    this.set('decisionRows', this.data.ruleList);
+                    var decisionRows = this.data.ruleList;
+                    var valuesRow = this.data.inputValues.concat(this.data.outputValues);
+                    decisionRows.splice(0,0,valuesRow);
+                    this.set('decisionRows', decisionRows);
                     this._launchColumnConfig();
                 }
             },
@@ -424,10 +403,8 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     this._removeFromArray('decisionRows', oldIdx);
                     return;
                 }
-
-
                 if (event.detail.action.action == 'move-up') {
-                    if (oldIdx == 0) {
+                    if (oldIdx == 1) {
                         return;
                     }
                     newIdx = oldIdx - 1;
@@ -542,9 +519,12 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 newArr.fill('-');
                 this.push('decisionRows', newArr);
             },
-
             getData: function () {
-                this.data.ruleList = this.decisionRows;
+                var valueRow = this.decisionRows[0];
+                var inputLength = this.data.inputExpressionList.length;
+                this.data.ruleList = this.decisionRows.slice(1);
+                this.data.outputValues = valueRow.splice(inputLength);
+                this.data.inputValues = valueRow;
                 return this.data;
             }
         })

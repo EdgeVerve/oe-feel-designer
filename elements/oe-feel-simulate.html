@@ -139,7 +139,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     jsonFeel: this.graph.data,
                     payload: this.simulation.payload
                 }
-                this.makeAjaxCall('api/decisiongraphs/execute', 'POST', body, null, null, null, function (
+                this.makeAjaxCall(OEUtils._getRestApiUrl('/decisiongraphs/execute'), 'POST', body, null, null, null, function (
                     err, resp) {
                     if (!err) {
                         this.set('simulation.output', resp)

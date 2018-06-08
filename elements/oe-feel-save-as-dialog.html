@@ -59,12 +59,14 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             _saveNewGraph:function(){
                 var payload = this.graph;
                 delete payload._version;
-                this.makeAjaxCall('api/decisiongraphs', "PUT", payload, null, null, function (err, resp) {
+                this.makeAjaxCall(OEUtils._getRestApiUrl('/decisiongraphs'), "PUT", payload, null, null, function (err, resp) {
                     if(resp){
                         this.push('graphList',resp);
                         this.fire('load-graph',resp);
                         this.fire('oe-show-success','Graph saved successfully');
                         this.closeDialog();
+                    }else{
+                        this.resolveError(err);
                     }
                 }.bind(this));
             },
