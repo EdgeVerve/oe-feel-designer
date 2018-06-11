@@ -89,6 +89,10 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 background: #fff;
             }
 
+            .component-container #INPUT{
+                border-radius: 20px;
+                border: 1px solid;
+            }
             .background {
                 position: absolute;
                 z-index: -1;
@@ -137,6 +141,9 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                         <template is="dom-repeat" items="[[node.data.inputExpressionList]]">
                             <label class="input-name">[[item]]</label>
                         </template>
+                    </div>
+                    <div id="INPUT" class="rect-container selectable-background">
+                        <label class="node-name">[[node.name]]</label>
                     </div>
                     <div id="BOXED_INVOCATION" class="rect-container selectable-background">
                         <label class="node-name">[[node.name]]</label>

@@ -73,21 +73,21 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     value: false
                 }
             },
-            behaviors: [],
-            listeners: {},
             ready: function () {
                 var connectionMap = {
                     'information': {
                         'DECISION_TABLE': ['DECISION_TABLE', 'BOXED_CONTEXT', 'BOXED_INVOCATION'],
                         'BOXED_INVOCATION': ['DECISION_TABLE', 'BOXED_CONTEXT', 'BOXED_INVOCATION'],
-                        'BOXED_CONTEXT': ['DECISION_TABLE', 'BOXED_CONTEXT', 'BOXED_INVOCATION']
+                        'BOXED_CONTEXT': ['DECISION_TABLE', 'BOXED_CONTEXT', 'BOXED_INVOCATION'],
+                        'INPUT':['DECISION_TABLE']
                     },
                     'knowledge-requirement': {
                         'BUSINESS_MODEL': ['DECISION_TABLE', 'BUSINESS_MODEL', 'BOXED_INVOCATION']
                     },
                     'authority':{
                         'KNOWLEDGE_SOURCE':['DECISION_TABLE', 'BUSINESS_MODEL','KNOWLEDGE_SOURCE'],
-                        'DECISION_TABLE':['KNOWLEDGE_SOURCE']
+                        'DECISION_TABLE':['KNOWLEDGE_SOURCE'],
+                        'INPUT':['KNOWLEDGE_SOURCE']
                     }
                 }
                 var associtaions = [{
