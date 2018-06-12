@@ -1,0 +1,695 @@
+<!-- 
+  ©2016-2017 EdgeVerve Systems Limited (a fully owned Infosys subsidiary),
+  Bangalore, India. All Rights Reserved.
+-->
+<!doctype html>
+<html>
+
+<head>
+    <title>oe-feel-designer tests</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../iron-test-helpers/test-helpers.js"></script>
+    <script src="../../iron-test-helpers/mock-interactions.js"></script>
+    <link rel="import" href="../all-imports.html">
+    <link rel="import" href="../oe-feel-designer.html">
+</head>
+
+<body>
+    <test-fixture id="basic">
+        <template>
+            <oe-feel-designer></oe-feel-designer>
+        </template>
+    </test-fixture>
+
+    <script>
+        HTMLImports.whenReady(function () {
+            if (OEUtils.geturl) {
+                OEUtils.geturl = function (url) {
+                    return url;
+                }
+            }
+        });
+
+        var decisiongraphs = [{
+            "name": "Graph-2",
+            "data": {
+                "Decision Table 1": "decision table(input expression list :['Input0'],outputs : ['Output0'],input values list : ['-'],output values : ['-'],rule list : [],id : 'Decision Table 1',hit policy : 'U' )",
+                "Boxed Invocation 1": "(key: value)",
+                "Boxed Invocation 2": "(key: value)",
+                "Business Model 1": "decision table(input expression list :['Input0'],outputs : ['Output0'],input values list : ['-'],output values : ['-'],rule list : [],id : 'Business Model 1',hit policy : 'U' )"
+            },
+            "graph": {
+                "nodes": [{
+                    "id": "nkkuwtttv",
+                    "i": 1,
+                    "name": "Decision Table 1",
+                    "nodeType": "DECISION_TABLE",
+                    "x": 230,
+                    "y": 314,
+                    "data": {
+                        "inputExpressionList": ["Input0"],
+                        "outputs": ["Output0"],
+                        "hitPolicy": "U",
+                        "ruleList": [],
+                        "inputValues": ["-"],
+                        "outputValues": ["-"]
+                    }
+                }, {
+                    "id": "0rdlfruxfv",
+                    "i": 2,
+                    "name": "Boxed Invocation 1",
+                    "nodeType": "BOXED_INVOCATION",
+                    "x": 790,
+                    "y": 454,
+                    "data": {
+                        "target": "",
+                        "parameters": [{
+                            "key": "key",
+                            "value": "value"
+                        }]
+                    }
+                }, {
+                    "id": "8acwa1vmv",
+                    "i": 3,
+                    "name": "Boxed Invocation 2",
+                    "nodeType": "BOXED_INVOCATION",
+                    "x": 233,
+                    "y": 494,
+                    "data": {
+                        "target": "",
+                        "parameters": [{
+                            "key": "key",
+                            "value": "value"
+                        }]
+                    }
+                }, {
+                    "id": "fp52f7jfur",
+                    "i": 4,
+                    "name": "Knowledge Source 1",
+                    "nodeType": "KNOWLEDGE_SOURCE",
+                    "x": 841,
+                    "y": 96,
+                    "data": {}
+                }, {
+                    "id": "g5bmr0ei",
+                    "i": 5,
+                    "name": "Business Model 1",
+                    "nodeType": "BUSINESS_MODEL",
+                    "x": 162,
+                    "y": 79,
+                    "data": {
+                        "decisionType": "DECISION_TABLE",
+                        "data": {
+                            "inputExpressionList": ["Input0"],
+                            "outputs": ["Output0"],
+                            "hitPolicy": "U",
+                            "ruleList": [],
+                            "inputValues": ["-"],
+                            "outputValues": ["-"]
+                        }
+                    }
+                }],
+                "connections": [{
+                    "type": "INFORMATION_REQUIREMENT",
+                    "from": 1,
+                    "to": 2,
+                    "id": "tqqnt477m"
+                }, {
+                    "type": "INFORMATION_REQUIREMENT",
+                    "from": 1,
+                    "to": 3,
+                    "id": "rv1oluuaa"
+                }, {
+                    "type": "INFORMATION_REQUIREMENT",
+                    "from": 2,
+                    "to": 3,
+                    "id": "7itndlh974"
+                }, {
+                    "type": "AUTHORITY_REQUIREMENT",
+                    "from": 4,
+                    "to": 1,
+                    "id": "m9oldfphg"
+                }, {
+                    "type": "KNOWLEDGE_REQUIREMENT",
+                    "from": 5,
+                    "to": 1,
+                    "id": "8lgf18n6"
+                }]
+            },
+            "payload": "",
+            "_type": "DecisionGraph",
+            "_createdBy": "judith",
+            "_modifiedBy": "judith",
+            "_createdOn": "2018-06-07T08:42:03.317Z",
+            "_modifiedOn": "2018-06-08T13:11:01.710Z",
+            "_isDeleted": false,
+            "_oldVersion": "4eb92872-5068-4843-970c-bba481053ed0",
+            "_version": "011c14a1-a050-45e3-9d0e-c8c31c328726"
+        }, {
+            "name": "Graph1",
+            "data": {
+                "Decision Table 1": "decision table(input expression list :['Input0'],outputs : ['Output0'],input values list : ['-'],output values : ['-'],rule list : [],id : 'Decision Table 1',hit policy : 'U' )",
+                "Boxed Invocation 1": "(key: value)",
+                "Decision Table 2": "decision table(input expression list :['Input0'],outputs : ['Output0'],input values list : ['-'],output values : ['-'],rule list : [],id : 'Decision Table 2',hit policy : 'U' )"
+            },
+            "graph": {
+                "nodes": [{
+                    "id": "thkjy98x",
+                    "i": 1,
+                    "name": "Decision Table 1",
+                    "nodeType": "DECISION_TABLE",
+                    "x": 5,
+                    "y": 10,
+                    "data": {
+                        "inputExpressionList": ["Input0"],
+                        "outputs": ["Output0"],
+                        "hitPolicy": "U",
+                        "ruleList": [],
+                        "inputValues": ["-"],
+                        "outputValues": ["-"]
+                    }
+                }, {
+                    "id": "zvycks87d7",
+                    "i": 2,
+                    "name": "Boxed Invocation 1",
+                    "nodeType": "BOXED_INVOCATION",
+                    "x": 2,
+                    "y": 133,
+                    "data": {
+                        "target": "",
+                        "parameters": [{
+                            "key": "key",
+                            "value": "value"
+                        }]
+                    }
+                }, {
+                    "id": "0kcnvgz9",
+                    "i": 3,
+                    "name": "Decision Table 2",
+                    "nodeType": "DECISION_TABLE",
+                    "x": 2,
+                    "y": 203,
+                    "data": {
+                        "inputExpressionList": ["Input0"],
+                        "outputs": ["Output0"],
+                        "hitPolicy": "U",
+                        "ruleList": [],
+                        "inputValues": ["-"],
+                        "outputValues": ["-"]
+                    }
+                }],
+                "connections": [{
+                    "type": "INFORMATION_REQUIREMENT",
+                    "from": 1,
+                    "to": 2,
+                    "id": "ekxq2r3c30"
+                }, {
+                    "type": "INFORMATION_REQUIREMENT",
+                    "from": 2,
+                    "to": 3,
+                    "id": "fqe2lwcpl"
+                }]
+            },
+            "payload": "",
+            "_type": "DecisionGraph",
+            "_createdBy": "judith",
+            "_modifiedBy": "judith",
+            "_createdOn": "2018-06-07T08:35:29.351Z",
+            "_modifiedOn": "2018-06-08T12:23:51.213Z",
+            "_isDeleted": false,
+            "_oldVersion": "e83e2f5b-71a2-4e39-85f4-2e62285a0630",
+            "_version": "7eae3819-11c5-4092-92b8-0ee93fb59853"
+        }, {
+            "name": "Teto",
+            "data": {
+                "Decision Table 1": "decision table(input expression list :['Input Field 1','Input 2'],outputs : ['Output Field 1','Output2'],input values list : ['inpv1','inpv2'],output values : ['oupv','-outv2'],rule list : [[r10,r20,o01,-],[r11,r21,o11,-]],id : 'Decision Table 1',hit policy : 'U' )"
+            },
+            "decisions": [],
+            "graph": {
+                "nodes": [{
+                    "x": 659.4921875,
+                    "y": 260.5,
+                    "nodeType": "DECISION_TABLE",
+                    "data": {
+                        "inputExpressionList": ["Input Field 1", "Input 2"],
+                        "outputs": ["Output Field 1", "Output2"],
+                        "hitPolicy": "U",
+                        "ruleList": [
+                            ["r10", "r20", "o01", "-"],
+                            ["r11", "r21", "o11", "-"]
+                        ],
+                        "inputValues": ["inpv1", "inpv2"],
+                        "outputValues": ["oupv", "-outv2"]
+                    },
+                    "id": "gSji5wgjxp4",
+                    "i": 0,
+                    "name": "Decision Table 1"
+                }],
+                "connections": []
+            },
+            "payload": "",
+            "_type": "DecisionGraph",
+            "_createdBy": "judith",
+            "_modifiedBy": "judith",
+            "_createdOn": "2018-06-08T11:42:45.130Z",
+            "_modifiedOn": "2018-06-08T11:56:35.025Z",
+            "_isDeleted": false,
+            "_oldVersion": "dfc962a4-f200-4521-a6a4-c881b1d4023f",
+            "_version": "56e2c506-3d2a-46f6-a49b-76e71280b95d"
+        }];
+        var decisionservices = [{
+            "name": "MyAll",
+            "decisions": ["Decision Table 1", "Boxed Invocation 1"],
+            "id": "5b18f0aedc6663b428d366a1",
+            "graphId": "Graph-2",
+            "_type": "DecisionService",
+            "_createdBy": "judith",
+            "_modifiedBy": "judith",
+            "_createdOn": "2018-06-07T08:45:34.643Z",
+            "_modifiedOn": "2018-06-07T09:35:13.422Z",
+            "_isDeleted": false,
+            "_oldVersion": "140f5f7c-64c7-46e2-9112-6b72a7fe3273",
+            "_version": "aa30c7ad-6df1-4cd1-8d24-4ea0f00999f9"
+        }, {
+            "name": "NewService",
+            "decisions": ["Decision Table 1", "Boxed Invocation 2", "Boxed Invocation 1"],
+            "id": "5b193701dc6663b428d366ab",
+            "graphId": "Graph-2",
+            "_type": "DecisionService",
+            "_createdBy": "judith",
+            "_modifiedBy": "judith",
+            "_createdOn": "2018-06-07T13:45:37.692Z",
+            "_modifiedOn": "2018-06-07T13:45:37.692Z",
+            "_isDeleted": false,
+            "_version": "0bd9c2a1-5a04-4183-8482-3cd096ea5257"
+        }];
+
+        suite('<oe-feel-designer>', function () {
+
+            var server;
+            var xhr, requests;
+            var el;
+
+            setup(function () {
+                xhr = sinon.useFakeXMLHttpRequest();
+                requests = [];
+                xhr.onCreate = function (req) {
+                    requests.push(req);
+                };
+
+                server = sinon.fakeServer.create();
+                server.autoRespond = true;
+                server.respondImmediately = true;
+                server.respondWith('GET',
+                    /decisiongraphs/,
+                    function (req) {
+                        req.respond(200, 'application/json', JSON.stringify(decisiongraphs));
+                    }
+                );
+
+                server.respondWith(
+                    'GET',
+                    /decisionservices/,
+                    function (req) {
+                        req.respond(200, 'application/json', JSON.stringify(decisionservices));
+                    }
+                );
+
+                server.respondWith('PUT',
+                    /decisionservices/,
+                    function (req) {
+                        req.respond(200, 'application/json', req.requestBody);
+                    }
+                );
+
+                server.respondWith('DELETE',
+                    /decisionservices\/*/,
+                    function (req) {
+                        req.respond(200, 'application/json', JSON.stringify({
+                            count: 1
+                        }));
+                    }
+                );
+                el = fixture('basic');
+                var footer = el.querySelector('[studio-footer]')
+
+                function moduleFireHandler(ev) {
+                    var eventName = ev.detail.event;
+                    var payload = ev.detail.payload;
+                    el.fire(eventName, payload);
+                }
+
+                function footerFireHandler(ev) {
+                    var eventName = ev.detail.event;
+                    var payload = ev.detail.payload;
+                    footer.fire(eventName, payload);
+                }
+
+                el.addEventListener('oe-studio-module-action', moduleFireHandler);
+                el.addEventListener('oe-studio-footer-action', footerFireHandler);
+            });
+
+
+            function loadGraph(index) {
+                var footer = el.querySelector('oe-feel-footer');
+                var listItem = footer.querySelectorAll('.graph-list .list-option');
+                listItem[index].click();
+            }
+
+
+            test('initial load of graphs list', function (done) {
+                Polymer.Base.async(function () {
+                    assert.deepEqual(el.curGraphStack.length, 0);
+                    assert.deepEqual(el._currentStackIndex, -1);
+                    done();
+                }, 100);
+            });
+
+            test('load a decision graph', function (done) {
+                Polymer.Base.async(function () {
+                    loadGraph(0);
+                    var loadedGraph = decisiongraphs[0];
+                    Polymer.Base.async(function () {
+                        flush(function () {
+                            assert.deepEqual(el.curGraphStack.length, 1);
+                            assert.deepEqual(el.curGraphStack[0].name,
+                                loadedGraph.name);
+                            assert.deepEqual(el._currentStackIndex, 0);
+                            var editor = el.querySelector('oe-feel-editor');
+                            var components = editor.querySelectorAll(
+                                'oe-feel-component');
+                            var connections = editor.querySelectorAll(
+                                'oe-feel-connector');
+                            assert.deepEqual(components.length, loadedGraph.graph
+                                .nodes.length);
+                            assert.deepEqual(connections.length, loadedGraph.graph
+                                .connections.length);
+                            done();
+                        });
+                    }, 400);
+
+                }, 100);
+            });
+
+            test('Add node to decision graph', function (done) {
+                Polymer.Base.async(function () {
+                    loadGraph(0);
+                    var loadedGraph = decisiongraphs[0];
+                    Polymer.Base.async(function () {
+                        flush(function () {
+                            assert.deepEqual(el.curGraphStack.length, 1);
+                            assert.deepEqual(el._currentStackIndex, 0);
+                            var editor = el.querySelector('oe-feel-editor');
+                            var customEvent = new MouseEvent('drop');
+                            customEvent.x = 100;
+                            customEvent.y = 100;
+                            customEvent.dataTransfer = {
+                                getData: function () {
+                                    return JSON.stringify({
+                                        name: 'Decision Table',
+                                        type: 'decision'
+                                    })
+                                }
+                            };
+                            editor._handleDrop(customEvent);
+                            flush(function () {
+                                assert.deepEqual(el.curGraphStack.length,
+                                    2);
+                                assert.deepEqual(el._currentStackIndex,
+                                    1);
+                                assert.deepEqual(el.curGraphStack[1].graph
+                                    .nodes.length, el.curGraphStack[
+                                        0].graph.nodes.length + 1);
+                                done();
+                            });
+                        });
+                    }, 100);
+                }, 100);
+            });
+
+            test('Move node of decision graph', function (done) {
+                Polymer.Base.async(function () {
+                    loadGraph(0);
+                    var loadedGraph = decisiongraphs[0];
+                    Polymer.Base.async(function () {
+                        flush(function () {
+                            assert.deepEqual(el.curGraphStack.length, 1);
+                            assert.deepEqual(el._currentStackIndex, 0);
+                            var editor = el.querySelector('oe-feel-editor');
+                            var components = editor.querySelectorAll(
+                                'oe-feel-component');
+                            editor.fire('update-component-position', {
+                                x: components[0].node.x + 20,
+                                y: components[0].node.y + 20,
+                                nodeIndex: components[0].node.i
+                            })
+                            flush(function () {
+                                assert.deepEqual(el.curGraphStack.length,
+                                    2);
+                                assert.deepEqual(el._currentStackIndex,
+                                    1);
+                                assert.deepEqual(el.curGraphStack[1].graph
+                                    .nodes[0].x, el.curGraphStack[0]
+                                    .graph.nodes[0].x + 20);
+                                done();
+                            });
+                        });
+                    }, 100);
+                }, 100);
+            });
+
+            test('Delete a node of decision graph', function (done) {
+                Polymer.Base.async(function () {
+                    loadGraph(0);
+                    var loadedGraph = decisiongraphs[0];
+                    Polymer.Base.async(function () {
+                        flush(function () {
+                            assert.deepEqual(el.curGraphStack.length, 1);
+                            assert.deepEqual(el._currentStackIndex, 0);
+                            var editor = el.querySelector('oe-feel-editor');
+                            var components = editor.querySelectorAll(
+                                'oe-feel-component');
+                            components[0]._deleteComponent();
+                            flush(function () {
+                                assert.deepEqual(el.curGraphStack.length,
+                                    2);
+                                assert.deepEqual(el._currentStackIndex,
+                                    1);
+                                assert.deepEqual(el.curGraphStack[1].graph
+                                    .nodes.length, el.curGraphStack[
+                                        0].graph.nodes.length - 1);
+                                assert.deepEqual(el.curGraphStack[1].graph
+                                    .connections.length, el.curGraphStack[
+                                        0].graph.connections.length -
+                                    4);
+                                done();
+                            });
+                        });
+                    }, 100);
+                }, 100);
+            });
+
+            test('Add new connection to decision graph', function (done) {
+                Polymer.Base.async(function () {
+                    loadGraph(0);
+                    var loadedGraph = decisiongraphs[0];
+                    Polymer.Base.async(function () {
+                        flush(function () {
+                            assert.deepEqual(el.curGraphStack.length, 1);
+                            assert.deepEqual(el._currentStackIndex, 0);
+                            var editor = el.querySelector('oe-feel-editor');
+                            var components = editor.querySelectorAll(
+                                'oe-feel-component');
+                            editor.fire('confirm-connection', {
+                                from: components[3].node,
+                                to: components[4].node,
+                                connection: {
+                                    type: "INFORMATION_REQUIREMENT"
+                                }
+                            });
+                            flush(function () {
+                                var dialog = editor.$.connectionSetting;
+                                assert.deepEqual(dialog.isNewConnection,
+                                    true);
+                                dialog._confirmConnection();
+                                flush(function () {
+                                    assert.deepEqual(el.curGraphStack
+                                        .length, 2);
+                                    assert.deepEqual(el._currentStackIndex,
+                                        1);
+                                    assert.deepEqual(el.curGraphStack[
+                                            1].graph
+                                        .connections.length,
+                                        el.curGraphStack[
+                                            0].graph.connections
+                                        .length + 1);
+                                    done();
+                                });
+                            });
+                        });
+                    }, 100);
+                }, 100);
+            });
+
+            test('Delete a connection of decision graph', function (done) {
+                Polymer.Base.async(function () {
+                    loadGraph(0);
+                    var loadedGraph = decisiongraphs[0];
+                    Polymer.Base.async(function () {
+                        flush(function () {
+                            assert.deepEqual(el.curGraphStack.length, 1);
+                            assert.deepEqual(el._currentStackIndex, 0);
+                            var editor = el.querySelector('oe-feel-editor');
+                            var connector = editor.querySelector('oe-feel-connector');
+                            connector._editConnection();
+                            flush(function () {
+                                var dialog = editor.$.connectionSetting;
+                                assert.deepEqual(dialog.isNewConnection,
+                                    false);
+                                dialog._confirmDelete();
+                                flush(function () {
+                                    assert.deepEqual(el.curGraphStack
+                                        .length,
+                                        2);
+                                    assert.deepEqual(el._currentStackIndex,
+                                        1);
+                                    assert.deepEqual(el.curGraphStack[
+                                            1].graph
+                                        .connections.length,
+                                        el.curGraphStack[
+                                            0].graph.connections
+                                        .length -
+                                        1);
+                                    done();
+                                });
+                            });
+                        });
+                    }, 400);
+                }, 100);
+            });
+
+            test('Edit node name', function (done) {
+                Polymer.Base.async(function () {
+                    loadGraph(0);
+                    var loadedGraph = decisiongraphs[0];
+                    Polymer.Base.async(function () {
+                        flush(function () {
+                            assert.deepEqual(el.curGraphStack.length, 1);
+                            assert.deepEqual(el._currentStackIndex, 0);
+                            var editor = el.querySelector('oe-feel-editor');
+                            var components = editor.querySelector('oe-feel-component');
+                            assert.deepEqual(editor._mainSection,"edit");
+                            components._launchSetting();
+                            flush(function () {
+                                assert.deepEqual(editor._mainSection,"setting");
+                                editor.set('_selectedNode.name','Renamed Node');
+                                editor.$["save-setting"].click();
+                                flush(function(){
+                                    assert.deepEqual(el.curGraphStack.length, 2);
+                                    assert.deepEqual(el._currentStackIndex,
+                                    1);
+                                    assert.deepEqual(el.curGraphStack[1].graph
+                                    .nodes[0].name,'Renamed Node');
+                                    done();
+                                });
+                            });
+                        });
+                    }, 100);
+                }, 100);
+            });
+
+            test('Select a node and service', function (done) {
+                Polymer.Base.async(function () {
+                    loadGraph(0);
+                    var loadedGraph = decisiongraphs[0];
+                    Polymer.Base.async(function () {
+                        flush(function () {
+                            assert.deepEqual(el.curGraphStack.length, 1);
+                            assert.deepEqual(el._currentStackIndex, 0);
+                            var editor = el.querySelector('oe-feel-editor');
+                            var component = editor.querySelector('oe-feel-component');
+                            component.toggleSelection();
+                            flush(function () {
+                                assert.deepEqual(editor.selectedNodes.length,1);
+                                var serviceManager = editor.querySelector('oe-feel-service-manager');
+                                assert.deepEqual(serviceManager.selectedService,null);
+                                var service = serviceManager.querySelector('.service-item');
+                                service.click();
+                                flush(function(){
+                                   assert.deepEqual(serviceManager._editServiceMode,false);
+                                   assert.deepEqual(editor.selectedNodes.length,2);
+                                   done();
+                                });
+                            });
+                        });
+                    }, 100);
+                }, 100);
+            });
+
+            test('Edit a service', function (done) {
+                Polymer.Base.async(function () {
+                    loadGraph(0);
+                    var loadedGraph = decisiongraphs[0];
+                    Polymer.Base.async(function () {
+                        flush(function () {
+                            var editor = el.querySelector('oe-feel-editor');
+                            var serviceManager = editor.querySelector('oe-feel-service-manager');
+                            assert.deepEqual(serviceManager.selectedService,null);
+                            var serviceEdit = serviceManager.querySelector('.service-item iron-icon[icon="create"]');
+                            serviceEdit.click();
+                            flush(function(){
+                                assert.deepEqual(serviceManager._editServiceMode,true);
+                                assert.deepEqual(editor.services.length,2);
+                                assert.deepEqual(editor.selectedService.name,"MyAll");
+                                assert.deepEqual(editor.selectedNodes.length,2);
+                                var component = editor.querySelector('oe-feel-component');
+                                component.toggleSelection();
+                                flush(function(){
+                                    assert.deepEqual(editor.selectedNodes.length,1);
+                                    serviceManager._saveAsService();
+                                    flush(function(){
+                                        serviceManager.$.saveServiceDialog.set('service.name','Test Service');
+                                        serviceManager.$.saveServiceDialog._saveNewService();
+                                        flush(function(){
+                                            assert.deepEqual(editor.services.length,3);
+                                            done();
+                                        });
+                                    });
+                                });
+                             });
+                        });
+                    }, 100);
+                }, 100);
+            });
+
+            test('Zoom in/out', function (done) {
+                Polymer.Base.async(function () {
+                    loadGraph(0);
+                    var loadedGraph = decisiongraphs[0];
+                    Polymer.Base.async(function () {
+                        flush(function () {
+                            var editor = el.querySelector('oe-feel-editor');
+                            var component = editor.querySelector('oe-feel-component');
+                            assert.deepEqual(editor._viewSetting.scaleFactor,1);
+                            editor._zoomIn();
+                            flush(function () {
+                                assert.deepEqual(editor._viewSetting.scaleFactor,1.1);
+                                editor._zoomOut();
+                                flush(function(){
+                                    assert.deepEqual(editor._viewSetting.scaleFactor,1);
+                                    done();
+                                })
+                            });
+                        });
+                    }, 100);
+                }, 100);
+            });
+        });
+    </script>
+</body>
+
+</html>

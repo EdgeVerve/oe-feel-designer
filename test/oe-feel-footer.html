@@ -1,0 +1,550 @@
+<!-- 
+  ©2016-2017 EdgeVerve Systems Limited (a fully owned Infosys subsidiary),
+  Bangalore, India. All Rights Reserved.
+-->
+<!doctype html>
+<html>
+
+<head>
+    <title>oe-feel-footer tests</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../iron-test-helpers/test-helpers.js"></script>
+    <script src="../../iron-test-helpers/mock-interactions.js"></script>
+    <link rel="import" href="../all-imports.html">
+    <link rel="import" href="../elements/oe-feel-footer.html">
+</head>
+
+<body>
+    <test-fixture id="basic">
+        <template>
+            <oe-feel-footer></oe-feel-footer>
+        </template>
+    </test-fixture>
+
+    <script>
+        HTMLImports.whenReady(function () {
+            if (OEUtils.geturl) {
+                OEUtils.geturl = function (url) {
+                    return url;
+                }
+            }
+        });
+
+        var decisiongraphs = [{
+            "name": "Graph-2",
+            "data": {
+                "Decision Table 1": "decision table(input expression list :['Input0'],outputs : ['Output0'],input values list : ['-'],output values : ['-'],rule list : [],id : 'Decision Table 1',hit policy : 'U' )",
+                "Boxed Invocation 1": "(key: value)",
+                "Boxed Invocation 2": "(key: value)",
+                "Business Model 1": "decision table(input expression list :['Input0'],outputs : ['Output0'],input values list : ['-'],output values : ['-'],rule list : [],id : 'Business Model 1',hit policy : 'U' )"
+            },
+            "graph": {
+                "nodes": [{
+                    "id": "nkkuwtttv",
+                    "i": 1,
+                    "name": "Decision Table 1",
+                    "nodeType": "DECISION_TABLE",
+                    "x": 230,
+                    "y": 314,
+                    "data": {
+                        "inputExpressionList": ["Input0"],
+                        "outputs": ["Output0"],
+                        "hitPolicy": "U",
+                        "ruleList": [],
+                        "inputValues": ["-"],
+                        "outputValues": ["-"]
+                    }
+                }, {
+                    "id": "0rdlfruxfv",
+                    "i": 2,
+                    "name": "Boxed Invocation 1",
+                    "nodeType": "BOXED_INVOCATION",
+                    "x": 790,
+                    "y": 454,
+                    "data": {
+                        "target": "",
+                        "parameters": [{
+                            "key": "key",
+                            "value": "value"
+                        }]
+                    }
+                }, {
+                    "id": "8acwa1vmv",
+                    "i": 3,
+                    "name": "Boxed Invocation 2",
+                    "nodeType": "BOXED_INVOCATION",
+                    "x": 233,
+                    "y": 494,
+                    "data": {
+                        "target": "",
+                        "parameters": [{
+                            "key": "key",
+                            "value": "value"
+                        }]
+                    }
+                }, {
+                    "id": "fp52f7jfur",
+                    "i": 4,
+                    "name": "Knowledge Source 1",
+                    "nodeType": "KNOWLEDGE_SOURCE",
+                    "x": 841,
+                    "y": 96,
+                    "data": {}
+                }, {
+                    "id": "g5bmr0ei",
+                    "i": 5,
+                    "name": "Business Model 1",
+                    "nodeType": "BUSINESS_MODEL",
+                    "x": 162,
+                    "y": 79,
+                    "data": {
+                        "decisionType": "DECISION_TABLE",
+                        "data": {
+                            "inputExpressionList": ["Input0"],
+                            "outputs": ["Output0"],
+                            "hitPolicy": "U",
+                            "ruleList": [],
+                            "inputValues": ["-"],
+                            "outputValues": ["-"]
+                        }
+                    }
+                }],
+                "connections": [{
+                    "type": "INFORMATION_REQUIREMENT",
+                    "from": 1,
+                    "to": 2,
+                    "id": "tqqnt477m"
+                }, {
+                    "type": "INFORMATION_REQUIREMENT",
+                    "from": 1,
+                    "to": 3,
+                    "id": "rv1oluuaa"
+                }, {
+                    "type": "INFORMATION_REQUIREMENT",
+                    "from": 2,
+                    "to": 3,
+                    "id": "7itndlh974"
+                }, {
+                    "type": "AUTHORITY_REQUIREMENT",
+                    "from": 4,
+                    "to": 1,
+                    "id": "m9oldfphg"
+                }, {
+                    "type": "KNOWLEDGE_REQUIREMENT",
+                    "from": 5,
+                    "to": 1,
+                    "id": "8lgf18n6"
+                }]
+            },
+            "payload": "",
+            "_type": "DecisionGraph",
+            "_createdBy": "judith",
+            "_modifiedBy": "judith",
+            "_createdOn": "2018-06-07T08:42:03.317Z",
+            "_modifiedOn": "2018-06-08T13:11:01.710Z",
+            "_isDeleted": false,
+            "_oldVersion": "4eb92872-5068-4843-970c-bba481053ed0",
+            "_version": "011c14a1-a050-45e3-9d0e-c8c31c328726"
+        }, {
+            "name": "Graph1",
+            "data": {
+                "Decision Table 1": "decision table(input expression list :['Input0'],outputs : ['Output0'],input values list : ['-'],output values : ['-'],rule list : [],id : 'Decision Table 1',hit policy : 'U' )",
+                "Boxed Invocation 1": "(key: value)",
+                "Decision Table 2": "decision table(input expression list :['Input0'],outputs : ['Output0'],input values list : ['-'],output values : ['-'],rule list : [],id : 'Decision Table 2',hit policy : 'U' )"
+            },
+            "graph": {
+                "nodes": [{
+                    "id": "thkjy98x",
+                    "i": 1,
+                    "name": "Decision Table 1",
+                    "nodeType": "DECISION_TABLE",
+                    "x": 5,
+                    "y": 10,
+                    "data": {
+                        "inputExpressionList": ["Input0"],
+                        "outputs": ["Output0"],
+                        "hitPolicy": "U",
+                        "ruleList": [],
+                        "inputValues": ["-"],
+                        "outputValues": ["-"]
+                    }
+                }, {
+                    "id": "zvycks87d7",
+                    "i": 2,
+                    "name": "Boxed Invocation 1",
+                    "nodeType": "BOXED_INVOCATION",
+                    "x": 2,
+                    "y": 133,
+                    "data": {
+                        "target": "",
+                        "parameters": [{
+                            "key": "key",
+                            "value": "value"
+                        }]
+                    }
+                }, {
+                    "id": "0kcnvgz9",
+                    "i": 3,
+                    "name": "Decision Table 2",
+                    "nodeType": "DECISION_TABLE",
+                    "x": 2,
+                    "y": 203,
+                    "data": {
+                        "inputExpressionList": ["Input0"],
+                        "outputs": ["Output0"],
+                        "hitPolicy": "U",
+                        "ruleList": [],
+                        "inputValues": ["-"],
+                        "outputValues": ["-"]
+                    }
+                }],
+                "connections": [{
+                    "type": "INFORMATION_REQUIREMENT",
+                    "from": 1,
+                    "to": 2,
+                    "id": "ekxq2r3c30"
+                }, {
+                    "type": "INFORMATION_REQUIREMENT",
+                    "from": 2,
+                    "to": 3,
+                    "id": "fqe2lwcpl"
+                }]
+            },
+            "payload": "",
+            "_type": "DecisionGraph",
+            "_createdBy": "judith",
+            "_modifiedBy": "judith",
+            "_createdOn": "2018-06-07T08:35:29.351Z",
+            "_modifiedOn": "2018-06-08T12:23:51.213Z",
+            "_isDeleted": false,
+            "_oldVersion": "e83e2f5b-71a2-4e39-85f4-2e62285a0630",
+            "_version": "7eae3819-11c5-4092-92b8-0ee93fb59853"
+        }, {
+            "name": "Teto",
+            "data": {
+                "Decision Table 1": "decision table(input expression list :['Input Field 1','Input 2'],outputs : ['Output Field 1','Output2'],input values list : ['inpv1','inpv2'],output values : ['oupv','-outv2'],rule list : [[r10,r20,o01,-],[r11,r21,o11,-]],id : 'Decision Table 1',hit policy : 'U' )"
+            },
+            "decisions": [],
+            "graph": {
+                "nodes": [{
+                    "x": 659.4921875,
+                    "y": 260.5,
+                    "nodeType": "DECISION_TABLE",
+                    "data": {
+                        "inputExpressionList": ["Input Field 1", "Input 2"],
+                        "outputs": ["Output Field 1", "Output2"],
+                        "hitPolicy": "U",
+                        "ruleList": [
+                            ["r10", "r20", "o01", "-"],
+                            ["r11", "r21", "o11", "-"]
+                        ],
+                        "inputValues": ["inpv1", "inpv2"],
+                        "outputValues": ["oupv", "-outv2"]
+                    },
+                    "id": "gSji5wgjxp4",
+                    "i": 0,
+                    "name": "Decision Table 1"
+                }],
+                "connections": []
+            },
+            "payload": "",
+            "_type": "DecisionGraph",
+            "_createdBy": "judith",
+            "_modifiedBy": "judith",
+            "_createdOn": "2018-06-08T11:42:45.130Z",
+            "_modifiedOn": "2018-06-08T11:56:35.025Z",
+            "_isDeleted": false,
+            "_oldVersion": "dfc962a4-f200-4521-a6a4-c881b1d4023f",
+            "_version": "56e2c506-3d2a-46f6-a49b-76e71280b95d"
+        }];
+        var decisionservices = [{
+            "name": "MyAll",
+            "decisions": ["Decision Table 1", "Boxed Invocation 1"],
+            "id": "5b18f0aedc6663b428d366a1",
+            "graphId": "Graph-2",
+            "_type": "DecisionService",
+            "_createdBy": "judith",
+            "_modifiedBy": "judith",
+            "_createdOn": "2018-06-07T08:45:34.643Z",
+            "_modifiedOn": "2018-06-07T09:35:13.422Z",
+            "_isDeleted": false,
+            "_oldVersion": "140f5f7c-64c7-46e2-9112-6b72a7fe3273",
+            "_version": "aa30c7ad-6df1-4cd1-8d24-4ea0f00999f9"
+        }, {
+            "name": "NewService",
+            "decisions": ["Decision Table 1", "Boxed Invocation 2", "Boxed Invocation 1"],
+            "id": "5b193701dc6663b428d366ab",
+            "graphId": "Graph-2",
+            "_type": "DecisionService",
+            "_createdBy": "judith",
+            "_modifiedBy": "judith",
+            "_createdOn": "2018-06-07T13:45:37.692Z",
+            "_modifiedOn": "2018-06-07T13:45:37.692Z",
+            "_isDeleted": false,
+            "_version": "0bd9c2a1-5a04-4183-8482-3cd096ea5257"
+        }];
+
+        suite('<oe-feel-footer>', function () {
+
+            var server;
+            var xhr, requests;
+
+            setup(function () {
+                xhr = sinon.useFakeXMLHttpRequest();
+                requests = [];
+                xhr.onCreate = function (req) {
+                    requests.push(req);
+                };
+
+                server = sinon.fakeServer.create();
+                server.autoRespond = true;
+                server.respondImmediately = true;
+                server.respondWith('GET',
+                    /decisiongraphs/,
+                    function (req) {
+                        req.respond(200, 'application/json', JSON.stringify(decisiongraphs));
+                    }
+                );
+
+                server.respondWith('PUT',
+                    /decisiongraphs/,
+                    function (req) {
+                        req.respond(200, 'application/json', req.requestBody);
+                    }
+                );
+
+                server.respondWith('DELETE',
+                    /decisiongraphs\/*/,
+                    function (req) {
+                        req.respond(200, 'application/json', JSON.stringify({
+                            count: 1
+                        }));
+                    }
+                );
+
+                server.respondWith(
+                    'GET',
+                    /decisionservices/,
+                    function (req) {
+                        req.respond(200, 'application/json', JSON.stringify(decisionservices));
+                    }
+                );
+
+            });
+
+            test('initial load of graphs list', function (done) {
+                var el = fixture('basic');
+                Polymer.Base.async(function () {
+                    assert.deepEqual(el.decisionGraphList.length, 3);
+                    assert.deepEqual(el._graphSelected, false);
+                    assert.deepEqual(el.selectedGraph, null);
+                    done();
+                }, 100);
+            });
+
+            test('filter the graphs list', function (done) {
+                var el = fixture('basic');
+                Polymer.Base.async(function () {
+                    var listItems = el.querySelectorAll('.graph-list .list-option')
+                    assert.deepEqual(listItems.length, 3);
+                    assert.deepEqual(el.showSeachBar, false);
+                    var searchIcon = el.querySelector('#search-trigger');
+                    searchIcon.click();
+                    flush(function(){
+                        assert.deepEqual(el.showSeachBar, true);
+                        el.set('graphSearchText','gra');
+                        flush(function(){
+                            listItems = el.querySelectorAll('.graph-list .list-option')
+                            assert.deepEqual(listItems.length, 2);
+                            done();
+                        });
+                    });
+                }, 100);
+            });
+
+            test('select a decision graph', function (done) {
+                var el = fixture('basic');
+                Polymer.Base.async(function () {
+                    var listItem = el.querySelector('.graph-list .list-option');
+
+                    function eventHandler(ev) {
+                        ev.stopPropagation();
+                        assert.deepEqual(ev.detail.event, 'decision-graph-selected');
+                        assert.deepEqual(el._graphSelected, true);
+                        assert.deepEqual(el.selectedGraph.name, decisiongraphs[0].name);
+                        el.removeEventListener('oe-studio-module-action', eventHandler);
+                        done();
+                    }
+                    el.addEventListener('oe-studio-module-action', eventHandler);
+                    listItem.click();
+                }, 300);
+            });
+
+            test('create a decision graph', function (done) {
+                var el = fixture('basic');
+                Polymer.Base.async(function () {
+                    var createPanel = el.querySelector('.graph-options .create-graph-panel');
+
+                    function eventHandler(ev) {
+                        ev.stopPropagation();
+                        assert.deepEqual(ev.detail.event, 'decision-graph-selected');
+                        assert.deepEqual(el._graphSelected, true);
+                        assert.deepEqual(el.selectedGraph.name, '');
+                        el.removeEventListener('oe-studio-module-action', eventHandler);
+                        done();
+                    }
+                    el.addEventListener('oe-studio-module-action', eventHandler);
+                    createPanel.click();
+                }, 300);
+            });
+
+            test('save a decision graph', function (done) {
+                var el = fixture('basic');
+                Polymer.Base.async(function () {
+                    var saveBtn = el.querySelector('#save-btn');
+                    var decisionLength = el.decisionGraphList.length;
+
+                    function eventHandler(ev) {
+                        ev.stopPropagation();
+                        if (ev.detail.event === 'init-save-graph') {
+                            el.fire('save-graph', {
+                                data: {},
+                                graph: {
+                                    nodes: [],
+                                    connections: []
+                                },
+                                name: "new-graph",
+                                _version:"123e3f"
+                            });
+                        } else if (ev.detail.event === 'decision-graph-selected') {
+                            assert.deepEqual(ev.detail.payload.graph.name, 'new-graph');
+                            el.removeEventListener('oe-studio-module-action', eventHandler);
+                            done();
+                        }
+                    }
+
+                    el.addEventListener('oe-studio-module-action', eventHandler);
+                    saveBtn.click();
+                }, 300);
+            });
+
+            test('save a decision graph with name', function (done) {
+                var el = fixture('basic');
+                Polymer.Base.async(function () {
+                    var saveBtn = el.querySelector('#save-btn');
+                    var decisionLength = el.decisionGraphList.length;
+
+                    function eventHandler(ev) {
+                        ev.stopPropagation();
+                        if (ev.detail.event === 'init-save-graph') {
+                            el.fire('save-graph', {
+                                data: {},
+                                graph: {
+                                    nodes: [],
+                                    connections: []
+                                },
+                                name: ""
+                            });
+
+                            flush(function () {
+                                var dialog = el.querySelector('#saveAsDialog');
+                                dialog.set('graph.name', 'test-graph');
+                                dialog._saveNewGraph();
+                            })
+                        } else if (ev.detail.event === 'decision-graph-selected') {
+                            assert.deepEqual(el.selectedGraph.name, 'test-graph');
+                            assert.deepEqual(el.decisionGraphList.length, decisionLength + 1);
+                            el.removeEventListener('oe-studio-module-action', eventHandler);
+                            done();
+                        }
+                    }
+
+                    el.addEventListener('oe-studio-module-action', eventHandler);
+                    saveBtn.click();
+                }, 300);
+            });
+
+            test('delete a decision graph', function (done) {
+                var el = fixture('basic');
+                Polymer.Base.async(function () {
+                    var listItem = el.querySelector('.graph-list .list-option');
+                    listItem.click();
+                    flush(function () {
+                        var deleteBtn = el.querySelector('#delete-btn');
+                        var decisionLength = el.decisionGraphList.length;
+
+                        function eventHandler(ev) {
+                            ev.stopPropagation();
+                            assert.deepEqual(el._graphSelected, false);
+                            assert.deepEqual(el.decisionGraphList.length,decisionLength - 1);
+                            el.removeEventListener('oe-studio-module-action',eventHandler);
+                            done();
+                        }
+
+                        function confirmHandler(ev) {
+                            ev.detail.ok && ev.detail.ok();
+                            el.removeEventListener('oe-show-confirm', confirmHandler);
+                        }
+
+                        el.addEventListener('oe-studio-module-action', eventHandler);
+                        el.addEventListener('oe-show-confirm', confirmHandler);
+                        deleteBtn.click();
+                    })
+
+                }, 300);
+            });
+
+            test('trigger undo graph', function (done) {
+                var el = fixture('basic');
+                Polymer.Base.async(function () {
+                    var undoBtn = el.querySelector('#undo-btn');
+                    function eventHandler(ev) {
+                        ev.stopPropagation();
+                        assert.deepEqual(ev.detail.event, 'undo-decision-graph');
+                        el.fire('stack-updated',{
+                            curIndex:0,
+                            stackLength:2
+                        });
+                        flush(function(){
+                            assert.deepEqual(el._isUndoDisabled, true);
+                            assert.deepEqual(el._isRedoDisabled, false);
+                            el.removeEventListener('oe-studio-module-action', eventHandler);
+                            done();
+                        });
+                    }
+                    el.addEventListener('oe-studio-module-action', eventHandler);
+                    undoBtn.click();
+                }, 300);
+            });
+
+            test('trigger redo graph', function (done) {
+                var el = fixture('basic');
+                Polymer.Base.async(function () {
+                    var redoBtn = el.querySelector('#redo-btn');
+                    function eventHandler(ev) {
+                        ev.stopPropagation();
+                        assert.deepEqual(ev.detail.event, 'redo-decision-graph');
+                        el.fire('stack-updated',{
+                            curIndex:1,
+                            stackLength:2
+                        });
+                        flush(function(){
+                            assert.deepEqual(el._isUndoDisabled, false);
+                            assert.deepEqual(el._isRedoDisabled, true);
+                            el.removeEventListener('oe-studio-module-action', eventHandler);
+                            done();
+                        });
+                    }
+                    el.addEventListener('oe-studio-module-action', eventHandler);
+                    redoBtn.click();
+                }, 300);
+            });
+        });
+    </script>
+</body>
+
+</html>

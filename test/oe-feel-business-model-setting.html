@@ -1,0 +1,176 @@
+<!-- 
+  ©2016-2017 EdgeVerve Systems Limited (a fully owned Infosys subsidiary),
+  Bangalore, India. All Rights Reserved.
+-->
+<!doctype html>
+<html>
+
+<head>
+    <title>oe-feel-business-model-setting tests</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../iron-test-helpers/test-helpers.js"></script>
+    <script src="../../iron-test-helpers/mock-interactions.js"></script>
+    <link rel="import" href="../all-imports.html">
+    <link rel="import" href="../elements/oe-feel-business-model-setting.html">
+</head>
+
+<body>
+    <test-fixture id="basic">
+        <template>
+            <oe-feel-business-model-setting></oe-feel-business-model-setting>
+        </template>
+    </test-fixture>
+
+    <script>
+        
+
+        suite('<oe-feel-business-model-setting>', function () {
+            var businessData =  {
+                "decisionType": "DECISION_TABLE",
+                "data": {
+                    "inputExpressionList": ["Input0"],
+                    "outputs": ["Output0"],
+                    "hitPolicy": "U",
+                    "ruleList": [['rule1inp1','rule1out1']],
+                    "inputValues": ["-"],
+                    "outputValues": ["-"]
+                }
+            }
+
+            function getinitData(){
+                return JSON.parse(JSON.stringify(businessData));
+            }
+
+            test('initial load of graphs list', function (done) {
+                var el = fixture('basic');
+                el.set('data',getinitData());
+                flush(function(){
+                    assert.deepEqual(el.decisionTableData.hitPolicy, businessData.data.hitPolicy);
+                    done();
+                });
+            });
+
+            test('Add column and row in decision table', function (done) {
+                var el = fixture('basic');
+                el.set('data',getinitData());
+                flush(function(){
+                    assert.deepEqual(el.decisionTableData.inputExpressionList.length, 1);
+                    assert.deepEqual(el.decisionTableData.outputs.length, 1);
+                    assert.deepEqual(el.decisionTableData.ruleList.length, 2);
+                    var controlButtons = el.$.decisionTable.querySelectorAll('.column-config paper-button');
+                    controlButtons[0].click();
+                    flush(function(){
+                        assert.deepEqual(el.decisionTableData.inputExpressionList.length, 2);
+                        controlButtons[1].click();
+                        flush(function(){
+                            assert.deepEqual(el.decisionTableData.outputs.length, 2);
+                            controlButtons[2].click();
+                            flush(function(){
+                                assert.deepEqual(el.decisionTableData.ruleList.length, 3);
+                                assert.deepEqual(el.decisionTableData.ruleList[0].length, 4);
+                                done();
+                            });
+                        });
+                    });
+                });
+            });
+
+            test('reorder/delete a rule in decision table', function (done) {
+                var el = fixture('basic');
+                el.set('data',getinitData());
+                flush(function(){
+                    assert.deepEqual(el.decisionTableData.ruleList.length, 2);
+                    assert.deepEqual(el.decisionTableData.ruleList[1][0], 'rule1inp1');
+                    var controlButtons = el.$.decisionTable.querySelectorAll('.column-config paper-button');
+                    controlButtons[2].click();
+                    flush(function(){
+                        Polymer.Base.async(function(){
+                            assert.deepEqual(el.decisionTableData.ruleList.length, 3);
+                            var rowActions = el.$.decisionTable.querySelectorAll('.row-action iron-icon');
+                            rowActions[5].click();
+                            flush(function(){
+                                assert.deepEqual(el.decisionTableData.ruleList[0][0], 'rule1inp1');
+                                rowActions[3].click();
+                                flush(function(){
+                                    assert.deepEqual(el.decisionTableData.ruleList.length, 2);
+                                    done();
+                                });
+                            });
+                        },300);
+                    });
+                });
+            });
+
+            test('Rename/delete column in decision table', function (done) {
+                var el = fixture('basic');
+                el.set('data',getinitData());
+                flush(function(){
+                    assert.deepEqual(el.decisionTableData.inputExpressionList[0],"Input0");
+                    var columnInput = el.$.decisionTable.querySelector('.column-config oe-input');
+                    columnInput.set('value','newInput');
+                    columnInput.fire('blur');
+                    flush(function(){
+                        assert.deepEqual(el.decisionTableData.inputExpressionList[0],"newInput");
+                        var deleteIcon = el.$.decisionTable.querySelector('.column-config-item iron-icon[icon="clear"]');
+                        deleteIcon.click();
+                        flush(function(){
+                            var result = el.getData();
+                            assert.deepEqual(result.data.inputExpressionList.length, 0);
+                            done();
+                        });
+                    });
+                });
+            });
+
+            test('Business model with boxed context', function (done) {
+                var el = fixture('basic');
+                el.set('data',getinitData());
+                el.set('data.decisionType',"BOXED_CONTEXT");
+                flush(function(){
+                    var result = el.getData();
+                    assert.deepEqual(result.data.result.type,"DECISION_TABLE");
+                    var contextEl = el.$.boxedContext;
+                    contextEl.set('data.result.type','literal-expression');
+                    flush(function(){
+                        result = el.getData();
+                        assert.deepEqual(result.data.result.value,"");
+                        contextEl.set('data.result.type','none');
+                        flush(function(){
+                            result = el.getData();
+                            assert.deepEqual(result.data.result.value,undefined);
+                            done();
+                        })
+                    });
+                });
+            });
+
+            test('Business model with boxed context alter parameters', function (done) {
+                var el = fixture('basic');
+                el.set('data',getinitData());
+                el.set('data.decisionType',"BOXED_CONTEXT");
+                flush(function(){
+                    var result = el.getData();
+                    assert.deepEqual(result.data.parameters.length,0);
+                    var paramEle = el.$.boxedContext.querySelector('oe-feel-parameter-list');
+                    paramEle.querySelector('paper-button').click();
+                    flush(function(){
+                        result = el.getData();
+                        assert.deepEqual(result.data.parameters.length,1);
+                        paramEle.querySelector('iron-icon[icon="remove"]').click();
+                        flush(function(){
+                            result = el.getData();
+                            assert.deepEqual(result.data.parameters.length,0);
+                            done();
+                        })
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

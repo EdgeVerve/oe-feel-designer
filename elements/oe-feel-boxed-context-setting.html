@@ -122,7 +122,8 @@
                 }else if(data.result.type === "literal-expression"){
                     data.result.value = this.feelExpression;
                 } else {
-
+                    delete data.result.data;
+                    delete data.result.value;
                 }
                 return this.data;
             }

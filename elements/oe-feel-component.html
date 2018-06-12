@@ -191,11 +191,11 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 this.fire('delete-component', this.node);
             },
             toggleSelection: function (e) {
-                e.stopPropagation();
+                e && e.stopPropagation();
                 this.fire('toggle-selection', this);
             },
             _handleConnectorLaunch: function (e) {
-                e.stopPropagation();
+                e && e.stopPropagation();
                 this.fire('connector-drag', {
                     node: this,
                     event: e

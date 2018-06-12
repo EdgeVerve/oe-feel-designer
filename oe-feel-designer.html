@@ -43,6 +43,9 @@
                 'init-save-graph':'_initSaveGraph',
                 'init-save-graph-as':'_initSaveAsGraph'
             },
+            attached:function(){
+                this._clearStack();
+            },
             _clearStack: function () {
                 this.set('curGraphStack', []);
                 this.set('_currentStackIndex', -1);

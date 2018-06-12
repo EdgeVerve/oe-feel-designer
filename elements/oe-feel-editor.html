@@ -153,7 +153,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 </div>
                 <div id="editor-section" mode="edit" class="layout horizontal justified">
                     <oe-feel-element-list id="element-list"></oe-feel-element-list>
-                    <div class="wrapper flex" on-track="_panWorkSpace" on-mouse-wheel="_handleMouseWheel" on-drop="_handleDrop" on-dragover="_handleDragOver">
+                    <div class="wrapper flex" on-track="_panWorkSpace" on-drop="_handleDrop" on-dragover="_handleDragOver">
                         <div class="flex" id="workSpace" style$="[[_calculateStyle(_viewSetting.scaleFactor,_viewSetting.currentX,_viewSetting.currentY)]]"></div>
                     </div>
                     <div id="workspace-actions" class="layout horizontal center around-justified">
@@ -170,8 +170,8 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 <div id="configure-section" mode="setting">
                     <div class="configure-heading layout horizontal center justified">
                         <label class="flex">Settings</label>
-                        <iron-icon icon="save" on-tap="_applySetting"></iron-icon>
-                        <iron-icon icon="close" on-tap="_closeSetting"></iron-icon>
+                        <iron-icon icon="save" id="save-setting" on-tap="_applySetting"></iron-icon>
+                        <iron-icon icon="close" id="close-setting" on-tap="_closeSetting"></iron-icon>
                     </div>
                     <div class="node-setting">
                         <oe-input label="Node Name" value={{_selectedNode.name}}></oe-input>
@@ -593,7 +593,6 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     this.set('_viewSetting.scaleFactor', this._viewSetting.scaleFactor - 0.1);
                 }
             },
-            _handleMouseWheel:function(){},
             _panWorkSpace: function (event) {
                 event.stopPropagation();
                 var elem = event.currentTarget;

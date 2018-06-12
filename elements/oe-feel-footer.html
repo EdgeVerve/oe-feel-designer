@@ -195,7 +195,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                                 </oe-input>
                             </div>
                             <div class="heading-panel layout horizontal center justified" hidden=[[showSeachBar]]>
-                                <iron-icon icon="search" on-tap="_toggleGraphSearch"></iron-icon>
+                                <iron-icon icon="search" id="search-trigger" on-tap="_toggleGraphSearch"></iron-icon>
                                 <label class="mini-heading">Graph List</label>
                                 <iron-icon icon="refresh" on-tap="_fetchGraphList"></iron-icon>
                             </div>
@@ -213,7 +213,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                         <div class="header-panel">
                             <label class="mini-heading">Options</label>
                         </div>
-                        <div class="list-option layout horizontal center" on-tap="_createGraph">
+                        <div class="list-option layout horizontal center create-graph-panel" on-tap="_createGraph">
                             <iron-icon icon="add"></iron-icon>
                             <span class="flex option-name">Create New Graph</span>
                         </div>
@@ -244,7 +244,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                         </paper-item>
                     </paper-menu>
                 </paper-menu-button>
-                <paper-icon-button id="code-view-btn" icon="delete" class="toolbar-item" on-tap="_initDeleteGraph"></paper-icon-button>
+                <paper-icon-button id="delete-btn" icon="delete" class="toolbar-item" on-tap="_initDeleteGraph"></paper-icon-button>
             </div>
         </div>
         <oe-feel-save-as-dialog id="saveAsDialog" graph-list={{decisionGraphList}}></oe-feel-save-as-dialog>
@@ -407,9 +407,9 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     err, resp) {
                     if (resp) {
                         this.fire('oe-show-success', 'Graph deleted successfully');
-                        this._moduleFire('decision-graph-selected', null);
                         this.splice('decisionGraphList', idx, 1);
                         this.set('_graphSelected', false);
+                        this._moduleFire('decision-graph-selected', null);
                     }else{
                         this.resolveError(err);
                     }
