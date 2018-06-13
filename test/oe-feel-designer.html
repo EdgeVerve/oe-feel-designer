@@ -319,6 +319,14 @@
                     }
                 );
 
+                server.respondWith('POST',
+                    /decisiongraphs\/execute/,
+                    function (req) {
+                        req.respond(200, 'application/json',JSON.stringify({
+                            value: "test"
+                        }));
+                    }
+                );
                 server.respondWith('PUT',
                     /decisionservices/,
                     function (req) {
@@ -544,7 +552,8 @@
                             assert.deepEqual(el.curGraphStack.length, 1);
                             assert.deepEqual(el._currentStackIndex, 0);
                             var editor = el.querySelector('oe-feel-editor');
-                            var connector = editor.querySelector('oe-feel-connector');
+                            var connector = editor.querySelector(
+                                'oe-feel-connector');
                             connector._editConnection();
                             flush(function () {
                                 var dialog = editor.$.connectionSetting;
@@ -581,19 +590,49 @@
                             assert.deepEqual(el.curGraphStack.length, 1);
                             assert.deepEqual(el._currentStackIndex, 0);
                             var editor = el.querySelector('oe-feel-editor');
-                            var components = editor.querySelector('oe-feel-component');
-                            assert.deepEqual(editor._mainSection,"edit");
+                            var components = editor.querySelectorAll('oe-feel-component')[1];
+                            assert.deepEqual(editor._mainSection, "edit");
                             components._launchSetting();
                             flush(function () {
-                                assert.deepEqual(editor._mainSection,"setting");
-                                editor.set('_selectedNode.name','Renamed Node');
+                                assert.deepEqual(editor._mainSection,
+                                    "setting");
+                                editor.set('_selectedNode.name',
+                                    'Renamed Node');
                                 editor.$["save-setting"].click();
-                                flush(function(){
-                                    assert.deepEqual(el.curGraphStack.length, 2);
+                                flush(function () {
+                                    assert.deepEqual(el.curGraphStack
+                                        .length, 2);
                                     assert.deepEqual(el._currentStackIndex,
-                                    1);
-                                    assert.deepEqual(el.curGraphStack[1].graph
-                                    .nodes[0].name,'Renamed Node');
+                                        1);
+                                    assert.deepEqual(el.curGraphStack[
+                                            1].graph
+                                        .nodes[1].name,
+                                        'Renamed Node');
+                                    done();
+                                });
+                            });
+                        });
+                    }, 100);
+                }, 100);
+            });
+
+            test('Select a node and simulate node', function (done) {
+                Polymer.Base.async(function () {
+                    loadGraph(0);
+                    var loadedGraph = decisiongraphs[0];
+                    Polymer.Base.async(function () {
+                        flush(function () {
+                            var editor = el.querySelector('oe-feel-editor');
+                            var component = editor.querySelector('oe-feel-component');
+                            component.toggleSelection();
+                            flush(function () {
+                                assert.deepEqual(editor.selectedNodes.length,1);
+                                var serviceManager = editor.querySelector('oe-feel-service-manager');
+                                var simulator = serviceManager.querySelector('oe-feel-simulate');
+                                simulator.set('simulation.payload',{'inp1':'inputValue'});
+                                simulator._runSimulation();
+                                flush(function(){
+                                    assert.deepEqual(simulator.simulation.output.value,'test');
                                     done();
                                 });
                             });
@@ -611,18 +650,37 @@
                             assert.deepEqual(el.curGraphStack.length, 1);
                             assert.deepEqual(el._currentStackIndex, 0);
                             var editor = el.querySelector('oe-feel-editor');
-                            var component = editor.querySelector('oe-feel-component');
+                            var component = editor.querySelector(
+                                'oe-feel-component');
                             component.toggleSelection();
                             flush(function () {
-                                assert.deepEqual(editor.selectedNodes.length,1);
-                                var serviceManager = editor.querySelector('oe-feel-service-manager');
-                                assert.deepEqual(serviceManager.selectedService,null);
-                                var service = serviceManager.querySelector('.service-item');
+                                assert.deepEqual(editor.selectedNodes.length,
+                                    1);
+                                var serviceManager = editor.querySelector(
+                                    'oe-feel-service-manager');
+                                assert.deepEqual(serviceManager.selectedService,
+                                    null);
+                                var service = serviceManager.querySelector(
+                                    '.service-item');
                                 service.click();
-                                flush(function(){
-                                   assert.deepEqual(serviceManager._editServiceMode,false);
-                                   assert.deepEqual(editor.selectedNodes.length,2);
-                                   done();
+                                flush(function () {
+                                    assert.deepEqual(
+                                        serviceManager._editServiceMode,
+                                        false);
+                                    assert.deepEqual(editor.selectedNodes
+                                        .length, 2);
+                                    serviceManager._clearSelectedService();
+                                    flush(function () {
+                                        assert.deepEqual(
+                                            serviceManager
+                                            .selectedService,
+                                            null);
+                                        assert.deepEqual(
+                                            editor.selectedNodes
+                                            .length,
+                                            0);
+                                        done();
+                                    });
                                 });
                             });
                         });
@@ -637,30 +695,86 @@
                     Polymer.Base.async(function () {
                         flush(function () {
                             var editor = el.querySelector('oe-feel-editor');
-                            var serviceManager = editor.querySelector('oe-feel-service-manager');
-                            assert.deepEqual(serviceManager.selectedService,null);
-                            var serviceEdit = serviceManager.querySelector('.service-item iron-icon[icon="create"]');
+                            var serviceManager = editor.querySelector(
+                                'oe-feel-service-manager');
+                            assert.deepEqual(serviceManager.selectedService,
+                                null);
+                            var serviceEdit = serviceManager.querySelector(
+                                '.service-item iron-icon[icon="create"]');
                             serviceEdit.click();
-                            flush(function(){
-                                assert.deepEqual(serviceManager._editServiceMode,true);
-                                assert.deepEqual(editor.services.length,2);
-                                assert.deepEqual(editor.selectedService.name,"MyAll");
-                                assert.deepEqual(editor.selectedNodes.length,2);
-                                var component = editor.querySelector('oe-feel-component');
+                            flush(function () {
+                                assert.deepEqual(serviceManager._editServiceMode,
+                                    true);
+                                assert.deepEqual(editor.services.length,
+                                    2);
+                                assert.deepEqual(editor.selectedService
+                                    .name, "MyAll");
+                                assert.deepEqual(editor.selectedNodes.length,
+                                    2);
+                                var component = editor.querySelector(
+                                    'oe-feel-component');
                                 component.toggleSelection();
-                                flush(function(){
-                                    assert.deepEqual(editor.selectedNodes.length,1);
+                                flush(function () {
+                                    assert.deepEqual(editor.selectedNodes
+                                        .length, 1);
                                     serviceManager._saveAsService();
-                                    flush(function(){
-                                        serviceManager.$.saveServiceDialog.set('service.name','Test Service');
-                                        serviceManager.$.saveServiceDialog._saveNewService();
-                                        flush(function(){
-                                            assert.deepEqual(editor.services.length,3);
-                                            done();
+                                    flush(function () {
+                                        serviceManager.$
+                                            .saveServiceDialog
+                                            .set(
+                                                'service.name',
+                                                'Test Service'
+                                            );
+                                        serviceManager.$
+                                            .saveServiceDialog
+                                            ._saveNewService();
+                                        flush(function () {
+                                            assert
+                                                .deepEqual(
+                                                    editor
+                                                    .services
+                                                    .length,
+                                                    3
+                                                );
+                                            done
+                                                ();
                                         });
                                     });
                                 });
-                             });
+                            });
+                        });
+                    }, 100);
+                }, 100);
+            });
+
+            test('Delete a service', function (done) {
+                Polymer.Base.async(function () {
+                    loadGraph(0);
+                    var loadedGraph = decisiongraphs[0];
+                    Polymer.Base.async(function () {
+                        flush(function () {
+                            var editor = el.querySelector('oe-feel-editor');
+                            var serviceManager = editor.querySelector(
+                                'oe-feel-service-manager');
+                            assert.deepEqual(serviceManager.selectedService,
+                                null);
+
+                            var confirmHandler = function (ev) {
+                                ev.detail.ok && ev.detail.ok();
+                                serviceManager.removeEventListener(
+                                    'oe-show-confirm', confirmHandler);
+                            }
+                            serviceManager.addEventListener('oe-show-confirm',
+                                confirmHandler);
+
+                            var serviceDelete = serviceManager.querySelector(
+                                '.service-item iron-icon[icon="delete"]');
+                            serviceDelete.click();
+                            flush(function () {
+                                assert.deepEqual(editor.services.length,
+                                    1);
+                                done();
+                            });
                         });
                     }, 100);
                 }, 100);
@@ -673,14 +787,17 @@
                     Polymer.Base.async(function () {
                         flush(function () {
                             var editor = el.querySelector('oe-feel-editor');
-                            var component = editor.querySelector('oe-feel-component');
-                            assert.deepEqual(editor._viewSetting.scaleFactor,1);
+                            var component = editor.querySelector(
+                                'oe-feel-component');
+                            assert.deepEqual(editor._viewSetting.scaleFactor, 1);
                             editor._zoomIn();
                             flush(function () {
-                                assert.deepEqual(editor._viewSetting.scaleFactor,1.1);
+                                assert.deepEqual(editor._viewSetting.scaleFactor,
+                                    1.1);
                                 editor._zoomOut();
-                                flush(function(){
-                                    assert.deepEqual(editor._viewSetting.scaleFactor,1);
+                                flush(function () {
+                                    assert.deepEqual(editor._viewSetting
+                                        .scaleFactor, 1);
                                     done();
                                 })
                             });
