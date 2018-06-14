@@ -224,30 +224,149 @@
             "_oldVersion": "e83e2f5b-71a2-4e39-85f4-2e62285a0630",
             "_version": "7eae3819-11c5-4092-92b8-0ee93fb59853"
         }, {
-            "name": "Teto",
+            "name": "news",
             "data": {
-                "Decision Table 1": "decision table(input expression list :['Input Field 1','Input 2'],outputs : ['Output Field 1','Output2'],input values list : ['inpv1','inpv2'],output values : ['oupv','-outv2'],rule list : [[r10,r20,o01,-],[r11,r21,o11,-]],id : 'Decision Table 1',hit policy : 'U' )"
+                "Decision Table 1": "decision table(input expression list : ['in1','Input 2'],outputs : ['out1','Output 2'],input values list : [[i1],[i2]],output values : [[o1],[o2]],rule list : [['ri1','ri2','ro1','ro2'],['r1i1','r1i2','r1o1','r1o2']],id : 'Decision Table 1',hit policy : 'U')",
+                "Boxed Invocation 1": "Decision Table 1 (New : \"value\",New2 : \"value2\")",
+                "Boxed Context 1": "{Field 1 : \"value\",result : decision table(input expression list : ['Input Field 1'],outputs : \"Output Field 1\",input values list : [[]],output values : [[]],rule list : [['-','-']],id : 'Boxed Context 1',hit policy : 'U')}",
+                "Boxed Context 2": "{f : 1,result : f+5}",
+                "Boxed Context 3": "{n : \"value\"}"
             },
             "decisions": [],
             "graph": {
                 "nodes": [{
-                    "x": 659.4921875,
-                    "y": 260.5,
+                    "x": 209.9765625,
+                    "y": 94,
                     "nodeType": "DECISION_TABLE",
                     "data": {
-                        "inputExpressionList": ["Input Field 1", "Input 2"],
-                        "outputs": ["Output Field 1", "Output2"],
+                        "inputExpressionList": ["in1", "Input 2"],
+                        "outputs": ["out1", "Output 2"],
                         "hitPolicy": "U",
                         "ruleList": [
-                            ["r10", "r20", "o01", "-"],
-                            ["r11", "r21", "o11", "-"]
+                            ["ri1", "ri2", "ro1", "ro2"],
+                            ["r1i1", "r1i2", "r1o1", "r1o2"]
                         ],
-                        "inputValues": ["inpv1", "inpv2"],
-                        "outputValues": ["oupv", "-outv2"]
+                        "inputValues": ["i1", "i2"],
+                        "outputValues": ["o1", "o2"]
                     },
-                    "id": "gSji5wgjxp4",
+                    "id": "gSjie7r71l7",
                     "i": 0,
                     "name": "Decision Table 1"
+                }, {
+                    "x": 424.96875,
+                    "y": 151,
+                    "nodeType": "BOXED_INVOCATION",
+                    "data": {
+                        "parameters": [{
+                            "key": "New",
+                            "value": "\"value\""
+                        }, {
+                            "key": "New2",
+                            "value": "\"value2\""
+                        }],
+                        "target": "Decision Table 1"
+                    },
+                    "id": "gSjie7r71la",
+                    "i": 1,
+                    "name": "Boxed Invocation 1"
+                }, {
+                    "x": 213,
+                    "y": 218,
+                    "nodeType": "BOXED_CONTEXT",
+                    "data": {
+                        "parameters": [{
+                            "key": "Field 1",
+                            "value": "\"value\""
+                        }],
+                        "result": {
+                            "type": "DECISION_TABLE",
+                            "data": {
+                                "inputExpressionList": ["Input Field 1"],
+                                "outputs": ["Output Field 1"],
+                                "hitPolicy": "U",
+                                "ruleList": [
+                                    ["-", "-"]
+                                ],
+                                "inputValues": [""],
+                                "outputValues": [""]
+                            }
+                        },
+                        "cache": {
+                            "DECISION_TABLE": {
+                                "type": "DECISION_TABLE",
+                                "data": {
+                                    "inputExpressionList": ["Input Field 1"],
+                                    "outputs": ["Output Field 1"],
+                                    "hitPolicy": "U",
+                                    "ruleList": [],
+                                    "inputValues": [],
+                                    "outputValues": []
+                                }
+                            }
+                        }
+                    },
+                    "id": "gSjie7r71ld",
+                    "i": 2,
+                    "name": "Boxed Context 1"
+                }, {
+                    "x": 217,
+                    "y": 277,
+                    "nodeType": "BOXED_CONTEXT",
+                    "data": {
+                        "parameters": [{
+                            "key": "f",
+                            "value": "1"
+                        }],
+                        "result": {
+                            "type": "literal-expression",
+                            "value": "f+5"
+                        },
+                        "cache": {
+                            "DECISION_TABLE": {
+                                "type": "DECISION_TABLE",
+                                "data": {
+                                    "inputExpressionList": ["Input Field 1"],
+                                    "outputs": ["Output Field 1"],
+                                    "hitPolicy": "U",
+                                    "ruleList": [],
+                                    "inputValues": [],
+                                    "outputValues": []
+                                }
+                            }
+                        }
+                    },
+                    "id": "gSjie7r71lg",
+                    "i": 3,
+                    "name": "Boxed Context 2"
+                }, {
+                    "x": 219,
+                    "y": 335,
+                    "nodeType": "BOXED_CONTEXT",
+                    "data": {
+                        "parameters": [{
+                            "key": "n",
+                            "value": "\"value\""
+                        }],
+                        "result": {
+                            "type": "none"
+                        },
+                        "cache": {
+                            "DECISION_TABLE": {
+                                "type": "DECISION_TABLE",
+                                "data": {
+                                    "inputExpressionList": ["Input Field 1"],
+                                    "outputs": ["Output Field 1"],
+                                    "hitPolicy": "U",
+                                    "ruleList": [],
+                                    "inputValues": [],
+                                    "outputValues": []
+                                }
+                            }
+                        }
+                    },
+                    "id": "gSjie7r71lj",
+                    "i": 4,
+                    "name": "Boxed Context 3"
                 }],
                 "connections": []
             },
@@ -255,11 +374,11 @@
             "_type": "DecisionGraph",
             "_createdBy": "judith",
             "_modifiedBy": "judith",
-            "_createdOn": "2018-06-08T11:42:45.130Z",
-            "_modifiedOn": "2018-06-08T11:56:35.025Z",
+            "_createdOn": "2018-06-14T07:12:17.862Z",
+            "_modifiedOn": "2018-06-14T07:22:29.228Z",
             "_isDeleted": false,
-            "_oldVersion": "dfc962a4-f200-4521-a6a4-c881b1d4023f",
-            "_version": "56e2c506-3d2a-46f6-a49b-76e71280b95d"
+            "_oldVersion": "fd3b8a03-0d76-4dd8-8f8a-8186b8aa7ddd",
+            "_version": "275a76d6-c9eb-41de-8400-8346a1472201"
         }];
         var decisionservices = [{
             "name": "MyAll",
@@ -322,7 +441,7 @@
                 server.respondWith('POST',
                     /decisiongraphs\/execute/,
                     function (req) {
-                        req.respond(200, 'application/json',JSON.stringify({
+                        req.respond(200, 'application/json', JSON.stringify({
                             value: "test"
                         }));
                     }
@@ -590,7 +709,8 @@
                             assert.deepEqual(el.curGraphStack.length, 1);
                             assert.deepEqual(el._currentStackIndex, 0);
                             var editor = el.querySelector('oe-feel-editor');
-                            var components = editor.querySelectorAll('oe-feel-component')[1];
+                            var components = editor.querySelectorAll(
+                                'oe-feel-component')[1];
                             assert.deepEqual(editor._mainSection, "edit");
                             components._launchSetting();
                             flush(function () {
@@ -623,16 +743,24 @@
                     Polymer.Base.async(function () {
                         flush(function () {
                             var editor = el.querySelector('oe-feel-editor');
-                            var component = editor.querySelector('oe-feel-component');
+                            var component = editor.querySelector(
+                                'oe-feel-component');
                             component.toggleSelection();
                             flush(function () {
-                                assert.deepEqual(editor.selectedNodes.length,1);
-                                var serviceManager = editor.querySelector('oe-feel-service-manager');
-                                var simulator = serviceManager.querySelector('oe-feel-simulate');
-                                simulator.set('simulation.payload',{'inp1':'inputValue'});
+                                assert.deepEqual(editor.selectedNodes.length,
+                                    1);
+                                var serviceManager = editor.querySelector(
+                                    'oe-feel-service-manager');
+                                var simulator = serviceManager.querySelector(
+                                    'oe-feel-simulate');
+                                simulator.set('simulation.payload', {
+                                    'inp1': 'inputValue'
+                                });
                                 simulator._runSimulation();
-                                flush(function(){
-                                    assert.deepEqual(simulator.simulation.output.value,'test');
+                                flush(function () {
+                                    assert.deepEqual(simulator.simulation
+                                        .output.value,
+                                        'test');
                                     done();
                                 });
                             });
@@ -777,6 +905,20 @@
                             });
                         });
                     }, 100);
+                }, 100);
+            });
+
+            test('Feel Expression generator', function (done) {
+                Polymer.Base.async(function () {
+                    var graph = decisiongraphs[2];
+                    graph.graph.nodes.forEach(function (node) {
+                        var expectedFEEL = graph.data[node.name];
+                        var generatedFEEL = el._getFEEL(node);
+                        if (expectedFEEL) {
+                            assert.deepEqual(expectedFEEL, generatedFEEL);
+                        }
+                    });
+                    done();
                 }, 100);
             });
 

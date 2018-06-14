@@ -219,22 +219,33 @@
                     }) + "]"
                 }
 
+                function valueArr(arr){
+                    return "["+arr.map(function(s){
+                        return "["+s+"]"
+                    })+"]";
+                }
+
                 var feel = "decision table(";
-                feel += "input expression list :" + getArrayString(data.inputExpressionList) + ",";
-                feel += "outputs : " + getArrayString(data.outputs) + ",";
-                feel += "input values list : " + getArrayString(data.inputValues) + ",";
-                feel += "output values : " + getArrayString(data.outputValues) + ",";
+                feel += "input expression list : " + getArrayString(data.inputExpressionList) + ",";
+                
+                if(data.outputs.length == 1){
+                    feel += "outputs : \""+ data.outputs[0]+"\",";
+                }else{
+                    feel += "outputs : " + getArrayString(data.outputs) + ",";
+                }
+                feel += "input values list : " + valueArr(data.inputValues) + ",";
+                feel += "output values : " + valueArr(data.outputValues)+ ",";
                 feel += "rule list : [" + data.ruleList.map(function (arr) {
-                    return "["+arr.join(',')+"]"
+                    return "["+arr.map(function(s){return "'"+s+"'"}).join(",")+"]"
                 }) + "],";
                 feel += "id : '" + name + "',";
-                feel += "hit policy : '" + data.hitPolicy + "' )";
+                feel += "hit policy : '" + data.hitPolicy + "')";
                 return feel;
             },
             _getInvocationFEEL: function (data) {
-                var feel = "" + data.target + "(";
+                var feel = "" + data.target + " (";
                 feel += data.parameters.map(function (param) {
-                    return param.key + ": " + param.value + "";
+                    return param.key + " : " + param.value + "";
                 });
                 feel += ")";
                 return feel;
@@ -242,14 +253,14 @@
             _getContextFEEL: function (data, name) {
                 var feel = "{";
                 feel += data.parameters.map(function (param) {
-                    return param.key + ": " + param.value + "";
+                    return param.key + " : " + param.value + "";
                 });
                 switch (data.result.type) {
                     case "DECISION_TABLE":
-                        feel += "result : " + this._getDecisionTableFEEL(data.result.data, name);
+                        feel += ",result : " + this._getDecisionTableFEEL(data.result.data, name);
                         break;
                     case "literal-expression":
-                        feel += "result : " + data.result.value;
+                        feel += ",result : " + data.result.value;
                         break;
                     case "none":
                         break;
