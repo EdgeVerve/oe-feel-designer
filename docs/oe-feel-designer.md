@@ -1,83 +1,78 @@
-# ***OE Component Manager***
+# ***OE FEEL Designer***
 
-It is a plugin for oe-studio that helps to create and manage ui related components.
+It is a plugin for oe-studio that helps to create and manage decision graphs.
+
 Here is the Landing Page.
 
-![Component Management](/images/landing_page.png)
+![Landing Page](images/empty_state.png)
 
-## ***Component Creation***
-Click on `Create/Manage Components` which will show the existing list of components and new components can be created by clicking on `Add Component` button on top right of the list screen.
 
-![Component Management](/images/create_component_page.png)
+## ***Graph Creation***
+Click on `Select Decision grpah` which will show the existing list of decision grpahs and new graph can be created by clicking on `Create new graph` button on top right of the list screen.
 
-Give a name for the page, search the model which will be associated with the component/form.
-Here in the below example `Address` model is used and the page name is `my-addr`.
+![Decision list](images/open_list.png)
 
-![Component Management](/images/create_component_with_model_page.png)
+Upon clicking , a blank graph will be created and displayed as shown below.
 
-Click on `NEXT` button to choose a template.
-Select a template from the available list of templates.
+![Blank Graph](images/create_new_graph.png)
 
-![Component Management](/images/choose_template_for_cpmponent_page.png)
+The bottom Panel will now display options to undo/redo graph change , save and delete the graph.
 
-Click on save to create a component/form.
-The form that we created above using Address model looks like below image.
+The Left side lists the components/nodes that can be dragged and dropped into graph.Each components will display differently based on their type.
 
-![Component Management](/images/component_page.png)
+These components can be moved around as needed within the graph.The entire graph can be panned or zoomed as per preference.The final icon near the zoom icons will reset the Pan and zoom to initial state.
 
-***Note :*** A component can be created without associating a model to it.The default page will contain blank screen instead of showing all the properties associated with the model and one needs to add fields to it manually.
+![Components](images/create_new_components.png)
 
-### ***Field Addition***
+#### **Create connection**
+To create a connection between two nodes drag the blue circle at the end of node and connect it to its target. Once connected the designer will show a dialog box with available connection type.
 
-A new field can be added to the form/page.On the bottom right corner of the screen there is a text box where the new field's Id or name can be specified.
+![Connection Dialog](images/create_new_connection.png)
+Once confirmed the connection will be drawn on the graph.Cyclic connections are prevented in the graph.
 
-![Component Management](/images/add_field_page.png)
+![Connection Complete](images/connection_drawn.png)
+The appearance of connection will vary based on the connection type. The connection may be edited by clicking on it to launch the dialog where it can be removed.
 
-Click on `+screen` button next to the text field will add it to the screen which will open a editor specific to the field just added.
-Change the `Label` at the top of the editor and click on `Apply` to add the field to the form.
+#### **Save graph**
+Once the graph is created it can be saved by clicking on the save button on the bottom bar.
+![Launch Save](images/save_launch.png)
 
-![Component Management](/images/add_field_save_page.png)
+Enter the name for the graph in the dialog box that appears and click on `save` button to save the graph.
+![Save Graph](images/save_graph_dialog.png)
 
-The new form will look like below image with the new added field.
 
-![Component Management](/images/saved_form_page.png)
+#### **Node settings**
+Hovering over a node displays options to `select node`,`launch setting` and `delete node` . 
+Deleting a node deletes all the connections to and from the deleted node.
 
-To add a field to the existing model's schema enter the field's name/Id just like above case and instead of `+screen`, press `+model`.
+![Node Hover](images/component_setting.png)
 
-![Component Management](/images/add_new_model_property.png)
+Clicking on the `launch setting` icon will display a configuration page for the node. The Configuration page allows user to change the node name and configure other properties based on the node type. The below is an example for a Decision Table node.
 
-This will open the model creation dialog which can be filled up with required data and saved to update the model schema.
+![Decision Table](images/setting_decision_table.png)
 
-![Component Management](/images/add_new_model_property_save_page.png)
+For decision table the rules are listed in a data-table with buttons to add input,output columns and a  rule. The names of the columns or the values in the row can be edited inline.
 
-Click on `SAVE` button to save the new schema.
+![Decision Table](images/decision_value_setting.png)
+Hovering over a rule record allows the user to move the rule up/down the rule list and also to delete the rule. Once all the settings are done click on the `save` icon at the top right of the page to return to the design view.
 
-***Note :*** To add a field/property to a model, `oe-model-manager` is required.
+#### **Node selection**
+On selection of a node, the node is highlighted and additional options are shown in the floating button to the top right of the screen.
 
-### ***Field Operations***
+![Node Selected](images/node_selection.png)
 
-Once we select(click) any field present on the form a editor opens on the right hand side of the screen.
-This editor can be used carry certain operations on the field like changing the label, container, UIType, etc.
-Click on `Apply` button so that the changes will reflect on the screen and click on the save button to persist the changes.
+Clicking on the `play` button allows the user to simulate the node using a payload and view the output.
 
-![Component Management](/images/field_operations_page.png)
+![Node Simulate](images/simulate_node.png)
 
-Here in the above image we have selected property/field `Line1` then on the property editor we changed the Label to `Street One`(check on top of the screen).Then click on `Apply` button so that the changes will reflect on the screen and then just below it is the `Save` button(marked just below the `Apply` button in the image) click on it to make changes persist.
+Clicking on the `plus` button launches the add to service dialog , where the selected nodes can be saved as a Decision Service after entering the name.
 
-![Component Management](/images/field_operations_saved_page.png)
+![Service Dialog](images/save_service_dialog.png)
 
-The order of the fields can be altered by dragging them in the right hand side editor shown in the below image.After carrying out those operations click on the `Save` button present at the bottom panel of the screen(already explained above)
+The list of decision services associated with the current graph can be viewed by clicking on the floating-button.
 
-![Component Management](/images/field_order_page.png)
+![Service Listing](images/service_list.png)
 
-There are redo and undo options to redo or undo the operations carried on the form/page.
+From here a service can be selected,edited or deleted. Once the service is selected the related nodes are highlighted and the service name appears near the floating button.
 
-![Component Management](/images/redo_undo_field_operations_page.png)
-
-### ***Add route to form or page***
-
-The form that we created above can be assigned a route.Click on the settings button highlighted in the below image to open a dialog which takes the route definitions.
-Fill in the route definitions and click on `SAVE` button to save the route.
-
-![Component Management](/images/add_route_to_form_page.png)
-
+![Service Selected](images/service_selected.png)
