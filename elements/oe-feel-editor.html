@@ -178,7 +178,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                         <iron-pages id="settingSelector" selected="[[_selectedNode.nodeType]]" attr-for-selected="type">
                             <oe-feel-decision-table-setting type="DECISION_TABLE"></oe-feel-decision-table-setting>
                             <oe-feel-boxed-context-setting type="BOXED_CONTEXT"></oe-feel-boxed-context-setting>
-                            <oe-feel-boxed-invocation-setting type="BOXED_INVOCATION"></oe-feel-boxed-invocation-setting>
+                            <oe-feel-boxed-invocation-setting target-list=[[__helperData.decisionTables]] type="BOXED_INVOCATION"></oe-feel-boxed-invocation-setting>
                             <oe-feel-business-model-setting type="BUSINESS_MODEL"></oe-feel-business-model-setting>
                         </iron-pages>
                     </div>
@@ -265,6 +265,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             _graphChanged: function (nval, oval) {
                 if (nval != oval && nval) {
                     this._renderGraph();
+                    this.__computeData();
                 } else {
                     this.set('_mainSection', 'empty');
                 }
@@ -631,6 +632,41 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 style += "transform:scale(" + scaleFactor + ") translate(" + currentX + "px," + currentY +
                     "px);";
                 return style;
+            },
+            __computeData:function(){
+                var decisionTables = [];
+                this.decisionGraph.graph.nodes.forEach(function(node){
+                    if(node.nodeType === "DECISION_TABLE"){
+                        decisionTables.push({
+                            name : node.name,
+                            type : node.nodeType
+                        });
+                    }else if(node.nodeType === "BOXED_CONTEXT"){
+                        if(node.data.result.type === "DECISION_TABLE"){
+                            decisionTables.push({
+                                name : node.name,
+                                type : node.nodeType
+                            });
+                        }
+                    }else if(node.nodeType === "BUSINESS_MODEL"){
+                        if(node.data.decisionType === "DECISION_TABLE"){
+                            decisionTables.push({
+                                name : node.name,
+                                type : node.nodeType
+                            });
+                        }else if(node.data.decisionType === "BOXED_CONTEXT"){
+                            if(node.data.data.result.type === "DECISION_TABLE"){
+                                decisionTables.push({
+                                    name : node.name,
+                                    type : node.nodeType
+                                });
+                            }
+                        }
+                    }
+                });
+                this.set('__helperData',{
+                    decisionTables:decisionTables
+                });
             }
         })
     </script>

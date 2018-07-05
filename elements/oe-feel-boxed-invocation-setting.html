@@ -10,7 +10,8 @@
         </style>
         <div class="component-container">
             <div>
-                <oe-input label="Target" value={{data.target}}></oe-input>
+                <oe-combo label="Target" value={{data.target}} listdata={{targetList}} 
+                valueproperty="name" displayproperty="name"></oe-combo>
             </div>
             <oe-feel-parameter-list parameters={{data.parameters}}></oe-feel-parameter-list>
         </div>
@@ -22,6 +23,10 @@
                 data: {
                     type: Object,
                     observer: '_dataChanged'
+                },
+                targetList:{
+                    type:Array,
+                    value:[]
                 }
             },
             getData:function(){
