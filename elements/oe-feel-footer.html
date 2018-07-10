@@ -244,6 +244,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                         </paper-item>
                     </paper-menu>
                 </paper-menu-button>
+                <!-- <paper-icon-button id="validate-btn" icon="done-all" class="toolbar-item" on-tap="_initValidateGraph"></paper-icon-button> -->
                 <paper-icon-button id="delete-btn" icon="delete" class="toolbar-item" on-tap="_initDeleteGraph"></paper-icon-button>
             </div>
         </div>
@@ -258,7 +259,8 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 'save-graph': '_saveGraphToDB',
                 'save-graph-as': '_saveGraphAsToDB',
                 'delete-graph': '_deleteGraph',
-                'load-graph': '_loadGraph'
+                'load-graph': '_loadGraph',
+                'validate-graph': '_validateGraph'
             },
             attached: function () {
                 this.set('graphSearchText', "");
@@ -271,7 +273,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
 
             //fetch Details
             _fetchGraphList: function (cb) {
-                this.makeAjaxCall(OEUtils._getRestApiUrl('/decisiongraphs'), 'get', null, null, null, function (err, resp) {
+                this.makeAjaxCall(OEUtils._getRestApiUrl('/DecisionGraphs'), 'get', null, null, null, function (err, resp) {
                     if(!err){
                     this.set('decisionGraphList', resp);
                     if (typeof cb === "function") {
@@ -363,7 +365,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 var payload = event.detail;
                 var method = "POST";
                 if (payload._version) {
-                    this.makeAjaxCall(OEUtils._getRestApiUrl('/decisiongraphs'), "PUT", payload, null, null, function (err, resp) {
+                    this.makeAjaxCall(OEUtils._getRestApiUrl('/DecisionGraphs'), "PUT", payload, null, null, function (err, resp) {
                         if (resp) {
                             this.fire('oe-show-success', 'Graph saved successfully');
                             this._moduleFire('decision-graph-selected', {
@@ -402,7 +404,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 var idx = this.decisionGraphList.findIndex(function (g) {
                     return g.name === graph.name;
                 });
-                var url = OEUtils._getRestApiUrl('/decisiongraphs/' + graph.name);
+                var url = OEUtils._getRestApiUrl('/DecisionGraphs/' + graph.name);
                 this.makeAjaxCall(url, "Delete", null, null, null, function (
                     err, resp) {
                     if (resp) {
@@ -446,6 +448,20 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     'payload': detail
                 });
             },
+           /*  _initValidateGraph:function(){
+                this._moduleFire('validate-decision-graph');
+            },
+            _validateGraph:function(e){
+                var graph = e.detail;
+                var payload = graph.data;
+                this.makeAjaxCall(OEUtils._getRestApiUrl('/DecisionGraphs/validate'), "POST", payload, null, null, function (err, resp) {
+                    if (resp) {
+                        this._moduleFire('validation-complete', resp);
+                    }else{
+                        this.resolveError(err);
+                    }
+                }.bind(this));
+            } */
         })
     </script>
 </dom-module>

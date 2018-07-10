@@ -37,6 +37,8 @@
                 'update-component-position': '_handlePositionUpdate',
                 'undo-decision-graph': '_handleUndoGraph',
                 'redo-decision-graph': '_handleRedoGraph',
+                // 'validate-decision-graph':'_handleValidateGraph',
+                'validation-complete':'_handleValidationResult',
                 'update-connection': '_handleConnectionUpdate',
                 'delete-connection':'_handleDeleteConnection',
                 'update-node-data': '_updateNodeData',
@@ -54,6 +56,8 @@
                 if (index > -1) {
                     var graph = JSON.parse(JSON.stringify(this.curGraphStack[index]));
                     return graph;
+                }else{
+                    return null;
                 }
             },
             _pushToStack: function (graph) {
@@ -86,6 +90,7 @@
                 this.set('serviceList',e.detail.service);
                 if (graph) {
                     this._pushToStack(graph);
+                    this._handleValidateGraph();
                 }
             },
             _handleAddNode: function (e) {
@@ -97,6 +102,7 @@
                 }
                 decisiongraph.graph.nodes.push(node);
                 this._pushToStack(decisiongraph);
+                this._handleValidateGraph();
             },
             _handleDeleteNode: function (e) {
                 var nodeToDelete = e.detail;
@@ -139,6 +145,23 @@
                         stackLength: this.curGraphStack.length
                     })
                 }
+            },
+            _handleValidateGraph:function(){
+                var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
+                this._footerFire('validate-graph',decisiongraph);
+            },
+            _handleValidationResult:function(e){
+                var result = e.detail;
+                var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
+                decisiongraph.graph.nodes.forEach(function(node){
+                    if(result[node.name]){
+                        node.__validity = result[node.name]
+                    };
+                });
+                this.set('curGraphStack.'+this._currentStackIndex,decisiongraph);
+                var stackIndex = this._currentStackIndex;
+                this.set('_currentStackIndex',-1);
+                this.set('_currentStackIndex',stackIndex);
             },
             _handleConnectionUpdate: function (event) {
                 var newConnection = event.detail;
@@ -186,6 +209,7 @@
                     decisiongraph.data[oldNode.name] = feel;
                 }
                 this._pushToStack(decisiongraph);
+                this._handleValidateGraph();
             },
 
             //FEEl Creation
@@ -208,6 +232,7 @@
                             feelStr = this._getContextFEEL(node.data.data, node.name);
                         }
                         break;
+                    default:break;
                 }
                 return feelStr;
             },
