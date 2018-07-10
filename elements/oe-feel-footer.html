@@ -292,7 +292,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                         }
                     }
                 }
-                this.makeAjaxCall(OEUtils._getRestApiUrl('/decisionservices'), 'get', null, null, params, function (err, resp) {
+                this.makeAjaxCall(OEUtils._getRestApiUrl('/DecisionServices/'), 'get', null, null, params, function (err, resp) {
                     if(!err){
                     this.set('graphServices', resp)
                     if (typeof cb === "function") {

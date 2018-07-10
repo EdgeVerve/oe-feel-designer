@@ -424,7 +424,7 @@
                 server.autoRespond = true;
                 server.respondImmediately = true;
                 server.respondWith('GET',
-                    /decisiongraphs/,
+                    /DecisionGraphs/,
                     function (req) {
                         req.respond(200, 'application/json', JSON.stringify(decisiongraphs));
                     }
@@ -432,14 +432,14 @@
 
                 server.respondWith(
                     'GET',
-                    /decisionservices/,
+                    /DecisionServices/,
                     function (req) {
                         req.respond(200, 'application/json', JSON.stringify(decisionservices));
                     }
                 );
 
                 server.respondWith('POST',
-                    /decisiongraphs\/execute/,
+                    /DecisionGraphs\/execute/,
                     function (req) {
                         req.respond(200, 'application/json', JSON.stringify({
                             value: "test"
@@ -447,14 +447,14 @@
                     }
                 );
                 server.respondWith('PUT',
-                    /decisionservices/,
+                    /DecisionServices/,
                     function (req) {
                         req.respond(200, 'application/json', req.requestBody);
                     }
                 );
 
                 server.respondWith('DELETE',
-                    /decisionservices\/*/,
+                    /DecisionServices\/*/,
                     function (req) {
                         req.respond(200, 'application/json', JSON.stringify({
                             count: 1

@@ -304,21 +304,21 @@
                 server.autoRespond = true;
                 server.respondImmediately = true;
                 server.respondWith('GET',
-                    /decisiongraphs/,
+                    /DecisionGraphs/,
                     function (req) {
                         req.respond(200, 'application/json', JSON.stringify(decisiongraphs));
                     }
                 );
 
                 server.respondWith('PUT',
-                    /decisiongraphs/,
+                    /DecisionGraphs/,
                     function (req) {
                         req.respond(200, 'application/json', req.requestBody);
                     }
                 );
 
                 server.respondWith('DELETE',
-                    /decisiongraphs\/*/,
+                    /DecisionGraphs\/*/,
                     function (req) {
                         req.respond(200, 'application/json', JSON.stringify({
                             count: 1
@@ -328,7 +328,7 @@
 
                 server.respondWith(
                     'GET',
-                    /decisionservices/,
+                    /DecisionServices/,
                     function (req) {
                         req.respond(200, 'application/json', JSON.stringify(decisionservices));
                     }
@@ -452,7 +452,7 @@
 
                             flush(function () {
                                 var dialog = el.querySelector('#saveAsDialog');
-                                dialog.set('graph.name', 'test-graph');
+                                dialog.set('graph.name', 'test-graph');                                
                                 dialog._saveNewGraph();
                             })
                         } else if (ev.detail.event === 'decision-graph-selected') {
