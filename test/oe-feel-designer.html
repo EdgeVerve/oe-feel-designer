@@ -439,6 +439,30 @@
                 );
 
                 server.respondWith('POST',
+                    /DecisionGraphs\/validate/,
+                    function (req) {
+                        req.respond(200, 'application/json', JSON.stringify({
+                            "Decision Table 1":{
+                                valid:true
+                            },
+                            "Boxed Invocation 1":{
+                                valid:true
+                            },
+                            "Boxed Context 1":{
+                                valid:true
+                            },
+                            "Boxed Context 2":{
+                                valid:false,
+                                errormessage:{}
+                            },
+                            "Boxed Context 3":{
+                                valid:true
+                            },
+                        }));
+                    }
+                );
+
+                server.respondWith('POST',
                     /DecisionGraphs\/execute/,
                     function (req) {
                         req.respond(200, 'application/json', JSON.stringify({
@@ -446,6 +470,7 @@
                         }));
                     }
                 );
+
                 server.respondWith('PUT',
                     /DecisionServices/,
                     function (req) {
@@ -511,6 +536,8 @@
                                 'oe-feel-component');
                             var connections = editor.querySelectorAll(
                                 'oe-feel-connector');
+                            assert.deepEqual(components[1].node.__validity.valid,true);
+                            assert.deepEqual(components[3].node.__validity,undefined);
                             assert.deepEqual(components.length, loadedGraph.graph
                                 .nodes.length);
                             assert.deepEqual(connections.length, loadedGraph.graph
