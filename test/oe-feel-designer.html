@@ -508,8 +508,10 @@
 
             function loadGraph(index) {
                 var footer = el.querySelector('oe-feel-footer');
-                var listItem = footer.querySelectorAll('.graph-list .list-option');
-                listItem[index].click();
+                var listItem = footer.querySelectorAll('.graph-list oe-studio-menu-item')[index];
+                if(listItem){
+                    listItem.querySelector('.item-container').click();
+                }
             }
 
 

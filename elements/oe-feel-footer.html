@@ -248,7 +248,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                                     </div>
                                     <div class="flex page-list-panel">
                                         <iron-pages selected="{{_selectedPanel}}">
-                                            <div class="page-list">
+                                            <div class="page-list graph-list">
                                                 <template is="dom-repeat" items="[[decisionGraphList]]" filter="{{_filter(searchKey)}}" as="graph">
                                                     <oe-studio-menu-item item=[[graph]] item-icon="settings-ethernet" is-selected=[[_isSeletedItem(graph,selectedGraph)]] options=[[graphOptions]]
                                                         on-item-selected="_loadGraph" on-delete-graph="_initDeleteGraph"></oe-studio-menu-item>
@@ -257,7 +257,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                                                     <div class="empty-state">No Decision Graphs created yet</div>
                                                 </template>
                                             </div>
-                                            <div class="page-list">
+                                            <div class="page-list table-list">
                                                 <template is="dom-repeat" items="[[decisionTableList]]" filter="{{_filter(searchKey)}}" as="table">
                                                     <oe-studio-menu-item item=[[table]] item-icon="oe-studio-icons:oe-rule-manager" options=[[tableOptions]] on-item-selected="_loadTable"
                                                         on-delete-table="_initDeleteTable"></oe-studio-menu-item>
@@ -311,7 +311,9 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 <paper-icon-button id="delete-btn" icon="delete" class="toolbar-item" on-tap="_initDeleteGraph"></paper-icon-button>
             </div>
         </div>
-        <oe-feel-save-as-dialog id="saveAsDialog" graph-list={{decisionGraphList}}></oe-feel-save-as-dialog>
+        <oe-feel-save-as-dialog id="saveAsDialog" 
+        on-save-success-graph="_loadGraph"
+        ></oe-feel-save-as-dialog>
     </template>
     <script>
         Polymer({
@@ -321,7 +323,6 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 'stack-updated': '_updateStackInfo',
                 'save-graph': '_saveGraphToDB',
                 'save-graph-as': '_saveGraphAsToDB',
-                'save-success-graph':'_handleGraphSave',
                 'load-graph': '_loadGraph',
                 'validate-graph': '_validateGraph',
                 'save-decision-table': '_saveDecisonTable'
@@ -364,7 +365,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                         }
                     }
                 }
-                this.makeAjaxCall(OEUtils._getRestApiUrl('/decisionservices'), 'get', null, null, params,
+                this.makeAjaxCall(OEUtils._getRestApiUrl('/DecisionServices'), 'get', null, null, params,
                     function (err, resp) {
                         if (!err) {
                             this.set('graphServices', resp)
@@ -481,9 +482,6 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             _saveGraphAs: function (e) {
                 this._moduleFire('init-save-graph-as');
             },
-            _handleGraphSave:function(e){
-                this.push('decisionGraphList',e.detail);
-            },
             _saveDecisonTable: function (e) {
                 var payload = event.detail;
                 var method = payload._version ? "POST" : "PUT";
@@ -529,7 +527,10 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 }.bind(this));
             },
             _initDeleteGraph: function (e) {
-                var graph = e.detail || this.selectedGraph;
+                var graph = this.selectedGraph;
+                if(e.detail && e.detail._type == "DecisionGraph"){
+                    graph = e.detail;
+                }
                 this.fire('oe-show-confirm', {
                     message: "Do you want to delete the graph ?",
                     ok: function () {
