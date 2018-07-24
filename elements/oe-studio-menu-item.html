@@ -1,0 +1,144 @@
+<!-- �2017-2018 EdgeVerve Systems Limited (a fully owned Infosys subsidiary), Bangalore, India. All Rights Reserved.
+The EdgeVerve proprietary software program ("Program"), is protected by copyrights laws, international treaties and other pending or existing intellectual property rights in India, the United States and other countries.
+The Program may contain/reference third party or open source components, the rights to which continue to
+remain with the applicable third party licensors or the open source community as the case may be and nothing
+here transfers the rights to the third party and open source components, except as expressly permitted.
+Any unauthorized reproduction, storage, transmission in any form or by any means (including without limitation to electronic, mechanical, printing, photocopying, recording or  otherwise), or any distribution of this Program,or any portion of it, may result in severe civil and criminal penalties, and will be prosecuted to the maximum extent possible under the law. -->
+
+<dom-module id="oe-studio-menu-item">
+    <template>
+        <style>
+            :host{
+                position:relative;
+                display:block;
+                box-sizing:border-box;
+            }
+
+            iron-icon {
+                --iron-icon-width: 18px;
+                --iron-icon-height: 18px;
+            }
+
+            iron-icon+span {
+                margin-left: 8px;
+            }
+
+            span+iron-icon {
+                margin-left: 8px;
+            }
+
+            .item-container {
+                height: 48px;
+                padding: 0 16px;
+                cursor: pointer;
+                position: relative;
+                color: var(--default-text-color);
+                @apply(--layout-flex);
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+            }
+
+            .item-name {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .options {
+                position: absolute;
+                visibility: hidden;
+                right: 0;
+                height: 48px;
+                padding: 0 16px;
+                background: var(--default-primary-color);
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+            }
+
+            .options iron-icon {
+                margin-left: 8px;
+            }
+
+            .item-container.selected-true {
+                background: var(--dark-primary-color);
+                color: var(--accent-color);
+            }
+
+            .item-container.selected-true .options {
+                background: var(--dark-primary-color);
+            }
+
+            .item-container:hover .options {
+                visibility: visible;
+            }
+
+            .item-container:hover {
+                box-shadow: 1px 2px 1px rgba(0, 0, 0, 0.20), 1px -2px 1px rgba(0, 0, 0, 0.20);
+            }
+
+            .scope-text {
+                font-size: 11px;
+            }
+
+        </style>
+            <div id="id_[[item.id]]" name$="[[item.name]]" class$="item-container selected-[[isSelected]]"
+                on-tap="_selectItem">
+                <iron-icon icon="[[itemIcon]]"></iron-icon>
+                <span class="flex item-name">[[item.name]]</span>
+                <template is="dom-if" if="[[item.scope]]">
+                    <span class="scope-text">{ ... }</span>
+                </template>
+                <div class="options">
+                    <template is="dom-repeat" items=[[options]] as="option">
+                            <iron-icon icon="[[option.icon]]" on-tap="_optionSelected"></iron-icon>
+                    </template>
+                </div>
+                <template is="dom-if" if="[[item.scope]]">
+                    <paper-tooltip for="id_[[item.id]]">
+                        <pre>[[_formatJSON(item.scope)]]</pre>
+                    </paper-tooltip>
+                </template>
+            </div>
+    </template>
+    <script>
+        Polymer({
+            is:"oe-studio-menu-item",
+            properties:{
+                item:{
+                    type:Object,
+                    value:function(){
+                        return {}
+                    }
+                },
+                itemIcon:{
+                    type:String,
+                    value:"polymer"
+                },
+                options:{
+                    type:Array,
+                    value:function(){
+                        return [];
+                    }
+                },
+                isSelected:{
+                    type:Boolean,
+                    value:false
+                }
+            },
+            _formatJSON: function (value) {
+                return JSON.stringify(value, null, 2);
+            },
+            _optionSelected:function(e){
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                var option = e.model.option;
+                this.fire(option.event,this.item);
+            },
+            _selectItem:function(e){
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                this.fire('item-selected',this.item)
+            }
+        })
+    </script>
+</dom-module>

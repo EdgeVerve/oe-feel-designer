@@ -6,6 +6,7 @@ here transfers the rights to the third party and open source components, except 
 Any unauthorized reproduction, storage, transmission in any form or by any means (including without limitation to electronic, mechanical, printing, photocopying, recording or  otherwise), or any distribution of this Program,or any portion of it, may result in severe civil and criminal penalties, and will be prosecuted to the maximum extent possible under the law. -->
 
 <link rel="import" href="oe-feel-save-as-dialog.html">
+<link rel="import" href="oe-studio-menu-item.html">
 <link rel="import" href="../../oe-utils/oe-common-behaviors.html">
 <dom-module id="oe-feel-footer">
     <template>
@@ -15,21 +16,21 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 display: block;
                 box-sizing: border-box;
                 font-family: Roboto;
-            }
-
-            iron-icon+* {
-                margin-left: 8px;
+                --menu-btn-width: 200px;
+                --menu-dropdown-height: 500px;
             }
 
             .footer-container {
                 background: #455A64;
             }
 
-            #graphSelectMenu {
+
+            /* Tag based styles */
+
+            paper-menu-button {
                 box-sizing: border-box;
                 height: 40px;
                 padding: 0px;
-                width: 200px;
                 background: var(--default-primary-color);
                 --paper-menu-button-content: {
                     border-radius: 0px;
@@ -37,190 +38,252 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 }
             }
 
-            #graphSelectMenu paper-button.dropdown-trigger {
+
+            /* Menu Button Style */
+
+            #graphSelectMenu {
+                width: var(--menu-btn-width);
+            }
+
+            #triggerBtn {
                 font-size: 12px;
                 border-radius: 0px;
                 padding: 12px;
-                width: 200px;
                 background: var(--dark-primary-color);
-                font-family: Roboto;
-                font-weight: 500;
-                letter-spacing: 0.7px;
+                width: var(--menu-btn-width);
             }
 
-            #graphSelectMenu .dropdown-content {
+            #triggerBtn.active-page-false {
+                background: var(--accent-color) !important;
+            }
+
+
+            /* Drop down styles */
+            #graphSelectMenu .dropdown-content{
                 margin-bottom: 12px;
                 position: relative;
-                width: 450px;
-                height: 500px;
-                background: var(--default-primary-color);
-                color: var(--default-text-color);
             }
 
-            #graphSelectMenu .dropdown-content:after {
+            #graphSelectMenu .dropdown-content:after{
                 content: "";
                 position: absolute;
                 left: 12px;
-                bottom: -10px;
                 border-style: solid;
                 border-width: 10px 10px 0 10px;
                 border-color: var(--default-primary-color) transparent transparent transparent;
             }
 
-            #graphSelectMenu .dropdown-content.create-component-1:after {
-                border-color: var(--dark-primary-color) transparent transparent transparent;
+
+            /* Parent wrapper */
+
+            .page-listing-component {
+                width: 700px;
+                height: var(--menu-dropdown-height);
+                background: var(--default-primary-color);
+                color: var(--default-text-color);
             }
 
+            /* Search Panel */
 
-
-            .server-graph-list {
-                width: 200px;
-                border-right: 1px solid rgba(255, 255, 255, 0.4);
+            .search-header {
+                height: 100px;
+                font-size: 14px;
             }
 
-            .header-panel {
-                height: 40px;
-                box-sizing: border-box;
-                margin-bottom: 2px;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-            }
-
-            .header-panel iron-icon {
-                --iron-icon-width: 18px;
-                --iron-icon-height: 18px;
-            }
-
-            .graph-options .header-panel {
-                padding: 8px 16px;
-            }
-
-            .heading-panel {
-                padding: 8px 16px;
-                height: 100%;
-                box-sizing: border-box;
-            }
-
-            .search-panel {
+            .page-stats {
+                height: 64px;
                 padding: 0px 16px;
+                opacity: 0.6;
             }
 
-            #search-graph {
-                --paper-input-container-color: #AAA;
-                --paper-input-container-input-color: #FFF;
-                --paper-input-container-underline: {
-                    display: none;
-                }
+            .mini-heading {
+                display: block;
+                padding: 12px 0px;
+                font-family: 'Roboto-Medium';
             }
 
-            .list-option {
+            .mini-heading iron-icon{
+                --iron-icon-width:20px;
+                --iron-icon-height:20px;
+            }
+
+            .helper-text {
+                font-size: 12px;
+                font-family: 'Roboto-Light';
+            }
+
+            #search {
+                height: 36px;
+                padding: 0px 16px;
+                box-sizing: border-box;
+                background: var(--light-primary-color);
+            }
+
+            #search #input {
+                border: none;
+                outline: none;
+                width: 100%;
+                background: inherit;
+                padding: 5px 8px;
+                margin: 0px;
+                height: 36px;
+                box-sizing: border-box;
+                color: var(--default-text-color);
+            }
+
+            #input::-webkit-input-placeholder {
+                color: rgba(255, 255, 255, 0.54);
+            }
+
+            #input::-moz-placeholder {
+                color: rgba(255, 255, 255, 0.54);
+            }
+
+            #input:-ms-input-placeholder {
+                color: rgba(255, 255, 255, 0.54);
+            }
+
+            #refreshIcon{
+                float:right;
+            }
+
+            /* View Selection panel (1st column) */
+
+            .view-selection-panel {
+                width: var(--menu-btn-width);
+                border-right: 2px solid var(--dark-primary-color);
+            }
+
+            .menu-item {
                 height: 48px;
                 padding: 0 16px;
                 cursor: pointer;
                 position: relative;
                 color: var(--default-text-color);
+                border-right: 2px solid var(--default-primary-color);
+                @apply(--layout-flex);
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
             }
 
-            .list-option:hover {
+            .menu-item.iron-selected {
+                border-right: 2px solid var(--accent-color);
+                background: var(--dark-primary-color);
+                color: var(--accent-color);
+            }
+
+            .menu-item:hover {
                 box-shadow: 1px 2px 1px rgba(0, 0, 0, 0.20), 1px -2px 1px rgba(0, 0, 0, 0.20);
             }
 
-            .list-option.selected-graph {
-                background: var(--dark-primary-color);
+ 
+            /* Listing panel */
+
+            .empty-state {
+                padding: 16px;
+                text-align: center;
+                font-family: 'Roboto-Light';
             }
 
-
-            .list-option iron-icon {
-                --iron-icon-height: 16px;
-                --iron-icon-width: 16px;
-            }
-
-            .graph-name {
-                margin-left: 16px;
-                width: 120px;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-            .toolbar-menu {
-                border-left: 1px solid rgba(255, 255, 255, 0.12);
-            }
-
-            .toolbar-menu iron-icon {
-                --iron-icon-height: 20px;
-                --iron-icon-width: 20px;
-            }
-
-
-
-            .toolbar-menu .toolbar-item {
-                height: 40px;
-                border-right: 1px solid rgba(255, 255, 255, 0.12);
-            }
-
-            .toolbar-menu .toolbar-item:not([disabled]) {
-                color: #FFF;
-            }
-
-            .toolbar-menu paper-menu-button {
-                padding: 0px;
-            }
-
-            .toolbar-menu paper-icon-button {
-                width: 40px;
-                height: 40px;
-                padding: 11px;
-            }
-
-            .graph-icon {
-                padding-right: 16px;
-            }
-
-            .graph-list {
+            .page-list {
                 overflow: auto;
             }
+
+            /* Options Listing panel (3rd column) */
+
+            .page-menu-options {
+                width: 200px;
+                height: var(--menu-dropdown-height);
+                background: var(--default-primary-color);
+                border-left: 2px solid var(--dark-primary-color);
+                font-size: 14px;
+            }
+
+            .page-menu-options iron-icon{
+                --iron-icon-width:16px;
+                --iron-icon-height:16px;
+            }
+
+            .options-header {
+                height: 48px;
+                padding: 0 16px;
+                color: var(--light-text-color);
+                @apply(--layout-flex);
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+            }
+
         </style>
         <div class="footer-container layout horizontal">
             <paper-menu-button no-animations no-overlap vertical-align="bottom" id="graphSelectMenu" ignore-select>
-                <paper-button class="dropdown-trigger">
+                <paper-button id="triggerBtn" class$="dropdown-trigger active-page-[[_graphSelected]]">
                     <iron-icon icon="settings-ethernet" class="graph-icon" hidden=[[!_graphSelected]]></iron-icon>
                     <label hidden=[[_graphSelected]]>Select Decision Graph</label>
                     <label hidden=[[!_graphSelected]]>[[selectedGraph.name]]</label>
                 </paper-button>
-                <div class="dropdown-content layout horizontal justified">
-                    <div class="server-graph-list layout vertical justified">
-                        <div class="header-panel">
-                            <div class="search-panel layout horizontal center justified" hidden=[[!showSeachBar]]>
-                                <oe-input id="search-graph" value="{{graphSearchText}}" no-label-float label="Search Graph...">
-                                    <iron-icon icon="clear" suffix on-tap="_clearGraphSearch"></iron-icon>
-                                </oe-input>
-                            </div>
-                            <div class="heading-panel layout horizontal center justified" hidden=[[showSeachBar]]>
-                                <iron-icon icon="search" id="search-trigger" on-tap="_toggleGraphSearch"></iron-icon>
-                                <label class="mini-heading">Graph List</label>
-                                <iron-icon icon="refresh" on-tap="_fetchGraphList"></iron-icon>
-                            </div>
-                        </div>
-                        <div class="graph-list flex">
-                            <template id="graphList" is="dom-repeat" items="[[_filterGraphList(graphSearchText,decisionGraphList.*)]]" as="graph">
-                                <div class$="list-option layout horizontal center [[_isSeletedGraph(graph,selectedGraph)]]" on-tap="_loadCurrentGraph">
-                                    <iron-icon icon="settings-ethernet" class="graph-icon"></iron-icon>
-                                    <span class="flex graph-name">[[graph.name]]</span>
+                <div class="dropdown-content">
+                    <div class="page-listing-component">
+                        <div class="page-listing layout horizontal">
+                            <div class="flex layout vertical">
+                                <div class="search-header">
+                                    <div class="page-stats">
+                                        <div class="mini-heading">
+                                                <label>Create Decision Graphs/Tables</label>
+                                                <iron-icon icon="refresh" id="refreshIcon" on-tap="_fetchData"></iron-icon>
+                                        </div>
+                                        <span class="helper-text">[[_getCount(decisionGraphList,decisionGraphList.*)]] Decision Graphs</span>&nbsp;&nbsp;
+                                        <span class="helper-text">[[_getCount(decisionTableList,decisionTableList.*)]] Decision Tables</span>
+                                    </div>
+                                    <div id="search" class="layout center horizontal">
+                                        <iron-icon icon="search"></iron-icon>
+                                        <input type="search" placeholder="Search..." id="input" bind-value="{{searchKey}}" autocomplete="off" is="iron-input">
+                                    </div>
                                 </div>
-                            </template>
+                                <div class="list-display-panel flex layout horizontal">
+                                    <div class="view-selection-panel">
+                                        <iron-selector selected="{{_selectedPanel}}">
+                                            <div class="menu-item">Decision Graph</div>
+                                            <div class="menu-item">Decision Table</div>
+                                        </iron-selector>
+                                    </div>
+                                    <div class="flex page-list-panel">
+                                        <iron-pages selected="{{_selectedPanel}}">
+                                            <div class="page-list">
+                                                <template is="dom-repeat" items="[[decisionGraphList]]" filter="{{_filter(searchKey)}}" as="graph">
+                                                    <oe-studio-menu-item item=[[graph]] item-icon="settings-ethernet" is-selected=[[_isSeletedItem(graph,selectedGraph)]] options=[[graphOptions]]
+                                                        on-item-selected="_loadGraph" on-delete-graph="_initDeleteGraph"></oe-studio-menu-item>
+                                                </template>
+                                                <template is="dom-if" if="[[!_getCount(decisionGraphList)]]">
+                                                    <div class="empty-state">No Decision Graphs created yet</div>
+                                                </template>
+                                            </div>
+                                            <div class="page-list">
+                                                <template is="dom-repeat" items="[[decisionTableList]]" filter="{{_filter(searchKey)}}" as="table">
+                                                    <oe-studio-menu-item item=[[table]] item-icon="oe-studio-icons:oe-rule-manager" options=[[tableOptions]] on-item-selected="_loadTable"
+                                                        on-delete-table="_initDeleteTable"></oe-studio-menu-item>
+                                                </template>
+                                                <template is="dom-if" if="[[!_getCount(decisionTableList)]]">
+                                                    <div class="empty-state">No Decision table created yet</div>
+                                                </template>
+                                            </div>
+                                        </iron-pages>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="page-menu-options">
+                                <div class="list-cont">
+                                    <div class="options-header">Options</div>
+                                    <div class="menu-item" id="add-graph-panel" on-tap="_createGraph">
+                                        <iron-icon icon="add"></iron-icon>
+                                        <span>Create Decision Graph</span>
+                                    </div>
+                                    <div class="menu-item" id="add-table-panel" on-tap="_createDecisionTable">
+                                        <iron-icon icon="add"></iron-icon>
+                                        <span>Create Decision Table</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="graph-options flex">
-                        <div class="header-panel">
-                            <label class="mini-heading">Options</label>
-                        </div>
-                        <div class="list-option layout horizontal center create-graph-panel" on-tap="_createGraph">
-                            <iron-icon icon="add"></iron-icon>
-                            <span class="flex option-name">Create New Graph</span>
-                        </div>
-                        <!-- <div class="list-option layout horizontal center" on-tap="_uploadGraph">
-                            <iron-icon icon="file-upload"></iron-icon>
-                            <span class="flex option-name">Upload Graph</span>
-                        </div> -->
                     </div>
                 </div>
             </paper-menu-button>
@@ -258,31 +321,40 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 'stack-updated': '_updateStackInfo',
                 'save-graph': '_saveGraphToDB',
                 'save-graph-as': '_saveGraphAsToDB',
-                'delete-graph': '_deleteGraph',
+                'save-success-graph':'_handleGraphSave',
                 'load-graph': '_loadGraph',
-                'validate-graph': '_validateGraph'
+                'validate-graph': '_validateGraph',
+                'save-decision-table': '_saveDecisonTable'
             },
             attached: function () {
-                this.set('graphSearchText', "");
-                this.showSeachBar = false;
-                this._fetchGraphList(function () {
-                    this.set('selectedGraph', null);
-                    this.set('_graphSelected', false);
-                }.bind(this));
+                
+                this.set('graphOptions', [{
+                    "icon": "delete",
+                    "event": "delete-graph"
+                }]);
+                this.set('tableOptions', [{
+                    "icon": "delete",
+                    "event": "delete-table"
+                }]);
+                this.set('selectedGraph', null);
+                this.set('_graphSelected', false);
+                this.set('_selectedPanel', 0);
+                this._fetchData();
             },
 
-            //fetch Details
+            //fetch Graph and table
             _fetchGraphList: function (cb) {
-                this.makeAjaxCall(OEUtils._getRestApiUrl('/DecisionGraphs'), 'get', null, null, null, function (err, resp) {
-                    if(!err){
-                    this.set('decisionGraphList', resp);
-                    if (typeof cb === "function") {
-                        cb();
-                    }
-                    }else{
-                        this.resolveError(err);
-                    }
-                }.bind(this));
+                this.makeAjaxCall(OEUtils._getRestApiUrl('/DecisionGraphs'), 'get', null, null, null,
+                    function (err, resp) {
+                        if (!err) {
+                            this.set('decisionGraphList', resp);
+                            if (typeof cb === "function") {
+                                cb();
+                            }
+                        } else {
+                            this.resolveError(err);
+                        }
+                    }.bind(this));
             },
             _fetchServiceList: function (name, cb) {
                 var params = {
@@ -292,45 +364,43 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                         }
                     }
                 }
-                this.makeAjaxCall(OEUtils._getRestApiUrl('/DecisionServices/'), 'get', null, null, params, function (err, resp) {
-                    if(!err){
-                    this.set('graphServices', resp)
-                    if (typeof cb === "function") {
-                        cb(resp);
-                    }
-                    }else{
-                        this.resolveError(err);
-                    }
-                }.bind(this));
+                this.makeAjaxCall(OEUtils._getRestApiUrl('/decisionservices'), 'get', null, null, params,
+                    function (err, resp) {
+                        if (!err) {
+                            this.set('graphServices', resp)
+                            if (typeof cb === "function") {
+                                cb(resp);
+                            }
+                        } else {
+                            this.resolveError(err);
+                        }
+                    }.bind(this));
             },
-
-            //Search Graphs
-            _toggleGraphSearch: function () {
-                this.set('showSeachBar', !this.showSeachBar);
-                if(this.showSeachBar){
-                    this.$$("#search-graph").focus();
-                }
+            _fetchDecisionTables: function (cb) {
+                this.makeAjaxCall(OEUtils._getRestApiUrl('/DecisionTables'), 'get', null, null, null,
+                    function (err, resp) {
+                        if (!err) {
+                            this.set('decisionTableList', resp);
+                            if (typeof cb === "function") {
+                                cb();
+                            }
+                        } else {
+                            this.resolveError(err);
+                        }
+                    }.bind(this));
             },
-            _clearGraphSearch: function () {
-                this.set('graphSearchText', "");
-                this.set('showSeachBar', false);
-            },
-            _filterGraphList: function (searchKey, change) {
-                var list = this.decisionGraphList;
-                if (!searchKey || searchKey.length == 0) {
-                    return list.slice();
-                } else {
-                    return list.filter(function (graph) {
-                        return graph.name.toLowerCase().match(searchKey.toLowerCase());
-                    })
-                }
+            _fetchData:function(){
+                this._fetchGraphList();
+                this._fetchDecisionTables();
             },
 
 
-            //Load Graph
-            _loadCurrentGraph: function (event) {
-                var graph = event.model.graph;
-                this.fire('load-graph', graph);
+            //Load Graph or Table
+            _loadTable: function (event) {
+                var table = event.detail;
+                this.set('selectedTable', table);
+                this._moduleFire('load-decision-table', table);
+                this.$.graphSelectMenu.close();
             },
             _loadGraph: function (event) {
                 var graph = event.detail;
@@ -342,7 +412,6 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                         service: resp
                     });
                 }.bind(this));
-                this._clearGraphSearch();
                 this.$.graphSelectMenu.close();
             },
             _createGraph: function (e) {
@@ -357,36 +426,54 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 }
                 this.fire('load-graph', emptyGraph);
             },
+            _createDecisionTable: function (e) {
+                var emptyDecisionTable = {
+                    name: "",
+                    decisionRules: '{"inputExpressionList":["input"],"outputs":["output"],"outputValues":[""],"ruleList":[["-","-"]],"hitPolicy":"U","inputValues":[""]}'
+                }
+                this._moduleFire('load-decision-table', emptyDecisionTable);
+                this.$.graphSelectMenu.close();
+            },
 
 
-
-            //Save Graph
+            //Save Graph or Table
             _saveGraphToDB: function (event) {
                 var payload = event.detail;
                 var method = "POST";
                 if (payload._version) {
-                    this.makeAjaxCall(OEUtils._getRestApiUrl('/DecisionGraphs'), "PUT", payload, null, null, function (err, resp) {
-                        if (resp) {
-                            this.fire('oe-show-success', 'Graph saved successfully');
-                            this._moduleFire('decision-graph-selected', {
-                                graph: resp,
-                                service: this.graphServices
-                            });
-                        }else{
-                            this.resolveError(err);
-                        }
-                    }.bind(this));
+                    this.makeAjaxCall(OEUtils._getRestApiUrl('/DecisionGraphs'), "PUT", payload, null, null,
+                        function (err, resp) {
+                            if (resp) {
+                                this.fire('oe-show-success', 'Graph saved successfully');
+                                this._moduleFire('decision-graph-selected', {
+                                    graph: resp,
+                                    service: this.graphServices
+                                });
+                            } else {
+                                this.resolveError(err);
+                            }
+                        }.bind(this));
                 } else {
-                    this._openSaveAsDialog(payload);
+                    this._openSaveAsDialog('graph', payload);
                 }
             },
             _saveGraphAsToDB: function (event) {
                 var payload = event.detail;
-                this._openSaveAsDialog(payload);
+                this._openSaveAsDialog('graph', payload);
             },
-            _openSaveAsDialog: function (payload) {
-                this.$.saveAsDialog.set('graph', payload);
-                this.$.saveAsDialog.openDialog();
+            _openSaveAsDialog: function (type, payload) {
+                var saveDialog = this.$.saveAsDialog;
+                if (type === "graph") {
+                    saveDialog.set('modelName', "Graph");
+                    saveDialog.set('modelList', this.decisionGraphList);
+                    saveDialog.set('modelPostUrl', '/DecisionGraphs');
+                } else if (type === "decisiontable") {
+                    saveDialog.set('modelName', "Decision Table");
+                    saveDialog.set('modelList', this.decisionTableList);
+                    saveDialog.set('modelPostUrl', '/DecisionTables');
+                }
+                saveDialog.set('model', payload);
+                saveDialog.openDialog();
             },
             _saveGraph: function (e) {
                 this._moduleFire('init-save-graph');
@@ -394,13 +481,35 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             _saveGraphAs: function (e) {
                 this._moduleFire('init-save-graph-as');
             },
-
+            _handleGraphSave:function(e){
+                this.push('decisionGraphList',e.detail);
+            },
+            _saveDecisonTable: function (e) {
+                var payload = event.detail;
+                var method = payload._version ? "POST" : "PUT";
+                this.makeAjaxCall(OEUtils._getRestApiUrl('/DecisionTables'), method, payload, null, null,
+                    function (err, resp) {
+                        if (resp) {
+                            this.fire('oe-show-success', 'Table saved successfully');
+                            var updateIdx = this.decisionTableList.findIndex(function (table) {
+                                return table.id === resp.id;
+                            });
+                            if (updateIdx === -1) {
+                                this.push('decisionTableList', resp);
+                            } else {
+                                this.set('decisionTableList.' + updateIdx, resp);
+                            }
+                            this.set('selectedTable', false);
+                        } else {
+                            this.resolveError(err);
+                        }
+                    }.bind(this));
+            },
 
 
 
             //Delete Graph
-            _deleteGraph: function (eve) {
-                var graph = eve.detail;
+            _deleteGraph: function (graph) {
                 var idx = this.decisionGraphList.findIndex(function (g) {
                     return g.name === graph.name;
                 });
@@ -410,23 +519,56 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     if (resp) {
                         this.fire('oe-show-success', 'Graph deleted successfully');
                         this.splice('decisionGraphList', idx, 1);
-                        this.set('_graphSelected', false);
-                        this._moduleFire('decision-graph-selected', null);
-                    }else{
+                        if(this.selectedGraph.name === graph.name){
+                            this.set('_graphSelected', false);
+                            this._moduleFire('decision-graph-selected', null);
+                        }
+                    } else {
                         this.resolveError(err);
                     }
                 }.bind(this));
             },
             _initDeleteGraph: function (e) {
+                var graph = e.detail || this.selectedGraph;
                 this.fire('oe-show-confirm', {
                     message: "Do you want to delete the graph ?",
                     ok: function () {
-                        this.fire('delete-graph', this.selectedGraph);
+                        this._deleteGraph(graph);
                     }.bind(this)
-                })
+                });
+            },
+            _deleteTable: function (table) {
+                var idx = this.decisionTableList.findIndex(function (t) {
+                    return t.name === table.name;
+                });
+                var url = OEUtils._getRestApiUrl('/DecisionTables/' + table.id);
+                this.makeAjaxCall(url, "Delete", null, null, null, function (
+                    err, resp) {
+                    if (resp) {
+                        this.fire('oe-show-success', 'Decision Table deleted successfully');
+                        this.splice('decisionTableList', idx, 1);
+                        if(this.selectedTable.id === table.id){
+                            this.set('selectedTable', false);
+                            this._moduleFire('load-decision-table', null);
+                        }
+                    } else {
+                        this.resolveError(err);
+                    }
+                }.bind(this));
+            },
+            _initDeleteTable: function (e) {
+                var table = e.detail;
+                if(table && table.id){
+                    this.fire('oe-show-confirm', {
+                        message: "Do you want to delete the decision table ?",
+                        ok: function () {
+                            this._deleteTable(table);
+                        }.bind(this)
+                    })
+                }
             },
 
-            // Undo & Redo
+            // Undo & Redo Graph
             _updateStackInfo: function (eve) {
                 this.set('_isUndoDisabled', eve.detail.curIndex === 0);
                 this.set('_isRedoDisabled', eve.detail.curIndex === (eve.detail.stackLength - 1));
@@ -439,8 +581,8 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             },
 
             //Utils
-            _isSeletedGraph: function (graph, selected) {
-                return (selected && (graph.name === selected.name)) ? "selected-graph" : "";
+            _isSeletedItem: function (item, selected) {
+                return (selected && item && (item.name === selected.name));
             },
             _moduleFire: function (name, detail) {
                 this.fire('oe-studio-module-action', {
@@ -448,19 +590,42 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     'payload': detail
                 });
             },
-           /*  _initValidateGraph:function(){
+            _initValidateGraph: function () {
                 this._moduleFire('validate-decision-graph');
-            },*/
-            _validateGraph:function(e){
+            },
+            _validateGraph: function (e) {
                 var graph = e.detail;
                 var payload = graph.data;
-                this.makeAjaxCall(OEUtils._getRestApiUrl('/DecisionGraphs/validate'), "POST", payload, null, null, function (err, resp) {
-                    if (resp) {
-                        this._moduleFire('validation-complete', resp);
-                    }else{
-                        this.resolveError(err);
+                this.makeAjaxCall(OEUtils._getRestApiUrl('/DecisionGraphs/validate'), "POST", payload, null,
+                    null,
+                    function (err, resp) {
+                        if (resp) {
+                            this._moduleFire('validation-complete', resp);
+                        } else {
+                            this.resolveError(err);
+                        }
+                    }.bind(this));
+            },
+            formatJSON: function (value) {
+                return JSON.stringify(value, null, 2);
+            },
+            _filter: function (val) {
+                return function (model) {
+                    if (!val) {
+                        return true;
                     }
-                }.bind(this));
+                    if (!model) {
+                        return false;
+                    }
+                    return (model.name.toLowerCase().indexOf(val.toLowerCase()) != -1);
+                }
+            },
+            _getCount: function (arr,change) {
+                if (!Array.isArray(arr)) {
+                    return null;
+                } else {
+                    return arr.length;
+                }
             }
         })
     </script>

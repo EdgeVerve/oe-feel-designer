@@ -62,7 +62,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
 
             #mainPageSelection>* {
                 width: 100vw;
-                height: calc(100vh - 40px);
+                height: calc(100vh - 20px);
             }
 
             .configure-heading {
@@ -174,7 +174,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                         <iron-icon icon="close" id="close-setting" on-tap="_closeSetting"></iron-icon>
                     </div>
                     <div class="node-setting">
-                        <oe-input label="Node Name" value={{_selectedNode.name}}></oe-input>
+                        <oe-input id="node-name" label="Node Name" required value={{_selectedNode.name}}></oe-input>
                         <iron-pages id="settingSelector" selected="[[_selectedNode.nodeType]]" attr-for-selected="type">
                             <oe-feel-decision-table-setting type="DECISION_TABLE"></oe-feel-decision-table-setting>
                             <oe-feel-boxed-context-setting type="BOXED_CONTEXT"></oe-feel-boxed-context-setting>
@@ -205,9 +205,10 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 'open-node-setting': '_handleOpenSetting',
                 'toggle-selection': '_toggleSelection',
                 'confirm-connection': '_handleNewConnection',
-                'edit-connection':'_handleEditConnection',
+                'edit-connection': '_handleEditConnection',
                 'reset-workspace-view': '_resetWorkSpaceView',
-                'load-service': '_loadService'
+                'load-service': '_loadService',
+                'edit-decision-table': '_editDecisionTable'
             },
             attached: function () {
                 this.set('_mainSection', 'empty');
@@ -461,30 +462,30 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     return this._getComponent(node.parentElement);
                 }
             },
-            _isGraphCyclic:function(nodes,connections){
+            _isGraphCyclic: function (nodes, connections) {
                 var graph = {};
                 var path = [];
-                nodes.forEach(function(node){
+                nodes.forEach(function (node) {
                     graph[node.i] = [];
                 });
-                connections.forEach(function(connection){
+                connections.forEach(function (connection) {
                     graph[connection.from].push(connection.to);
                 });
-                
-                function visitNode(node){
-                    if(path.indexOf(node) !== -1){
+
+                function visitNode(node) {
+                    if (path.indexOf(node) !== -1) {
                         return false;
                     }
                     path.push(node);
                     var edge = graph[node];
-                    for(var i = 0,len = edge.length;i<len;i++){
+                    for (var i = 0, len = edge.length; i < len; i++) {
                         var isValid = visitNode(edge[i]);
-                        if(!isValid){
+                        if (!isValid) {
                             return false;
                         }
                     }
                     var idx = path.indexOf(node);
-                    path.splice(idx,1);
+                    path.splice(idx, 1);
                     return true;
                 }
                 var isValid = visitNode(nodes[0]["i"]);
@@ -493,18 +494,22 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             _handleNewConnection: function (event) {
                 var nodes = this.decisionGraph.graph.nodes.slice();
                 var connections = this.decisionGraph.graph.connections.slice();
-                var newConnection = {from:event.detail.from.i,to:event.detail.to.i};
-                var alreadyExist = connections.findIndex(function(connection){
-                    return ((connection.from === newConnection.from) && (connection.to === newConnection.to))
+                var newConnection = {
+                    from: event.detail.from.i,
+                    to: event.detail.to.i
+                };
+                var alreadyExist = connections.findIndex(function (connection) {
+                    return ((connection.from === newConnection.from) && (connection.to ===
+                        newConnection.to))
                 })
-                if(alreadyExist !== -1){
-                    this.fire('oe-show-error',"Connection already exists");
+                if (alreadyExist !== -1) {
+                    this.fire('oe-show-error', "Connection already exists");
                     return;
                 }
-				
+
                 connections.push(newConnection);
-                if(this._isGraphCyclic(nodes,connections)){
-                    this.fire('oe-show-error',"Cannot create cycle in the graph");
+                if (this._isGraphCyclic(nodes, connections)) {
+                    this.fire('oe-show-error', "Cannot create cycle in the graph");
                     return;
                 }
                 this.$.connectionSetting.set('isNewConnection', true);
@@ -531,8 +536,17 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             _applySetting: function () {
                 var settingsPanel = this.$.settingSelector.selectedItem;
                 var data = null;
+                var valid = this.$['node-name'].validate();
+
                 if (settingsPanel) {
+                    if (settingsPanel._validate) {
+                        valid = valid && settingsPanel._validate();
+                    }
                     data = settingsPanel.getData();
+                }
+                if (!valid) {
+                    this.fire('oe-show-error', 'Validation failed');
+                    return;
                 }
                 this.fire('update-node-data', {
                     node: this._selectedNode,
@@ -541,9 +555,12 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 this._closeSetting();
             },
             _closeSetting: function () {
-                this.set('_mainSection', 'edit');
+                if (this.decisionGraph) {
+                    this.set('_mainSection', 'edit');
+                } else {
+                    this.set('_mainSection', 'empty');
+                }
             },
-
 
             //Handle Node selection
             _toggleSelection: function (event) {
@@ -567,7 +584,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 var selectedNodes = [];
                 [].forEach.call(elementNodes, function (ele) {
                     var nodeName = ele.node.name;
-                    if(!service || !service.decisions){
+                    if (!service || !service.decisions) {
                         ele.set('selected', false);
                         return;
                     }
@@ -633,39 +650,39 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     "px);";
                 return style;
             },
-            __computeData:function(){
+            __computeData: function () {
                 var decisionTables = [];
-                this.decisionGraph.graph.nodes.forEach(function(node){
-                    if(node.nodeType === "DECISION_TABLE"){
+                this.decisionGraph.graph.nodes.forEach(function (node) {
+                    if (node.nodeType === "DECISION_TABLE") {
                         decisionTables.push({
-                            name : node.name,
-                            type : node.nodeType
+                            name: node.name,
+                            type: node.nodeType
                         });
-                    }else if(node.nodeType === "BOXED_CONTEXT"){
-                        if(node.data.result.type === "DECISION_TABLE"){
+                    } else if (node.nodeType === "BOXED_CONTEXT") {
+                        if (node.data.result.type === "DECISION_TABLE") {
                             decisionTables.push({
-                                name : node.name,
-                                type : node.nodeType
+                                name: node.name,
+                                type: node.nodeType
                             });
                         }
-                    }else if(node.nodeType === "BUSINESS_MODEL"){
-                        if(node.data.decisionType === "DECISION_TABLE"){
+                    } else if (node.nodeType === "BUSINESS_MODEL") {
+                        if (node.data.decisionType === "DECISION_TABLE") {
                             decisionTables.push({
-                                name : node.name,
-                                type : node.nodeType
+                                name: node.name,
+                                type: node.nodeType
                             });
-                        }else if(node.data.decisionType === "BOXED_CONTEXT"){
-                            if(node.data.data.result.type === "DECISION_TABLE"){
+                        } else if (node.data.decisionType === "BOXED_CONTEXT") {
+                            if (node.data.data.result.type === "DECISION_TABLE") {
                                 decisionTables.push({
-                                    name : node.name,
-                                    type : node.nodeType
+                                    name: node.name,
+                                    type: node.nodeType
                                 });
                             }
                         }
                     }
                 });
-                this.set('__helperData',{
-                    decisionTables:decisionTables
+                this.set('__helperData', {
+                    decisionTables: decisionTables
                 });
             }
         })

@@ -43,7 +43,8 @@
                 'delete-connection':'_handleDeleteConnection',
                 'update-node-data': '_updateNodeData',
                 'init-save-graph':'_initSaveGraph',
-                'init-save-graph-as':'_initSaveAsGraph'
+                'init-save-graph-as':'_initSaveAsGraph',
+                'load-decision-table':'_loadDecisionTable'
             },
             attached:function(){
                 this._clearStack();
@@ -198,6 +199,10 @@
             _updateNodeData: function (event) {
                 var detail = event.detail;
                 var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
+                if(event.detail.node.__meta){
+                    this._handleDecisionTableUpdate(event.detail);
+                    return;
+                }
                 var oldNode = decisiongraph.graph.nodes.find(function (node) {
                     return node.id === detail.node.id;
                 });
@@ -294,6 +299,30 @@
                 }
                 feel += "}";
                 return feel;
+            },
+            //Decision Table Hanlders
+            _loadDecisionTable:function(event){
+                var table = event.detail;
+                if(!table.decisionRules){
+                    this.$.editor._closeSetting();
+                    return;
+                }
+                var data = JSON.parse(table.decisionRules);
+                data.inputValues = data.inputValues || data.inputValuesList.slice();
+                delete data.inputValuesList;
+                var decisionNode = {
+                    name : table.name,
+                    data : data,
+                    nodeType:"DECISION_TABLE",
+                    __meta:table
+                }
+                this.$.editor.fire('open-node-setting',decisionNode);
+            },
+            _handleDecisionTableUpdate:function(detail){
+                var payload = detail.node.__meta;
+                payload.decisionRules = JSON.stringify(detail.data);
+                payload.name = detail.node.name;
+                this._footerFire('save-decision-table',payload);
             }
         })
     </script>

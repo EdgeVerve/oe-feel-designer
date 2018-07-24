@@ -188,6 +188,10 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 }
             }
 
+            #hit-policy-selection{
+                padding: 8px;
+            }
+
             #decisionTable {
                 --oe-data-table-data: {
                     padding-right: 24px;
@@ -234,7 +238,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             
         </style>
         <div class="component-container">
-            <div class="hit-policy-selection">
+            <div class="hit-policy-selection layout horizontal center justified">
                 <oe-combo label="Hit policy" id="hit-selector" listdata="[[hitPolicyList]]" value={{data.hitPolicy}} displayproperty="name"
                     valueproperty="code">
                     <template item-template>
@@ -244,6 +248,11 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                         </div>
                     </template>
                 </oe-combo>
+                <div class="upload-section">
+                    <oe-file-input show-clear value-type="dataUrl" value={{tempDocObj.documentData}}
+                        accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                    </oe-file-input>
+                </div>
             </div>
             <div class="expression-table">
                 <div class="column-config" hidden="[[!showConfig]]">
@@ -284,6 +293,12 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 data: {
                     type: Object,
                     observer: '_dataChanged'
+                },
+                tempDocObj:{
+                    type: Object,
+                    value:function(){
+                        return {};
+                    }
                 }
             },
             listeners: {
@@ -291,6 +306,8 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 'oe-data-table-action-add-rule': '_addRule',
                 'oe-data-table-row-action': '_handleRowAction'
             },
+            behaviors: [OEUtils.AjaxBehavior],
+            observers:['_documentChanged(tempDocObj.documentData)'],
             ready: function () {
                 var hitPolicies = [{
                         name: 'Unique',
@@ -518,6 +535,29 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 newArr.fill('-');
                 this.push('decisionRows', newArr);
             },
+            _documentChanged:function(){
+                if(!this.tempDocObj.documentData){
+                    return;
+                }
+                var payload = this.tempDocObj;
+                this.makeAjaxCall(OEUtils._getRestApiUrl('/DecisionTables/parseExcel'), "POST", payload, null, null, function (err, resp) {
+                    if (resp) {
+                        delete resp.context;
+                        var excelData = JSON.parse(JSON.stringify(resp));
+                        excelData.inputValues = (new Array(resp.inputValuesList.length)).fill("");
+                        delete excelData.inputValuesList;
+                        this.set('tempDocObj',{});
+                        this.fire('oe-show-confirm',{
+                            ok:function(){
+                                this.set('data',excelData);
+                            }.bind(this),
+                            message:"This will overwrite existing data.Do you want to proceed ?"
+                        });
+                    }else{
+                        this.resolveError(err);
+                    }
+                }.bind(this));
+            },
             getData: function () {
                 var valueRow = this.decisionRows[0];
                 var inputLength = this.data.inputExpressionList.length;
@@ -525,6 +565,9 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 this.data.outputValues = valueRow.splice(inputLength);
                 this.data.inputValues = valueRow;
                 return this.data;
+            },
+            _validate:function(){
+                return !!this.data.hitPolicy;
             }
         })
     </script>

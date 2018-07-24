@@ -19,14 +19,14 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
         </style>
         <paper-dialog id="getNameDialog" modal>
             <div class="dialog-header">
-                Save Graph
+                Save [[modelName]]
             </div>
             <div class="dialog-body">
-                <oe-input id="name" label="Graph Name" value="{{graph.name}}"
+                <oe-input id="name" label="[[modelName]] Name" value="{{model.name}}"
                 invalid=[[_nameInvalid]]></oe-input>
             </div>
             <div class="dialog-footer layout horizontal center end-justified">
-                <paper-button disabled=[[_nameInvalid]] on-tap="_saveNewGraph">Save</paper-button>
+                <paper-button disabled=[[_nameInvalid]] on-tap="_saveNewModel">Save</paper-button>
                 <paper-button on-tap="closeDialog">Cancel</paper-button>
             </div>
         </paper-dialog>
@@ -35,15 +35,29 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
         Polymer({
             is:"oe-feel-save-as-dialog",
             properties:{
-                graph:{
-                    type:Object
+                modelName:{
+                    type:String,
+                    value:"Graph"
                 },
-                graphList:{
-                    type:Array
+                model:{
+                    type:Object,
+                    value:function(){
+                        return {};
+                    }
+                },
+                modelList:{
+                    type:Array,
+                    value:function(){
+                        return [];
+                    }
+                },
+                modelPostUrl:{
+                    type:String,
+                    value:"/decisiongraphs"
                 }
             },
             behaviors:[OEUtils.AjaxBehavior],
-            observers:['_validationName(graph.name)'],
+            observers:['_validationName(model.name)'],
             _validationName:function(name){
                 var valid = true;
                 if(!name || name.length === 0){
@@ -51,19 +65,19 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     return;
                 }
                 
-                var idx = this.graphList.findIndex(function(graph){
-                    return graph.name === name;
+                var idx = this.modelList.findIndex(function(model){
+                    return model.name === name;
                 })
                 this.set('_nameInvalid',(idx !== -1));
             },
-            _saveNewGraph:function(){
-                var payload = this.graph;
+            _saveNewModel:function(){
+                var payload = this.model;
                 delete payload._version;
-                this.makeAjaxCall(OEUtils._getRestApiUrl('/DecisionGraphs'), "PUT", payload, null, null, function (err, resp) {
+                this.makeAjaxCall(OEUtils._getRestApiUrl(this.modelPostUrl), "PUT", payload, null, null, function (err, resp) {
                     if(resp){
-                        this.push('graphList',resp);
-                        this.fire('load-graph',resp);
-                        this.fire('oe-show-success','Graph saved successfully');
+                        this.push('modelList',resp);
+                        this.fire('save-success-'+this.modelName.toLowerCase(),resp);
+                        this.fire('oe-show-success',this.modelName +' saved successfully');
                         this.closeDialog();
                     }else{
                         this.resolveError(err);
