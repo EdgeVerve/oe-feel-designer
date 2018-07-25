@@ -38,6 +38,36 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 }
             }
 
+            /* Toolbar icon styles */
+            .toolbar-menu {
+                border-left: 1px solid rgba(255, 255, 255, 0.12);
+            }
+
+            .toolbar-menu iron-icon {
+                --iron-icon-height: 20px;
+                --iron-icon-width: 20px;
+            }
+
+
+
+            .toolbar-menu .toolbar-item {
+                height: 40px;
+                border-right: 1px solid rgba(255, 255, 255, 0.12);
+            }
+
+            .toolbar-menu .toolbar-item:not([disabled]) {
+                color: #FFF;
+            }
+
+            .toolbar-menu paper-menu-button {
+                padding: 0px;
+            }
+
+            .toolbar-menu paper-icon-button {
+                width: 40px;
+                height: 40px;
+                padding: 11px;
+            }
 
             /* Menu Button Style */
 
@@ -49,6 +79,9 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 font-size: 12px;
                 border-radius: 0px;
                 padding: 12px;
+                font-family: Roboto;
+                font-weight: 500;
+                letter-spacing: 0.7px;
                 background: var(--dark-primary-color);
                 width: var(--menu-btn-width);
             }
@@ -57,6 +90,9 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 background: var(--accent-color) !important;
             }
 
+            .graph-icon {
+                padding-right: 16px;
+            }
 
             /* Drop down styles */
             #graphSelectMenu .dropdown-content{
@@ -288,7 +324,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 </div>
             </paper-menu-button>
             <div class="flex"></div>
-            <div class="layout horizontal toolbar-menu" hidden=[[!_graphSelected]]>
+            <div class="layout horizontal toolbar-menu" hidden=[[!_showToolbar(selectedGraph,enableToolbar)]]>
                 <paper-icon-button id="undo-btn" icon="undo" disabled=[[_isUndoDisabled]] class="toolbar-item" on-tap="_undoGraph"></paper-icon-button>
                 <paper-icon-button id="redo-btn" icon="redo" disabled=[[_isRedoDisabled]] class="toolbar-item" on-tap="_redoGraph"></paper-icon-button>
                 <paper-menu-button class="toolbar-item" no-animations no-overlap vertical-align="bottom" close-on-activate>
@@ -312,7 +348,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             </div>
         </div>
         <oe-feel-save-as-dialog id="saveAsDialog" 
-        on-save-success-graph="_loadGraph"
+        on-save-success-graph="_handleSaveGraph"
         ></oe-feel-save-as-dialog>
     </template>
     <script>
@@ -325,7 +361,8 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 'save-graph-as': '_saveGraphAsToDB',
                 'load-graph': '_loadGraph',
                 'validate-graph': '_validateGraph',
-                'save-decision-table': '_saveDecisonTable'
+                'save-decision-table': '_saveDecisonTable',
+                'change-toolbar-display':'_changeToolBarDisplay'
             },
             attached: function () {
                 
@@ -341,6 +378,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 this.set('selectedTable', null);
                 this.set('_graphSelected', false);
                 this.set('_selectedPanel', 0);
+                this.set('enableToolbar',false);
                 this._fetchData();
             },
 
@@ -504,7 +542,10 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                         }
                     }.bind(this));
             },
-
+            _handleSaveGraph:function(e){
+                this.set('decisionGraphList',this.decisionGraphList.slice());
+                this.fire('load-graph',e.detail);
+            },
 
 
             //Delete Graph
@@ -583,6 +624,12 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             },
 
             //Utils
+            _showToolbar:function(selectedGraph,enableToolbar){
+                return (selectedGraph && enableToolbar);
+            },
+            _changeToolBarDisplay:function(event){
+                this.set('enableToolbar',event.detail.show);
+            },
             _isSeletedItem: function (item, selected) {
                 return (selected && item && (item.name === selected.name));
             },

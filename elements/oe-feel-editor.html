@@ -211,7 +211,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 'edit-decision-table': '_editDecisionTable'
             },
             attached: function () {
-                this.set('_mainSection', 'empty');
+                this._closeSetting();
                 this.set('componentMap', {
                     'decision': 'DECISION_TABLE',
                     'invocation': 'BOXED_INVOCATION',
@@ -272,7 +272,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 }
             },
             _renderGraph: function () {
-                this.set('_mainSection', 'edit');
+                this._closeSetting();
                 var workSpace = this.$.workSpace;
                 workSpace.innerHTML = "";
                 this.set('counter', {
@@ -531,6 +531,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 if (settingsPanel) {
                     settingsPanel.set('data', this._selectedNode.data);
                 }
+                this.fire('editor-panel-opened');
                 this.set('_mainSection', 'setting');
             },
             _applySetting: function () {
@@ -560,6 +561,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 } else {
                     this.set('_mainSection', 'empty');
                 }
+                this.fire('editor-panel-closed');
             },
 
             //Handle Node selection

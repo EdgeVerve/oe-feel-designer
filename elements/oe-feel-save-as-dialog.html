@@ -43,17 +43,19 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     type:Object,
                     value:function(){
                         return {};
-                    }
+                    },
+                    notify:true
                 },
                 modelList:{
                     type:Array,
                     value:function(){
                         return [];
-                    }
+                    },
+                    notify:true
                 },
                 modelPostUrl:{
                     type:String,
-                    value:"/decisiongraphs"
+                    value:"/DecisionGraphs"
                 }
             },
             behaviors:[OEUtils.AjaxBehavior],
