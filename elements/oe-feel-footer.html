@@ -338,6 +338,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     "event": "delete-table"
                 }]);
                 this.set('selectedGraph', null);
+                this.set('selectedTable', null);
                 this.set('_graphSelected', false);
                 this.set('_selectedPanel', 0);
                 this._fetchData();
@@ -484,7 +485,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             },
             _saveDecisonTable: function (e) {
                 var payload = event.detail;
-                var method = payload._version ? "POST" : "PUT";
+                var method = payload.id ? "PUT" : "POST";
                 this.makeAjaxCall(OEUtils._getRestApiUrl('/DecisionTables'), method, payload, null, null,
                     function (err, resp) {
                         if (resp) {
@@ -549,7 +550,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                         this.fire('oe-show-success', 'Decision Table deleted successfully');
                         this.splice('decisionTableList', idx, 1);
                         if(this.selectedTable.id === table.id){
-                            this.set('selectedTable', false);
+                            this.set('selectedTable', null);
                             this._moduleFire('load-decision-table', null);
                         }
                     } else {
@@ -606,9 +607,6 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                             this.resolveError(err);
                         }
                     }.bind(this));
-            },
-            formatJSON: function (value) {
-                return JSON.stringify(value, null, 2);
             },
             _filter: function (val) {
                 return function (model) {

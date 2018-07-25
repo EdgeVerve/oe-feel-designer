@@ -544,7 +544,8 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     if (resp) {
                         delete resp.context;
                         var excelData = JSON.parse(JSON.stringify(resp));
-                        excelData.inputValues = (new Array(resp.inputValuesList.length)).fill("");
+                        var inputExprs = resp.inputValues || resp.inputValuesList;
+                        excelData.inputValues = (new Array(inputExprs.length)).fill("");
                         delete excelData.inputValuesList;
                         this.set('tempDocObj',{});
                         this.fire('oe-show-confirm',{
