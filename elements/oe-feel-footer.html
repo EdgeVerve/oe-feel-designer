@@ -521,8 +521,10 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             _saveGraphAs: function (e) {
                 this._moduleFire('init-save-graph-as');
             },
-            _saveDecisonTable: function (e) {
-                var payload = event.detail;
+            _saveDecisonTable: function (event) {
+                var payload = event.detail.node.__meta;
+                payload.decisionRules = JSON.stringify(event.detail.data);
+                payload.name = event.detail.node.name;
                 var method = payload.id ? "PUT" : "POST";
                 this.makeAjaxCall(OEUtils._getRestApiUrl('/DecisionTables'), method, payload, null, null,
                     function (err, resp) {
@@ -537,6 +539,9 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                                 this.set('decisionTableList.' + updateIdx, resp);
                             }
                             this.set('selectedTable', false);
+                            this.async(function(){
+                                event.detail.cb && event.detail.cb();
+                            },1000);
                         } else {
                             this.resolveError(err);
                         }

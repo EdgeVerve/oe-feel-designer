@@ -206,8 +206,8 @@
             _updateNodeData: function (event) {
                 var detail = event.detail;
                 var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
-                if(event.detail.node.__meta){
-                    this._handleDecisionTableUpdate(event.detail);
+                if(detail.node.__meta){
+                    this._footerFire('save-decision-table',detail);
                     return;
                 }
                 var oldNode = decisiongraph.graph.nodes.find(function (node) {
@@ -220,6 +220,7 @@
                 if (feel && feel.length > 0) {
                     decisiongraph.data[oldNode.name] = feel;
                 }
+                detail.cb && detail.cb();
                 this._pushToStack(decisiongraph);
                 this._handleValidateGraph();
             },
@@ -324,12 +325,6 @@
                     __meta:table
                 }
                 this.$.editor.fire('open-node-setting',decisionNode);
-            },
-            _handleDecisionTableUpdate:function(detail){
-                var payload = detail.node.__meta;
-                payload.decisionRules = JSON.stringify(detail.data);
-                payload.name = detail.node.name;
-                this._footerFire('save-decision-table',payload);
             }
         })
     </script>

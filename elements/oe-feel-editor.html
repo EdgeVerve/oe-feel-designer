@@ -551,9 +551,9 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 }
                 this.fire('update-node-data', {
                     node: this._selectedNode,
-                    data: data
+                    data: data,
+                    cb:this._closeSetting.bind(this)
                 });
-                this._closeSetting();
             },
             _closeSetting: function () {
                 if (this.decisionGraph) {
