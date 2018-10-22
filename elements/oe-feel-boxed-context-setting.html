@@ -58,7 +58,7 @@
             </div>
             <div class="result-detail-panel">
                 <iron-pages selected={{data.result.type}} attr-for-selected="result-type">
-                    <oe-feel-decision-table-setting data={{decisionTableData}} result-type="DECISION_TABLE"></oe-feel-decision-table-setting>
+                    <oe-feel-decision-table-setting id="decisionTable" data={{decisionTableData}} result-type="DECISION_TABLE"></oe-feel-decision-table-setting>
                     <oe-textarea label="Feel expression" result-type="literal-expression" value="{{feelExpression}}"></oe-textarea>
                 </iron-pages>
             </div>
@@ -122,7 +122,7 @@
             getData:function(){
                 var data = this.data;
                 if(data.result.type === "DECISION_TABLE"){
-                    data.result.data = this.decisionTableData;
+                    data.result.data = this.$.decisionTable.getData();
                 }else if(data.result.type === "literal-expression"){
                     data.result.value = this.feelExpression;
                 } else {
