@@ -60,7 +60,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 _saveNewService:function(){
                     var payload = this.service;
                     delete payload._version;
-                    this.makeAjaxCall(OEUtils._getRestApiUrl('/decisionservices'), "PUT", payload, null, null, function (err, resp) {
+                    this.makeAjaxCall(OEUtils._getRestApiUrl('/DecisionServices/'), "PUT", payload, null, null, function (err, resp) {
                         if(resp){
                             this.set('service',resp);
                             this.push('serviceList',resp);

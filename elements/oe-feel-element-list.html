@@ -60,22 +60,8 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 <template is="dom-repeat" items="{{icons}}">
                     <div class="element" title="[[item.name]]">
                         <iron-icon icon="oe-feel-icons:[[item.type]]"  draggable="true" on-dragstart="dragStart"></iron-icon>
-                        <!-- <div class="hover-display layout horizontal center justified" draggable="true" on-dragstart="dragStart">
-                            <iron-icon icon="oe-feel-icons:[[item.type]]"></iron-icon>
-                            <label>[[item.name]]</label>
-                        </div> -->
                     </div>
                 </template>
-                <hr>
-                <!-- <template is="dom-repeat" items="{{associations}}">
-                    <div class="association" draggable="true" title="[[item.name]]" on-click="raiseConnect">
-                        <iron-icon icon="oe-feel-icons:[[item.type]]"></iron-icon>
-                        <div class="hover-display layout horizontal center justified">
-                            <iron-icon icon="oe-feel-icons:[[item.type]]"></iron-icon>
-                            <label>[[item.name]]</label>
-                        </div>
-                    </div>
-                </template> -->
             </div>
         </div>
     </template>

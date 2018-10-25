@@ -304,21 +304,21 @@
                 server.autoRespond = true;
                 server.respondImmediately = true;
                 server.respondWith('GET',
-                    /decisiongraphs/,
+                    /DecisionGraphs/,
                     function (req) {
                         req.respond(200, 'application/json', JSON.stringify(decisiongraphs));
                     }
                 );
 
                 server.respondWith('PUT',
-                    /decisiongraphs/,
+                    /DecisionGraphs/,
                     function (req) {
                         req.respond(200, 'application/json', req.requestBody);
                     }
                 );
 
                 server.respondWith('DELETE',
-                    /decisiongraphs\/*/,
+                    /DecisionGraphs\/*/,
                     function (req) {
                         req.respond(200, 'application/json', JSON.stringify({
                             count: 1
@@ -328,7 +328,7 @@
 
                 server.respondWith(
                     'GET',
-                    /decisionservices/,
+                    /DecisionServices/,
                     function (req) {
                         req.respond(200, 'application/json', JSON.stringify(decisionservices));
                     }
@@ -349,19 +349,13 @@
             test('filter the graphs list', function (done) {
                 var el = fixture('basic');
                 Polymer.Base.async(function () {
-                    var listItems = el.querySelectorAll('.graph-list .list-option')
+                    var listItems = el.querySelectorAll('.graph-list oe-studio-menu-item')
                     assert.deepEqual(listItems.length, 3);
-                    assert.deepEqual(el.showSeachBar, false);
-                    var searchIcon = el.querySelector('#search-trigger');
-                    searchIcon.click();
+                    el.set('searchKey','gra');
                     flush(function(){
-                        assert.deepEqual(el.showSeachBar, true);
-                        el.set('graphSearchText','gra');
-                        flush(function(){
-                            listItems = el.querySelectorAll('.graph-list .list-option')
-                            assert.deepEqual(listItems.length, 2);
-                            done();
-                        });
+                        listItems = el.querySelectorAll('.graph-list oe-studio-menu-item')
+                        assert.deepEqual(listItems.length, 2);
+                        done();
                     });
                 }, 100);
             });
@@ -369,7 +363,7 @@
             test('select a decision graph', function (done) {
                 var el = fixture('basic');
                 Polymer.Base.async(function () {
-                    var listItem = el.querySelector('.graph-list .list-option');
+                    var listItem = el.querySelector('.graph-list oe-studio-menu-item');
 
                     function eventHandler(ev) {
                         ev.stopPropagation();
@@ -380,14 +374,14 @@
                         done();
                     }
                     el.addEventListener('oe-studio-module-action', eventHandler);
-                    listItem.click();
+                    listItem.querySelector('.item-container').click();
                 }, 300);
             });
 
             test('create a decision graph', function (done) {
                 var el = fixture('basic');
                 Polymer.Base.async(function () {
-                    var createPanel = el.querySelector('.graph-options .create-graph-panel');
+                    var createPanel = el.querySelector('#add-graph-panel');
 
                     function eventHandler(ev) {
                         ev.stopPropagation();
@@ -452,8 +446,8 @@
 
                             flush(function () {
                                 var dialog = el.querySelector('#saveAsDialog');
-                                dialog.set('graph.name', 'test-graph');
-                                dialog._saveNewGraph();
+                                dialog.set('model.name', 'test-graph');                                
+                                dialog._saveNewModel();
                             })
                         } else if (ev.detail.event === 'decision-graph-selected') {
                             assert.deepEqual(el.selectedGraph.name, 'test-graph');
@@ -471,8 +465,8 @@
             test('delete a decision graph', function (done) {
                 var el = fixture('basic');
                 Polymer.Base.async(function () {
-                    var listItem = el.querySelector('.graph-list .list-option');
-                    listItem.click();
+                    var listItem = el.querySelector('.graph-list oe-studio-menu-item');
+                    listItem.querySelector('.item-container').click();
                     flush(function () {
                         var deleteBtn = el.querySelector('#delete-btn');
                         var decisionLength = el.decisionGraphList.length;
@@ -493,7 +487,7 @@
                         el.addEventListener('oe-studio-module-action', eventHandler);
                         el.addEventListener('oe-show-confirm', confirmHandler);
                         deleteBtn.click();
-                    })
+                    });
 
                 }, 300);
             });

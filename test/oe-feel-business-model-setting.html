@@ -93,7 +93,7 @@
                             var rowActions = el.$.decisionTable.querySelectorAll('.row-action iron-icon');
                             rowActions[5].click();
                             flush(function(){
-                                assert.deepEqual(el.decisionTableData.ruleList[0][0], 'rule1inp1');
+                                assert.deepEqual(el.decisionTableData.ruleList[0][0], '-');
                                 rowActions[3].click();
                                 flush(function(){
                                     assert.deepEqual(el.decisionTableData.ruleList.length, 2);

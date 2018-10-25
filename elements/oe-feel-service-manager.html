@@ -204,7 +204,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 }
             },
             _updateService: function (service) {
-                this.makeAjaxCall(OEUtils._getRestApiUrl('/decisionservices'), "PUT", service, null, null, null, function (err,
+                this.makeAjaxCall(OEUtils._getRestApiUrl('/DecisionServices/'), "PUT", service, null, null, null, function (err,
                     resp) {
                     if (!err) {
                         var idx = this.serviceList.findIndex(function (s) {
@@ -223,7 +223,7 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 }.bind(this));
             },
             _deleteService: function (service) {
-                this.makeAjaxCall(OEUtils._getRestApiUrl('/decisionservices'), 'delete', service, null, null, null, function (
+                this.makeAjaxCall(OEUtils._getRestApiUrl('/DecisionServices/'), 'delete', service, null, null, null, function (
                     err, resp) {
                     if (!err) {
                         var idx = this.serviceList.findIndex(function (s) {

@@ -110,6 +110,19 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                 box-shadow: 5px 5px 1px rgba(0, 0, 0, 0.2);
             }
 
+            #validity-display{
+                position: absolute;
+                top: 2px;
+                left: 2px;
+            }
+
+            #validity-display.validation-true{
+                color:green;
+            }
+            #validity-display.validation-false{
+                color: red;
+            }
+
             #connectorTrigger {
                 width: 6px;
                 height: 6px;
@@ -167,6 +180,11 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
                     </div>
                 </iron-pages>
             </div>
+            <div id="validity-display" class$="validation-[[node.__validity.valid]]" hidden=[[!node.__validity]]>
+                <iron-icon icon="[[_getValidityIcon(node.__validity.valid)]]">
+                </iron-icon>
+                <paper-tooltip hidden=[[node.__validity.valid]]>[[node.__validity.errorMessage]]</paper-tooltip>
+            </div>
             <div id="connectorTrigger" on-track="_handleConnectorLaunch"></div>
         </div>
     </template>
@@ -183,6 +201,9 @@ Any unauthorized reproduction, storage, transmission in any form or by any means
             },
             _computeIcon: function (selected) {
                 return selected ? "check-box" : "check-box-outline-blank";
+            },
+            _getValidityIcon:function(valid){
+                return valid ? "done" : "error";
             },
             _launchSetting: function () {
                 this.fire('open-node-setting', this.node);

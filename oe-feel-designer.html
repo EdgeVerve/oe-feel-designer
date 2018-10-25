@@ -21,7 +21,10 @@
         </style>
         <div class="component-container layout vertical">
             <div class="component-workspace layout horizontal flex">
-                <oe-feel-editor id="editor" services="{{serviceList}}"
+                <oe-feel-editor id="editor" 
+                on-editor-panel-closed="_EditorClosed"
+                on-editor-panel-opened="_EditorOpened"
+                services="{{serviceList}}"
                 decision-graph="[[_getCurrentGraph(_currentStackIndex)]]"></oe-feel-editor>
             </div>
         </div>
@@ -37,11 +40,13 @@
                 'update-component-position': '_handlePositionUpdate',
                 'undo-decision-graph': '_handleUndoGraph',
                 'redo-decision-graph': '_handleRedoGraph',
+                'validation-complete':'_handleValidationResult',
                 'update-connection': '_handleConnectionUpdate',
                 'delete-connection':'_handleDeleteConnection',
                 'update-node-data': '_updateNodeData',
                 'init-save-graph':'_initSaveGraph',
-                'init-save-graph-as':'_initSaveAsGraph'
+                'init-save-graph-as':'_initSaveAsGraph',
+                'load-decision-table':'_loadDecisionTable'
             },
             attached:function(){
                 this._clearStack();
@@ -54,6 +59,8 @@
                 if (index > -1) {
                     var graph = JSON.parse(JSON.stringify(this.curGraphStack[index]));
                     return graph;
+                }else{
+                    return null;
                 }
             },
             _pushToStack: function (graph) {
@@ -71,7 +78,12 @@
                     'payload': detail
                 });
             },
-
+            _EditorOpened:function(e){
+                this._footerFire('change-toolbar-display',{show:false});
+            },
+            _EditorClosed:function(e){
+                this._footerFire('change-toolbar-display',{show:true});
+            },
             //Event Handlers
             _graphSelected: function (e) {
                 var self = this;
@@ -86,6 +98,7 @@
                 this.set('serviceList',e.detail.service);
                 if (graph) {
                     this._pushToStack(graph);
+                    this._handleValidateGraph();
                 }
             },
             _handleAddNode: function (e) {
@@ -97,6 +110,7 @@
                 }
                 decisiongraph.graph.nodes.push(node);
                 this._pushToStack(decisiongraph);
+                this._handleValidateGraph();
             },
             _handleDeleteNode: function (e) {
                 var nodeToDelete = e.detail;
@@ -140,6 +154,23 @@
                     })
                 }
             },
+            _handleValidateGraph:function(){
+                var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
+                this._footerFire('validate-graph',decisiongraph);
+            },
+            _handleValidationResult:function(e){
+                var result = e.detail;
+                var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
+                decisiongraph.graph.nodes.forEach(function(node){
+                    if(result[node.name]){
+                        node.__validity = result[node.name]
+                    };
+                });
+                this.set('curGraphStack.'+this._currentStackIndex,decisiongraph);
+                var stackIndex = this._currentStackIndex;
+                this.set('_currentStackIndex',-1);
+                this.set('_currentStackIndex',stackIndex);
+            },
             _handleConnectionUpdate: function (event) {
                 var newConnection = event.detail;
                 var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
@@ -175,6 +206,10 @@
             _updateNodeData: function (event) {
                 var detail = event.detail;
                 var decisiongraph = this._getCurrentGraph(this._currentStackIndex);
+                if(detail.node.__meta){
+                    this._footerFire('save-decision-table',detail);
+                    return;
+                }
                 var oldNode = decisiongraph.graph.nodes.find(function (node) {
                     return node.id === detail.node.id;
                 });
@@ -185,7 +220,9 @@
                 if (feel && feel.length > 0) {
                     decisiongraph.data[oldNode.name] = feel;
                 }
+                detail.cb && detail.cb();
                 this._pushToStack(decisiongraph);
+                this._handleValidateGraph();
             },
 
             //FEEl Creation
@@ -208,6 +245,7 @@
                             feelStr = this._getContextFEEL(node.data.data, node.name);
                         }
                         break;
+                    default:break;
                 }
                 return feelStr;
             },
@@ -269,6 +307,24 @@
                 }
                 feel += "}";
                 return feel;
+            },
+            //Decision Table Hanlders
+            _loadDecisionTable:function(event){
+                var table = event.detail;
+                if(!table.decisionRules){
+                    this.$.editor._closeSetting();
+                    return;
+                }
+                var data = JSON.parse(table.decisionRules);
+                data.inputValues = data.inputValues || data.inputValuesList.slice();
+                delete data.inputValuesList;
+                var decisionNode = {
+                    name : table.name,
+                    data : data,
+                    nodeType:"DECISION_TABLE",
+                    __meta:table
+                }
+                this.$.editor.fire('open-node-setting',decisionNode);
             }
         })
     </script>

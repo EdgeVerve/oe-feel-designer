@@ -7,8 +7,8 @@ Here is the Landing Page.
 ![Landing Page](images/empty_state.png)
 
 
-## ***Graph Creation***
-Click on `Select Decision grpah` which will show the existing list of decision grpahs and new graph can be created by clicking on `Create new graph` button on top right of the list screen.
+## ***Decision Graph Creation***
+Click on `Select Decision graph` which will show the existing list of decision graphs and new graph can be created by clicking on `Create Decision graph` button under the options part on the right.
 
 ![Decision list](images/open_list.png)
 
@@ -54,7 +54,11 @@ Clicking on the `launch setting` icon will display a configuration page for the 
 For decision table the rules are listed in a data-table with buttons to add input,output columns and a  rule. The names of the columns or the values in the row can be edited inline.
 
 ![Decision Table](images/decision_value_setting.png)
-Hovering over a rule record allows the user to move the rule up/down the rule list and also to delete the rule. Once all the settings are done click on the `save` icon at the top right of the page to return to the design view.
+Hovering over a rule record allows the user to move the rule up/down the rule list and also to delete the rule.
+
+> In addition to entering the rule data , the user can upload a valid Decision Table Excel using the `choose or drop files` file uploader button to populate the rulelist and hitPolicy. __Note__ : The Name of the decision Table will not be updated from the file and needs to be manually changed.
+
+Once all the settings are done click on the `save` icon at the top right of the page to return to the design view.
 
 #### **Node selection**
 On selection of a node, the node is highlighted and additional options are shown in the floating button to the top right of the screen.
@@ -76,3 +80,12 @@ The list of decision services associated with the current graph can be viewed by
 From here a service can be selected,edited or deleted. Once the service is selected the related nodes are highlighted and the service name appears near the floating button.
 
 ![Service Selected](images/service_selected.png)
+
+## ***Decision table Creation***
+Click on `Select Decision graph` which will show the existing list of decision graphs, clicking on the Decision Table section in left displays the list of decision Tables available. A new decision Table can be created by clicking the `Create Decision Table` button under the options part on the right.
+
+![Decision Table List](images/open_list_table.png)
+
+This launches the decision Table editor used when editing the decision graph nodes, The user can enter the data or upload a valid Excel that populates the rules list and Hit Policy. Once the decision Table name is also configured the user can press the save icon on the top to save the Decision Table.
+
+![Decision Table Edit](images/decision_table_edit.png)

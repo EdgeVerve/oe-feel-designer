@@ -407,6 +407,47 @@
             "_version": "0bd9c2a1-5a04-4183-8482-3cd096ea5257"
         }];
 
+        var decisionTables = [{
+            "name": "eligibilityUSA",
+            "decisionRules": "{\"inputExpressionList\":[\"amount\",\"type\",\"experience\"],\"inputValuesList\":[\"<= 1000,<=1000,> 1000,-\",\"\\\"PERSONAL_LOAN\\\",\\\"HOME_LOAN\\\",\\\"CAR_LOAN\\\"\",\"> 6,-\"],\"outputs\":[\"eligibility\",\"preApproved\"],\"outputValues\":[[\"amount\",\"if amount < (monthlyIncome*6) then amount else (monthlyIncome*6)\",\"if amount < (monthlyIncome*72) then amount else (monthlyIncome*72)\",\"if amount < (monthlyIncome*12) then amount else (monthlyIncome*12)\"],[\"TRUE\",\"FALSE\"]],\"ruleList\":[[\"<= 1000\",\"\\\"PERSONAL_LOAN\\\"\",\"> 6\",\"amount\",\"TRUE\"],[\"<=1000\",\"\\\"PERSONAL_LOAN\\\"\",\"-\",\"if amount < (monthlyIncome*6) then amount else (monthlyIncome*6)\",\"FALSE\"],[\"> 1000\",\"\\\"PERSONAL_LOAN\\\"\",\"-\",\"if amount < (monthlyIncome*6) then amount else (monthlyIncome*6)\",\"FALSE\"],[\"-\",\"\\\"HOME_LOAN\\\"\",\"-\",\"if amount < (monthlyIncome*72) then amount else (monthlyIncome*72)\",\"FALSE\"],[\"-\",\"\\\"CAR_LOAN\\\"\",\"-\",\"if amount < (monthlyIncome*12) then amount else (monthlyIncome*12)\",\"FALSE\"]],\"hitPolicy\":\"F\",\"context\":\"{monthlyIncome:employment.monthlyIncome,experience:if employment.yearsOfExperience and true then employment.yearsOfExperience else 0}\"}",
+            "id": "6e128320-703d-4a97-87ac-1c3af97e6a1c",
+            "_type": "DecisionTable",
+            "_createdBy": "system",
+            "_modifiedBy": "system",
+            "_createdOn": "2018-07-25T05:37:13.287Z",
+            "_modifiedOn": "2018-07-25T05:37:13.287Z",
+            "_isDeleted": false,
+            "_version": "4724f429-497f-4de8-ad48-c728947012f5",
+            "documentId": "f1484c35-9fa5-4ab0-a30f-0ce75733d774"
+        }, {
+            "name": "eligibilityFR",
+            "decisionRules": "{\"inputExpressionList\":[\"amount\",\"type\",\"experience\",\"employmentType\"],\"inputValuesList\":[\"<= 2000,<=2000,> 2000,-\",\"\\\"PERSONAL_LOAN\\\",\\\"CAR_LOAN\\\",\\\"HOME_LOAN\\\"\",\"> 6,-\",\"\\\"FULL_TIME\\\",\\\"PART_TIME\\\",\\\"SELF_EMPLOYED\\\"\"],\"outputs\":[\"eligibility\",\"preApproved\"],\"outputValues\":[[\"amount\",\"if amount < (monthlyIncome*6 + totalOtherIncome*2) then amount else (monthlyIncome*6 + totalOtherIncome*2)\",\"if amount < (monthlyIncome*2 + totalOtherIncome*2) then amount else (monthlyIncome*2 + totalOtherIncome*2)\",\"if amount < (monthlyIncome + totalOtherIncome*2) then amount else (monthlyIncome + totalOtherIncome*2)\",\"if amount < 6*(monthlyIncome*6 + totalOtherIncome*2) then amount else 6*(monthlyIncome*6 + totalOtherIncome*2)\",\"if amount < 6*(monthlyIncome*4 + totalOtherIncome*2) then amount else 6*(monthlyIncome*4 + totalOtherIncome*2)\",\"if amount < 6*(monthlyIncome*2 + totalOtherIncome*2) then amount else 6*(monthlyIncome*2 + totalOtherIncome*2)\",\"if amount < 12*(monthlyIncome*6 + totalOtherIncome*2) then amount else 12*(monthlyIncome*6 + totalOtherIncome*2)\",\"if amount < 12*(monthlyIncome*4 + totalOtherIncome*2) then amount else 12*(monthlyIncome*4 + totalOtherIncome*2)\",\"if amount < 12*(monthlyIncome*2 + totalOtherIncome*2) then amount else 12*(monthlyIncome*2 + totalOtherIncome*2)\"],[\"TRUE\",\"FALSE\"]],\"ruleList\":[[\"<= 2000\",\"\\\"PERSONAL_LOAN\\\"\",\"> 6\",\"\\\"FULL_TIME\\\"\",\"amount\",\"TRUE\"],[\"<=2000\",\"\\\"PERSONAL_LOAN\\\"\",\"-\",\"\\\"FULL_TIME\\\"\",\"if amount < (monthlyIncome*6 + totalOtherIncome*2) then amount else (monthlyIncome*6 + totalOtherIncome*2)\",\"FALSE\"],[\"> 2000\",\"\\\"PERSONAL_LOAN\\\"\",\"-\",\"\\\"FULL_TIME\\\"\",\"if amount < (monthlyIncome*6 + totalOtherIncome*2) then amount else (monthlyIncome*6 + totalOtherIncome*2)\",\"FALSE\"],[\"-\",\"\\\"PERSONAL_LOAN\\\"\",\"-\",\"\\\"PART_TIME\\\"\",\"if amount < (monthlyIncome*2 + totalOtherIncome*2) then amount else (monthlyIncome*2 + totalOtherIncome*2)\",\"FALSE\"],[\"-\",\"\\\"PERSONAL_LOAN\\\"\",\"-\",\"\\\"SELF_EMPLOYED\\\"\",\"if amount < (monthlyIncome + totalOtherIncome*2) then amount else (monthlyIncome + totalOtherIncome*2)\",\"FALSE\"],[\"-\",\"\\\"CAR_LOAN\\\"\",\"-\",\"\\\"FULL_TIME\\\"\",\"if amount < 6*(monthlyIncome*6 + totalOtherIncome*2) then amount else 6*(monthlyIncome*6 + totalOtherIncome*2)\",\"FALSE\"],[\"-\",\"\\\"CAR_LOAN\\\"\",\"-\",\"\\\"PART_TIME\\\"\",\"if amount < 6*(monthlyIncome*4 + totalOtherIncome*2) then amount else 6*(monthlyIncome*4 + totalOtherIncome*2)\",\"FALSE\"],[\"-\",\"\\\"CAR_LOAN\\\"\",\"-\",\"\\\"SELF_EMPLOYED\\\"\",\"if amount < 6*(monthlyIncome*2 + totalOtherIncome*2) then amount else 6*(monthlyIncome*2 + totalOtherIncome*2)\",\"FALSE\"],[\"-\",\"\\\"HOME_LOAN\\\"\",\"-\",\"\\\"FULL_TIME\\\"\",\"if amount < 12*(monthlyIncome*6 + totalOtherIncome*2) then amount else 12*(monthlyIncome*6 + totalOtherIncome*2)\",\"FALSE\"],[\"-\",\"\\\"HOME_LOAN\\\"\",\"-\",\"\\\"PART_TIME\\\"\",\"if amount < 12*(monthlyIncome*4 + totalOtherIncome*2) then amount else 12*(monthlyIncome*4 + totalOtherIncome*2)\",\"FALSE\"],[\"-\",\"\\\"HOME_LOAN\\\"\",\"-\",\"\\\"SELF_EMPLOYED\\\"\",\"if amount < 12*(monthlyIncome*2 + totalOtherIncome*2) then amount else 12*(monthlyIncome*2 + totalOtherIncome*2)\",\"FALSE\"]],\"hitPolicy\":\"F\",\"context\":\"{employmentType:employment.employmentType,monthlyIncome:employment.monthlyIncome,otherIncomeArr:for a in incomeSources return a.amount,totalOtherIncome:sum(otherIncomeArr),experience:if employment.yearsOfExperience and true then employment.yearsOfExperience else 0}\"}",
+            "id": "eb51b81e-ffff-4f3f-9964-3b3fefa7c62b",
+            "_type": "DecisionTable",
+            "_createdBy": "system",
+            "_modifiedBy": "system",
+            "_createdOn": "2018-07-25T05:37:13.372Z",
+            "_modifiedOn": "2018-07-25T05:37:13.372Z",
+            "_isDeleted": false,
+            "_version": "d38ac804-8a38-4fcc-8a62-3074c9f257ef",
+            "documentId": "6da7ab6e-76b7-42de-b929-45a6c2a7da7e",
+            "scope":{
+                "language":"en-US"
+            }
+        }, {
+            "name": "eligibilitySetOne",
+            "decisionRules": "{\"inputExpressionList\":[\"EmploymentType\"],\"inputValuesList\":[\"\\\"SELF_EMPLOYED\\\",-\"],\"outputs\":[\"URL\"],\"outputValues\":[[\"\\\"/loaneligiblity-2self\\\"\",\"\\\"/eligiblity-2full\\\"\"]],\"ruleList\":[[\"\\\"SELF_EMPLOYED\\\"\",\"\\\"/loaneligiblity-2self\\\"\"],[\"-\",\"\\\"/eligiblity-2full\\\"\"]],\"hitPolicy\":\"U\",\"context\":\"{EmploymentType:employment.employmentType}\"}",
+            "id": "eb51b81e-ffff-4f3f-9964-3b3fefa7c81c",
+            "_type": "DecisionTable",
+            "_createdBy": "system",
+            "_modifiedBy": "system",
+            "_createdOn": "2018-07-25T05:37:13.386Z",
+            "_modifiedOn": "2018-07-25T05:37:13.386Z",
+            "_isDeleted": false,
+            "_version": "ab03da79-6782-4df0-aa06-cd0e49e0d7cb",
+            "documentId": "6ac69b99-eea4-4faa-be0d-52e6080ad681"
+        }];
+
         suite('<oe-feel-designer>', function () {
 
             var server;
@@ -423,44 +464,112 @@
                 server = sinon.fakeServer.create();
                 server.autoRespond = true;
                 server.respondImmediately = true;
+
+                // Decision Graph APIs
                 server.respondWith('GET',
-                    /decisiongraphs/,
+                    /DecisionGraphs/,
                     function (req) {
                         req.respond(200, 'application/json', JSON.stringify(decisiongraphs));
                     }
                 );
-
-                server.respondWith(
-                    'GET',
-                    /decisionservices/,
+                server.respondWith('POST',
+                    /DecisionGraphs\/validate/,
                     function (req) {
-                        req.respond(200, 'application/json', JSON.stringify(decisionservices));
+                        req.respond(200, 'application/json', JSON.stringify({
+                            "Decision Table 1": {
+                                valid: true
+                            },
+                            "Boxed Invocation 1": {
+                                valid: true
+                            },
+                            "Boxed Context 1": {
+                                valid: true
+                            },
+                            "Boxed Context 2": {
+                                valid: false,
+                                errormessage: {}
+                            },
+                            "Boxed Context 3": {
+                                valid: true
+                            },
+                        }));
                     }
                 );
 
                 server.respondWith('POST',
-                    /decisiongraphs\/execute/,
+                    /DecisionGraphs\/execute/,
                     function (req) {
                         req.respond(200, 'application/json', JSON.stringify({
                             value: "test"
                         }));
                     }
                 );
-                server.respondWith('PUT',
-                    /decisionservices/,
-                    function (req) {
-                        req.respond(200, 'application/json', req.requestBody);
-                    }
-                );
 
                 server.respondWith('DELETE',
-                    /decisionservices\/*/,
+                    /DecisionGraphs\/*/,
                     function (req) {
                         req.respond(200, 'application/json', JSON.stringify({
                             count: 1
                         }));
                     }
                 );
+
+                // Decision Service APIs
+                server.respondWith(
+                    'GET',
+                    /DecisionServices/,
+                    function (req) {
+                        req.respond(200, 'application/json', JSON.stringify(decisionservices));
+                    }
+                );
+
+                server.respondWith('PUT',
+                    /DecisionServices/,
+                    function (req) {
+                        req.respond(200, 'application/json', req.requestBody);
+                    }
+                );
+
+                server.respondWith('DELETE',
+                    /DecisionServices\/*/,
+                    function (req) {
+                        req.respond(200, 'application/json', JSON.stringify({
+                            count: 1
+                        }));
+                    }
+                );
+
+                // Decision Table APIs
+                server.respondWith('GET',
+                    /DecisionTables/,
+                    function (req) {
+                        req.respond(200, 'application/json', JSON.stringify(decisionTables));
+                    }
+                );
+
+                server.respondWith('PUT',
+                    /DecisionTables/,
+                    function (req) {
+                        req.respond(200, 'application/json', req.requestBody);
+                    }
+                );
+
+                server.respondWith('POST',
+                    /DecisionTables\/parseExcel/,
+                    function (req) {
+                        req.respond(200, 'application/json', decisionTables[2].decisionRules);
+                    }
+                );
+
+                server.respondWith('DELETE',
+                    /DecisionTables\/*/,
+                    function (req) {
+                        req.respond(200, 'application/json', JSON.stringify({
+                            count: 1
+                        }));
+                    }
+                );
+
                 el = fixture('basic');
                 var footer = el.querySelector('[studio-footer]')
 
@@ -483,10 +592,19 @@
 
             function loadGraph(index) {
                 var footer = el.querySelector('oe-feel-footer');
-                var listItem = footer.querySelectorAll('.graph-list .list-option');
-                listItem[index].click();
+                var listItem = footer.querySelectorAll('.graph-list oe-studio-menu-item')[index];
+                if (listItem) {
+                    listItem.querySelector('.item-container').click();
+                }
             }
 
+            function loadTable(index) {
+                var footer = el.querySelector('oe-feel-footer');
+                var listItem = footer.querySelectorAll('.table-list oe-studio-menu-item')[index];
+                if (listItem) {
+                    listItem.querySelector('.item-container').click();
+                }
+            }
 
             test('initial load of graphs list', function (done) {
                 Polymer.Base.async(function () {
@@ -511,6 +629,10 @@
                                 'oe-feel-component');
                             var connections = editor.querySelectorAll(
                                 'oe-feel-connector');
+                            assert.deepEqual(components[1].node.__validity.valid,
+                                true);
+                            assert.deepEqual(components[3].node.__validity,
+                                undefined);
                             assert.deepEqual(components.length, loadedGraph.graph
                                 .nodes.length);
                             assert.deepEqual(connections.length, loadedGraph.graph
@@ -945,6 +1067,74 @@
                             });
                         });
                     }, 100);
+                }, 100);
+            }); 
+
+            test('load a decision table', function (done) {
+                Polymer.Base.async(function () {
+                    loadTable(0);
+                    var loadedTable = decisionTables[0];
+                    flush(function () {
+                        var editor = el.querySelector('oe-feel-editor');
+                        var settingsPanel = editor.querySelector('oe-feel-decision-table-setting');
+                        assert.deepEqual(editor._selectedNode.name,loadedTable.name);
+                        assert.deepEqual(settingsPanel.data.hitPolicy,"F");
+                        done();
+                    });
+                }, 100);
+            });
+
+            test('update a decision table from excel data', function (done) {
+                Polymer.Base.async(function () {
+                    loadTable(0);
+                    var loadedTable = decisionTables[0];
+                    flush(function () {
+                        var editor = el.querySelector('oe-feel-editor');
+                        var settingsPanel = editor.querySelector('oe-feel-decision-table-setting');
+                        assert.deepEqual(settingsPanel.data.hitPolicy,"F");
+                        editor.set('_selectedNode.name',"new-test");
+                        settingsPanel.set('tempDocObj',{documentData:"data/excel"});
+                        var confirmHandler = function (ev) {
+                            ev.detail.ok && ev.detail.ok();
+                            settingsPanel.removeEventListener('oe-show-confirm', confirmHandler);
+                        }
+                        settingsPanel.addEventListener('oe-show-confirm',confirmHandler);
+                        settingsPanel._documentChanged();
+                        flush(function(){
+                            assert.deepEqual(settingsPanel.data.hitPolicy,"U");
+                            editor._applySetting();
+                            flush(function(){
+                                var footer = el.querySelector('oe-feel-footer');
+                                assert.deepEqual(footer.decisionTableList[0].name,"new-test");
+                                done();
+                            });
+                        });
+                    });
+                }, 100);
+            });
+
+            test('delete a decision table', function (done) {
+                Polymer.Base.async(function () {
+                    loadTable(0);
+                    var loadedTable = decisionTables[0];
+                    flush(function () {
+                        var footer = el.querySelector('oe-feel-footer');
+                        var confirmHandler = function (ev) {
+                            ev.detail.ok && ev.detail.ok();
+                            el.removeEventListener('oe-show-confirm', confirmHandler);
+                        }
+                        el.addEventListener('oe-show-confirm',confirmHandler);
+                        assert.deepEqual(footer.selectedTable.name,loadedTable.name);
+                        assert.deepEqual(footer.decisionTableList.length,3);
+                        var item = footer.querySelector('.table-list oe-studio-menu-item');
+                        var delIcon = item.querySelector('.options iron-icon');
+                        delIcon.click();
+                        flush(function(){
+                            assert.deepEqual(footer.selectedTable,null);
+                            assert.deepEqual(footer.decisionTableList.length,2);
+                            done();
+                        });
+                    });
                 }, 100);
             });
         });
